@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1031018103071",
+    "project_id": "schoolappfcm",
+    "storage_bucket": "schoolappfcm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031018103071:android:59a0f32465915e8563f02a",
+        "android_client_info": {
+          "package_name": "com.goglobalschool.schoolmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031018103071-nl098omssescg8baclls9v3v0kunfmcf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUL3M6rO5Ah3Xme27HtsykRjKSeY7hQaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031018103071-nl098omssescg8baclls9v3v0kunfmcf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

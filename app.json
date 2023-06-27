@@ -1,0 +1,87 @@
+{
+  "expo": {
+    "name": "Go Global School",
+    "slug": "school-mobile",
+    "version": "1.0.20",
+    "orientation": "portrait",
+    "icon": "./assets/Images/playstore.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash1.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "custom photos permission",
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to open the camera",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/Images/playstore.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.ACCESS_BACKGROUND_LOCATION"
+      ],
+      "package": "com.goglobalschool.schoolmobile",
+      "versionCode": 19,
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "custom photos permission",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/Images/noti_icon.png",
+          "sounds": [
+            "./assets/Images/notification.wav",
+            "./assets/Images/notification_sound_other.wav"
+          ],
+          "mode": "production"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
+      ]
+    ],
+    "notification": {
+      "icon": "./assets/Images/noti_icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "af77fab8-a2fd-4017-9bfe-679644c3670c"
+      }
+    }
+  }
+}
