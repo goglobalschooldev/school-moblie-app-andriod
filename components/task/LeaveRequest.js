@@ -95,7 +95,7 @@ const LeaveRequest = ({ navigation, route }) => {
 
   const [createPermission] = useMutation(CREATE_PERMISSION, {
     onCompleted: ({ createPermission }) => {
-      // console.log(createPermission, "createPermission");
+      console.log(createPermission, "createPermission");
       if (createPermission?.success) {
         navigation.navigate("RequestDetail", { dataDetail: createPermission });
       } else {

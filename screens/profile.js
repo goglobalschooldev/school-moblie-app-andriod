@@ -69,7 +69,6 @@ export default function Profile({ navigation }) {
   };
 
   //
-  
 
   //get Image from guery by mutation login Id
   let ProfileImage = accountDBCtx?.user;
@@ -104,7 +103,7 @@ export default function Profile({ navigation }) {
     "https://storage.go-globalschool.com/api" +
     imageUser?.getMobileUserById?.profileImage;
 
-  const userImgNull = imageUser?.getMobileUserById?.profileImage
+  const userImgNull = imageUser?.getMobileUserById?.profileImage;
 
   // console.log(userImage)
 
@@ -118,7 +117,7 @@ export default function Profile({ navigation }) {
       quality: 1,
     });
 
-    if (!imgUser.cancelled) {
+    if (!imgUser.canceled) {
       setImage(imgUser.uri);
 
       try {
@@ -173,136 +172,132 @@ export default function Profile({ navigation }) {
         <ActivityIndicator size="large" color="#EFB419" />
       </View>
     );
-  } else {
-    return (
-      <Root
-        Header={
-          <HeaderSetting title={t("គណនី")} navigation={navigation} />
+  }
+  return (
+    <Root Header={<HeaderSetting title={t("គណនី")} navigation={navigation} />}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            progressBackgroundColor="white"
+          />
         }
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollView}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              progressBackgroundColor="white"
-            />
-          }
-        >
-          <View style={styles.container}>
-            <View style={styles.header}>
-              {/* cover */}
-              <PreviewCover />
-              <View style={styles.bgProfile}>
-                <View
-                  style={{
-                    width: width * 0.3,
-                    height: height * 0.16,
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <PreviewImage
-                    navigation={navigation}
-                    images={image}
-                    userImages={userImage}
-                    loadingImage={isLoading}
-                    userImgNull={userImgNull}
-                  />
-                  <TouchableOpacity style={styles.camera} onPress={pickImage}>
-                    <FontAwesome name="camera" size={16} color="black" />
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.conTitle}>
-                  {/* <Text style={{ fontSize: 20 }}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            {/* cover */}
+            <PreviewCover />
+            <View style={styles.bgProfile}>
+              <View
+                style={{
+                  width: width * 0.3,
+                  height: height * 0.16,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <PreviewImage
+                  navigation={navigation}
+                  images={image}
+                  userImages={userImage}
+                  loadingImage={isLoading}
+                  userImgNull={userImgNull}
+                />
+                <TouchableOpacity style={styles.camera} onPress={pickImage}>
+                  <FontAwesome name="camera" size={16} color="black" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.conTitle}>
+                {/* <Text style={{ fontSize: 20 }}>
                     {Account?.lastName + " " + Account?.firstName}
                   </Text> */}
-                  {ParentName()}
-                </View>
+                {ParentName()}
               </View>
             </View>
-            <TouchableOpacity style={styles.body}>
-              <View style={styles.conEdit} />
-              <View>
-                <View style={styles.btn}>
-                  <Text
-                    style={{
-                      color: COLORS.MAIN,
-                      fontFamily: "Kantumruy-Regular",
-                      fontSize: 14,
-                    }}
-                  >
-                    {t("ព័ត៌មានផ្ទាល់ខ្លួន")}
-                  </Text>
-                </View>
+          </View>
+          <TouchableOpacity style={styles.body}>
+            <View style={styles.conEdit} />
+            <View>
+              <View style={styles.btn}>
+                <Text
+                  style={{
+                    color: COLORS.MAIN,
+                    fontFamily: "Kantumruy-Regular",
+                    fontSize: 14,
+                  }}
+                >
+                  {t("ព័ត៌មានផ្ទាល់ខ្លួន")}
+                </Text>
               </View>
-            </TouchableOpacity>
-            <View style={styles.footer}>
-              <View style={styles.containList}>
-                <View style={styles.List}>
-                  <Ionicons
-                    name="call"
-                    style={{ width: 22 }}
-                    size={18}
-                    color="#A0A0A0"
-                  />
-                  <Text
-                    style={{
-                      padding: 3,
-                      fontSize: 14,
-                      fontFamily: "Kantumruy-Regular",
-                    }}
-                  >
-                    {Account?.tel}
-                  </Text>
-                </View>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.footer}>
+            <View style={styles.containList}>
+              <View style={styles.List}>
+                <Ionicons
+                  name="call"
+                  style={{ width: 22 }}
+                  size={18}
+                  color="#A0A0A0"
+                />
+                <Text
+                  style={{
+                    padding: 3,
+                    fontSize: 14,
+                    fontFamily: "Kantumruy-Regular",
+                  }}
+                >
+                  {Account?.tel}
+                </Text>
+              </View>
 
-                <View style={styles.List}>
-                  <MaterialIcons
-                    style={{ width: 22 }}
-                    name="email"
-                    size={20}
-                    color="#A0A0A0"
-                  />
-                  <Text
-                    style={{
-                      padding: 3,
-                      fontSize: 14,
-                      fontFamily: "Kantumruy-Regular",
-                    }}
-                  >
-                    {accountDBCtx?.user?.email}
-                  </Text>
-                </View>
-                <View style={styles.List}>
-                  <MaterialCommunityIcons
-                    name="home-city"
-                    style={{ width: 22 }}
-                    size={18}
-                    color="#A0A0A0"
-                  />
-                  <Text
-                    style={{
-                      padding: 3,
-                      fontSize: 13,
-                      fontFamily: "Kantumruy-Regular",
-                    }}
-                  >
-                    {"ភូមិ" +
-                      Account?.village +
-                      " សង្កាត់" +
-                      Account?.commune +
-                      " ស្រុក" +
-                      Account?.district +
-                      " ខេត្ត" +
-                      Account?.province}
-                  </Text>
-                </View>
+              <View style={styles.List}>
+                <MaterialIcons
+                  style={{ width: 22 }}
+                  name="email"
+                  size={20}
+                  color="#A0A0A0"
+                />
+                <Text
+                  style={{
+                    padding: 3,
+                    fontSize: 14,
+                    fontFamily: "Kantumruy-Regular",
+                  }}
+                >
+                  {accountDBCtx?.user?.email}
+                </Text>
               </View>
-              <View style={styles.conBtn}>
-                <ModalSignOut />
+              <View style={styles.List}>
+                <MaterialCommunityIcons
+                  name="home-city"
+                  style={{ width: 22 }}
+                  size={18}
+                  color="#A0A0A0"
+                />
+                <Text
+                  style={{
+                    padding: 3,
+                    fontSize: 13,
+                    fontFamily: "Kantumruy-Regular",
+                  }}
+                >
+                  {"ភូមិ" +
+                    Account?.village +
+                    " សង្កាត់" +
+                    Account?.commune +
+                    " ស្រុក" +
+                    Account?.district +
+                    " ខេត្ត" +
+                    Account?.province}
+                </Text>
               </View>
-              {/* <View
+            </View>
+            <View style={styles.conBtn}>
+              <ModalSignOut />
+            </View>
+            {/* <View
                 style={{
                   position: "absolute",
                   bottom: 10,
@@ -312,12 +307,11 @@ export default function Profile({ navigation }) {
               >
                 <LanguageModal />
               </View> */}
-            </View>
           </View>
-        </ScrollView>
-      </Root>
-    );
-  }
+        </View>
+      </ScrollView>
+    </Root>
+  );
 }
 
 const H = Dimensions.get("screen").height;

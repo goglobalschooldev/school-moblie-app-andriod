@@ -27,6 +27,9 @@ import localization from "moment/locale/km";
 import { RefreshControl } from "react-native";
 import * as Location from "expo-location";
 import { getDistance, getPreciseDistance, isPointWithinRadius } from "geolib";
+import { Image } from "react-native";
+import { QUERY_ANNOUNCEMENT } from "../graphql/gql_announcement";
+import AnnouncementCard from "../components/Announcement";
 
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -56,7 +59,7 @@ const Tasks = ({ navigation }) => {
       parentId: ParentId?._id,
     },
     onCompleted: ({ getStudentsByParents }) => {
-      // console.log(getStudentsByParents, "test");
+      // console.log(getStudentsByParents, "getStudentsByParents");
     },
     onError: (error) => {
       console.log(error.message, "error");
@@ -98,6 +101,7 @@ const Tasks = ({ navigation }) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    refetchAnnoucement();
     wait(2000).then(() => setRefreshing(false) && academicRefetch());
   }, []);
 
@@ -119,25 +123,135 @@ const Tasks = ({ navigation }) => {
     }
   });
 
-  if (loading || academicLoading || refreshing) {
+  //Query Announcement
+  const {
+    data: Announcement,
+    loading: announcementLoading,
+    refetch: refetchAnnoucement,
+  } = useQuery(QUERY_ANNOUNCEMENT, {
+    notifyOnNetworkStatusChange: true,
+    // pollInterval: 1000,
+  });
+  // let AnnouncementData = useMemo(() => {
+  //   if (!Announcement?.getAnnouncement) {
+  //     return [];
+  //   }
+  //   return Announcement?.getAnnouncement;
+  // }, [Announcement?.getAnnouncement]);
+  // console.log(AnnouncementData, "AnnouncementData");
+
+  // useEffect(() => {
+  //   const announcementInterval = setInterval(() => {
+  //     refetchAnnoucement();
+  //   }, 10000);
+
+  //   return () => {
+  //     clearInterval(announcementInterval);
+  //   };
+  //   // refetchAnnoucement();
+  // }, [Announcement?.getAnnouncement]);
+
+  if (loading || academicLoading || refreshing || announcementLoading) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
       </View>
     );
-  } else {
-    return (
-      <>
-        <StatusBar
-          barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+  }
+  return (
+    <>
+      <StatusBar
+        barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+      />
+      <SafeAreaView>
+        <Header
+          title={t("ឆ្នាំសិក្សា") + " " + academicYear}
+          navigation={navigation}
         />
-        <SafeAreaView>
-          {/* {AcademicYear()} */}
-          <Header
-            title={t("ឆ្នាំសិក្សា") + " " + academicYear}
-            navigation={navigation}
-          />
-        </SafeAreaView>
+      </SafeAreaView>
+      <View
+        style={{
+          flex: 1,
+          width: width,
+          height: height,
+          // backgroundColor: COLORS.WHITE,
+        }}
+      >
+        {/* <ModalProminent/> */}
+        <View
+          style={{
+            width: width * 1,
+            backgroundColor: COLORS.WHITE,
+            borderBottomWidth: 1,
+            borderBottomColor: "#E4E4E4",
+          }}
+        >
+          <View
+            style={{
+              width: width * 0.95,
+              alignSelf: "center",
+              justifyContent: "center",
+              // flexDirection: "row"
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 20,
+                color: COLORS.MAIN,
+              }}
+            >
+              {t("បុត្រធីតា")}
+            </Text>
+          </View>
+          <View
+            style={{
+              width: width,
+              alignSelf: "center",
+              height: height * 0.24,
+              backgroundColor: COLORS.WHITE,
+              flexDirection: "column",
+              justifyContent: "center",
+              // paddingTop: 5,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
+              <ImageBackground
+                source={require("../assets/Images/Dashboard.png")}
+                resizeMode="cover"
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                }}
+              >
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  stickyHeaderIndices={[1]}
+                >
+                  {dataSubUser?.map((load) => (
+                    <TouchableOpacity
+                      key={load?._id}
+                      onPress={
+                        () => navigation.navigate("StuClass", { data: load })
+                        // navigation.navigate("StuClass", {
+                        //   data: load,
+                        //   otherParam: distance,
+                        // })
+                      }
+                    >
+                      <StudentCard {...load} stuLoading={loading} />
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </ImageBackground>
+            </View>
+          </View>
+        </View>
         <ScrollView
           contentContainerStyle={styles.scrollView}
           refreshControl={
@@ -147,87 +261,46 @@ const Tasks = ({ navigation }) => {
               progressBackgroundColor="white"
             />
           }
+          showsVerticalScrollIndicator={false}
         >
           <View
             style={{
-              width: width,
-              height: height,
-              backgroundColor: COLORS.WHITE,
+              flexDirection: "row",
+              width: width * 0.95,
+              alignSelf: "center",
+              paddingTop: 2,
+              paddingBottom: 2,
             }}
           >
-            <View
+            <Image
+              source={require("../assets/Images/announcement.png")}
+              style={{ width: 20, height: 20, alignSelf: "center" }}
+            />
+            <Text
               style={{
-                width: width,
-                alignSelf: "center",
-                height: height * 0.29,
-                backgroundColor: COLORS.WHITE,
-                flexDirection: "column",
-                justifyContent: "center",
-                paddingTop: 5,
+                fontFamily: "Bayon-Regular",
+                fontSize: 14,
+                color: "#EA2877",
+                left: 3,
               }}
             >
-              <View
-                style={{
-                  width: width * 0.95,
-                  alignSelf: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: "Bayon-Regular",
-                    fontSize: 20,
-                    color: COLORS.MAIN,
-                  }}
-                >
-                  {t("បុត្រធីតា")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  width: width,
-                  alignSelf: "center",
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#E4E4E4",
-                }}
-              >
-                <ImageBackground
-                  source={require("../assets/Images/Dashboard.png")}
-                  resizeMode="cover"
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                  }}
-                >
-                  <ScrollView
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    stickyHeaderIndices={[1]}
-                  >
-                    {dataSubUser.map((load) => (
-                      <TouchableOpacity
-                        key={load?._id}
-                        onPress={
-                          () =>
-                            // navigation.navigate("StuClass", {
-                            //   data: load,
-                            //   otherParam: distance,
-                            // })
-                          navigation.navigate("StuClass", { data: load})
-                        }
-                      >
-                        <StudentCard {...load} />
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </ImageBackground>
-              </View>
-            </View>
+              {t("ដំណឹងថ្មីៗ")}
+            </Text>
           </View>
+          {Announcement?.getAnnouncement?.map((items) => (
+            <TouchableOpacity
+              key={items?._id}
+              onPress={() =>
+                navigation.navigate("AnnouncementDetail", { data: items })
+              }
+            >
+              <AnnouncementCard {...items} loading={announcementLoading} />
+            </TouchableOpacity>
+          ))}
         </ScrollView>
-      </>
-    );
-  }
+      </View>
+    </>
+  );
 };
 
 export default Tasks;

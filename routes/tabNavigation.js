@@ -82,6 +82,33 @@ const TabNavigation = ({ navigation }) => {
         }}
       />
       <Tab.Screen
+        name="TransportationStack"
+        component={TransportationStack}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/van-blue.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/van-silver.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
         name="EventsStack"
         component={EventsStack}
         options={{
@@ -108,34 +135,6 @@ const TabNavigation = ({ navigation }) => {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="TransportationStack"
-        component={TransportationStack}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {focused ? (
-                <Image
-                  source={require("../assets/Images/van-blue.png")}
-                  style={{ width:24, height: 24 }}
-                />
-              ) : (
-                <Image
-                  source={require("../assets/Images/van-silver.png")}
-                  style={{ width: 23, height: 23}}
-                />
-              )}
-            </View>
-          ),
-        }}
-      /> */}
-
       <Tab.Screen
         name="ProfileStack"
         component={ProfileStack}

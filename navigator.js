@@ -4,7 +4,9 @@ import HomeStack from "./routes/homeStack";
 import LoginStack from "./routes/loginStack";
 
 const Navigator = () => {
-  const { logined } = useContext(DataController);
+  const { logined, user } = useContext(DataController);
+  // console.log(logined, "logined");
+  // console.log(user, "user");
   return logined ? <HomeStack /> : <LoginStack />;
 };
 

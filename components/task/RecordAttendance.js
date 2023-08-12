@@ -32,19 +32,13 @@ const RecordAttendance = ({ navigation, route }) => {
   const [stuAttanceData, setStuAttanceData] = useState([]);
   const shiftIDAfterNoon = "62e1fe1f3cdcd305193c1a98";
   const shiftIDMorning = "62e1fe173cdcd305193c183e";
-  const [loadingTime, setLoadingTime] = useState(true)
+  const [loadingTime, setLoadingTime] = useState(true);
 
   useEffect(() => {
     data?.forEach((element) => {
       setStuID(element);
     });
   }, [data]);
-  // console.log(stuID?.studentId,"stuID?.studentId")
-  // console.log(startDate,"startDate")
-  // console.log(endDate,"endDate")
-  // console.log(attLimit,"attLimit")
-  // console.log(otherParam,"otherParam")
-  // console.log(data[0]?.studentId)
 
   // ========================== get data student attendance ======================
   const {
@@ -54,14 +48,8 @@ const RecordAttendance = ({ navigation, route }) => {
   } = useQuery(STUDENT_ATTENDANCE, {
     variables: {
       stuId: stuID?.studentId,
-      startDate:
-        startDate === ""
-          ? null
-          : moment(startDate).locale("en", localization).format("YYYY-MM-DD"),
-      endDate:
-        endDate === ""
-          ? null
-          : moment(endDate).locale("en", localization).format("YYYY-MM-DD"),
+      startDate:startDate === "" ? null: moment(startDate).locale("en", localization).format("YYYY-MM-DD"),
+      endDate: endDate === "" ? null: moment(endDate).locale("en", localization).format("YYYY-MM-DD"),
       limit: attLimit,
     },
     pollInterval: 2000,
@@ -72,10 +60,10 @@ const RecordAttendance = ({ navigation, route }) => {
       } else {
         setStuAttanceData([]);
       }
-      setLoadingTime(false)
+      setLoadingTime(false);
     },
     onError: (error) => {
-      setLoadingTime(true)
+      setLoadingTime(true);
       console.log(error.message);
     },
   });
@@ -122,7 +110,8 @@ const RecordAttendance = ({ navigation, route }) => {
     if (getLanguage() === "en") {
       return (
         <Text numberOfLines={1}>
-          {stuID?.englishName}{t("វត្តមានរបស់")}
+          {stuID?.englishName}
+          {t("វត្តមានរបស់")}
         </Text>
       );
     } else {
@@ -142,7 +131,7 @@ const RecordAttendance = ({ navigation, route }) => {
       } else {
         return [
           {
-            shiftId:"",
+            shiftId: "",
             morningCheckIn: null,
             morningCheckOut: null,
             afternoonCheckIn: null,
@@ -150,12 +139,11 @@ const RecordAttendance = ({ navigation, route }) => {
             status: "",
           },
         ];
-     
       }
     } else {
       return [
         {
-          shiftId:"",
+          shiftId: "",
           morningCheckIn: null,
           morningCheckOut: null,
           afternoonCheckIn: null,
@@ -163,7 +151,6 @@ const RecordAttendance = ({ navigation, route }) => {
           status: "",
         },
       ];
-   
     }
   };
 
@@ -287,242 +274,276 @@ const RecordAttendance = ({ navigation, route }) => {
               />
             }
           >
-          
-          {
-            loadingTime ?
-            <>
-              <View className="flex-1 justify-center">
-                <ActivityIndicator size="large" color="#EFB419" />
-              </View>
-            </>
-          :
-            <>          
-            {stuAttanceData?.length === 0 ? (
-              <View className="flex h-[70%] bg-white flex-col items-center justify-center">
-                <Text className="text-gray font-kantunruy-regular">
-                  {t("មិនមានទិន្នន័យ")}
-                </Text>
-              </View>
+            {loadingTime ? (
+              <>
+                <View className="flex-1 justify-center">
+                  <ActivityIndicator size="large" color="#EFB419" />
+                </View>
+              </>
             ) : (
-              <View className="pt-2 pb-2 w-[97%] self-center">
-                {stuAttanceData?.map((item) => (
-                  <View
-                    className="flex flex-row h-14 w-[97%] bg-white items-center border-b border-background self-center"
-                    key={item?._id}
-                  >
-                    <View className="h-12 justify-center w-[24%] items-center">
-                      <Text className="text-black font-kantunruy-regular text-xs">
-                        {moment(item?.attendanceDate)
-                          ?.locale("en", localization)
-                          ?.format("DD MMM YYYY")}
-                      </Text>
-                    </View>
-
-                    <View className="flex flex-row h-14 w-[100%] bg-white items-center border-b border-background self-center">
-                      {/* moning  */}
-                      {handleGetTimeShift(item?.info, shiftIDMorning) &&
-                      handleGetTimeShift(item?.info, shiftIDMorning)[0]
-                        ?.status === "PERMISSION" ? (
-                        <View className="h-12 justify-around w-[24%] items-center flex-col">
-                          <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
-                            {
-                            handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckIn !== "" 
-                            && handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckIn !== null ? 
-                              moment(handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckIn).locale("en", localization).format("HH:mm")
-                            : "--:--"}
-                          </Text>
-                          <Text className="text-[#FEBE00] font-kantunruy-bold text-xs">
-                            -
-                          </Text>
-                          <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckOut ? 
-                             moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDMorning
-                                  )[0]?.morningCheckOut
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                        </View>
-                      ) : (
-                        <View className="h-12 justify-around w-[24%] items-center flex-col">
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckIn !== "" && 
-                            handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckIn !== null ? 
-                              moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDMorning
-                                  )[0]?.morningCheckIn
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            -
-                          </Text>
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDMorning)[0]?.morningCheckOut 
-                              ? moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDMorning
-                                  )[0]?.morningCheckOut
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                        </View>
-                      )}
-
-                      {/* afternoon */}
-                      {handleGetTimeShift(item?.info, shiftIDAfterNoon) &&
-                      handleGetTimeShift(item?.info, shiftIDAfterNoon)[0]
-                        .status === "PERMISSION" ? (
-                        <View className="h-12 justify-around w-[24%] items-center flex-col">
-                          <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDAfterNoon)[0]?.afternoonCheckIn 
-                            // !== ""  && handleGetTimeShift(item?.info, shiftIDAfterNoon)[0]?.afternoonCheckIn !== null (ដាក់លក្ខខណ្ឌនេះ វាដើរម៉ោងម៉ាស៊ីន)
-                             ? 
-                              moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDAfterNoon
-                                  )[0]?.afternoonCheckIn
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                          <Text className="text-[#FEBE00] font-kantunruy-bold text-xs">
-                            -
-                          </Text>
-                          <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDAfterNoon)?.afternoonCheckOut 
-                              ? moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDAfterNoon
-                                  )?.afternoonCheckOut
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                        </View>
-                      ) : (
-                        <View className="h-12 justify-around w-[24%] items-center flex-col">
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDAfterNoon)?.afternoonCheckIn 
-                              ? moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDAfterNoon
-                                  )?.afternoonCheckIn
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            -
-                          </Text>
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            {handleGetTimeShift(item?.info, shiftIDAfterNoon)?.afternoonCheckOut 
-                              ? moment(
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    shiftIDAfterNoon
-                                  )?.afternoonCheckOut
-                                )
-                                  .locale("en", localization)
-                                  .format("HH:mm")
-                              : "--:--"}
-                          </Text>
-                        </View>
-                      )}
-
-                      <View className="h-12 justify-center w-[29%] items-center">
-                        {otherParam?.map((element, indexshift) => (
-                          <View key={indexshift}>
-                            {handleGetTimeShift(item?.info, element?.shiftId)[0]
-                              ?.status === "PRESENT" ? (
-                              <Text className="text-[#0000FD] font-kantunruy-regular text-[11px] my-1">
-                                {element?.shiftName}.
-                                {
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    element?.shiftId
-                                  )[0]?.status
-                                }
-                              </Text>
-                            ) : handleGetTimeShift(
-                                item?.info,
-                                element?.shiftId
-                              )[0]?.status === "LATE" ? (
-                              <Text className="text-[#00AE50] font-kantunruy-regular text-[11px] my-1">
-                                {element?.shiftName}.
-                                {
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    element?.shiftId
-                                  )[0]?.status
-                                }
-                              </Text>
-                            ) : handleGetTimeShift(
-                                item?.info,
-                                element?.shiftId
-                              )[0]?.status === "PERMISSION" ? (
-                              <Text className="text-[#FEBE00] font-kantunruy-regular text-[11px] my-1">
-                                {element?.shiftName}.
-                                {
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    element?.shiftId
-                                  )[0]?.status
-                                }
-                              </Text>
-                            ) : handleGetTimeShift(
-                                item?.info,
-                                element?.shiftId
-                              )[0]?.status === "ABSENT" ? (
-                              <Text className="text-[#FD0002] font-kantunruy-regular text-[11px] my-1">
-                                {element?.shiftName}.
-                                {
-                                  handleGetTimeShift(
-                                    item?.info,
-                                    element?.shiftId
-                                  )[0]?.status
-                                }
-                              </Text>
-                            ) : null}
-                          </View>
-                        ))}
-                      </View>
-                    </View>
+              <>
+                {stuAttanceData?.length === 0 ? (
+                  <View className="flex h-[70%] bg-white flex-col items-center justify-center">
+                    <Text className="text-gray font-kantunruy-regular">
+                      {t("មិនមានទិន្នន័យ")}
+                    </Text>
                   </View>
-                ))}
-              </View>
+                ) : (
+                  <View className="pt-2 pb-2 w-[97%] self-center">
+                    {stuAttanceData?.map((item) => (
+                      <View
+                        className="flex flex-row h-14 w-[97%] bg-white items-center border-b border-background self-center"
+                        key={item?._id}
+                      >
+                        <View className="h-12 justify-center w-[24%] items-center">
+                          <Text className="text-black font-kantunruy-regular text-xs">
+                            {moment(item?.attendanceDate)
+                              ?.locale("en", localization)
+                              ?.format("DD MMM YYYY")}
+                          </Text>
+                        </View>
+
+                        <View className="flex flex-row h-14 w-[100%] bg-white items-center border-b border-background self-center">
+                          {/* moning  */}
+                          {handleGetTimeShift(item?.info, shiftIDMorning) &&
+                          handleGetTimeShift(item?.info, shiftIDMorning)[0]
+                            ?.status === "PERMISSION" ? (
+                            <View className="h-12 justify-around w-[24%] items-center flex-col">
+                              <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDMorning
+                                )[0]?.morningCheckIn !== "" &&
+                                handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDMorning
+                                )[0]?.morningCheckIn !== null
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDMorning
+                                      )[0]?.morningCheckIn
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                              <Text className="text-[#FEBE00] font-kantunruy-bold text-xs">
+                                -
+                              </Text>
+                              <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDMorning
+                                )[0]?.morningCheckOut
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDMorning
+                                      )[0]?.morningCheckOut
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                            </View>
+                          ) : (
+                            <View className="h-12 justify-around w-[24%] items-center flex-col">
+                              <Text className="text-black font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDMorning
+                                )[0]?.morningCheckIn !== "" &&
+                                handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDMorning
+                                )[0]?.morningCheckIn !== null
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDMorning
+                                      )[0]?.morningCheckIn
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                              <Text className="text-black font-kantunruy-regular text-xs">
+                                -
+                              </Text>
+                              <Text className="text-black font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDMorning
+                                )[0]?.morningCheckOut
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDMorning
+                                      )[0]?.morningCheckOut
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                            </View>
+                          )}
+
+                          {/* afternoon */}
+                          {handleGetTimeShift(item?.info, shiftIDAfterNoon) &&
+                          handleGetTimeShift(item?.info, shiftIDAfterNoon)[0]
+                            .status === "PERMISSION" ? (
+                            <View className="h-12 justify-around w-[24%] items-center flex-col">
+                              <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDAfterNoon
+                                )[0]?.afternoonCheckIn
+                                  ? // !== ""  && handleGetTimeShift(item?.info, shiftIDAfterNoon)[0]?.afternoonCheckIn !== null (ដាក់លក្ខខណ្ឌនេះ វាដើរម៉ោងម៉ាស៊ីន)
+                                    moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDAfterNoon
+                                      )[0]?.afternoonCheckIn
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                              <Text className="text-[#FEBE00] font-kantunruy-bold text-xs">
+                                -
+                              </Text>
+                              <Text className="text-[#FEBE00] font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDAfterNoon
+                                )?.afternoonCheckOut
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDAfterNoon
+                                      )?.afternoonCheckOut
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                            </View>
+                          ) : (
+                            <View className="h-12 justify-around w-[24%] items-center flex-col">
+                              <Text className="text-black font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDAfterNoon
+                                )?.afternoonCheckIn
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDAfterNoon
+                                      )?.afternoonCheckIn
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                              <Text className="text-black font-kantunruy-regular text-xs">
+                                -
+                              </Text>
+                              <Text className="text-black font-kantunruy-regular text-xs">
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  shiftIDAfterNoon
+                                )?.afternoonCheckOut
+                                  ? moment(
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        shiftIDAfterNoon
+                                      )?.afternoonCheckOut
+                                    )
+                                      .locale("en", localization)
+                                      .format("HH:mm")
+                                  : "--:--"}
+                              </Text>
+                            </View>
+                          )}
+
+                          <View className="h-12 justify-center w-[29%] items-center">
+                            {otherParam?.map((element, indexshift) => (
+                              <View key={indexshift}>
+                                {handleGetTimeShift(
+                                  item?.info,
+                                  element?.shiftId
+                                )[0]?.status === "PRESENT" ? (
+                                  <Text className="text-[#0000FD] font-kantunruy-regular text-[11px] my-1">
+                                    {element?.shiftName}.
+                                    {
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        element?.shiftId
+                                      )[0]?.status
+                                    }
+                                  </Text>
+                                ) : handleGetTimeShift(
+                                    item?.info,
+                                    element?.shiftId
+                                  )[0]?.status === "LATE" ? (
+                                  <Text className="text-[#00AE50] font-kantunruy-regular text-[11px] my-1">
+                                    {element?.shiftName}.
+                                    {
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        element?.shiftId
+                                      )[0]?.status
+                                    }
+                                  </Text>
+                                ) : handleGetTimeShift(
+                                    item?.info,
+                                    element?.shiftId
+                                  )[0]?.status === "PERMISSION" ? (
+                                  <Text className="text-[#FEBE00] font-kantunruy-regular text-[11px] my-1">
+                                    {element?.shiftName}.
+                                    {
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        element?.shiftId
+                                      )[0]?.status
+                                    }
+                                  </Text>
+                                ) : handleGetTimeShift(
+                                    item?.info,
+                                    element?.shiftId
+                                  )[0]?.status === "ABSENT" ? (
+                                  <Text className="text-[#FD0002] font-kantunruy-regular text-[11px] my-1">
+                                    {element?.shiftName}.
+                                    {
+                                      handleGetTimeShift(
+                                        item?.info,
+                                        element?.shiftId
+                                      )[0]?.status
+                                    }
+                                  </Text>
+                                ) : null}
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                {attLimit === stuAttanceData?.length ? (
+                  <TouchableOpacity
+                    className="items-center p-2 pb-5"
+                    onPress={() => setAttLimit(attLimit + 5)}
+                  >
+                    <Text className="text-base font-gothic text-main">
+                      {t("មើលបន្ថែម")}
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+              </>
             )}
-
-            {attLimit === stuAttanceData?.length ? (
-              <TouchableOpacity
-                className="items-center p-2 pb-5"
-                onPress={() => setAttLimit(attLimit + 5)}
-              >
-                <Text className="text-base font-gothic text-main">
-                  {t("មើលបន្ថែម")}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
-            </>
-          }
-
           </ScrollView>
         </View>
       </View>

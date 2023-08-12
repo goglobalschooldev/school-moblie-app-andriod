@@ -13,7 +13,6 @@
 //   FlatList,
 // } from "react-native";
 // import React, { useState, useEffect, useMemo, useContext } from "react";
-// import { PlusIcon } from "react-native-heroicons/outline";
 // import SelectDropdown from "react-native-select-dropdown";
 // import { useTranslation, getLanguage } from "react-multi-lang";
 // import RequestCard from "../RequestCard";
@@ -145,7 +144,7 @@
 //               elevation: 6,
 //             }}
 //           >
-//             <PlusIcon size={35} color="white" />
+//
 //           </View>
 //         </TouchableOpacity>
 //       </View>

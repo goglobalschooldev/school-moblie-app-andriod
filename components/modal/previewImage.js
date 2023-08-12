@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Image
+  Image,
 } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { StyleController } from "../../static/styleProvider";
@@ -14,13 +14,17 @@ import ImageZoom from "react-native-image-pan-zoom";
 import AutoHeightImage from "react-native-auto-height-image";
 import { COLORS } from "../../color";
 
-
-export default function PreviewImage({ images, userImages, loadingImage,userImgNull }) {
+export default function PreviewImage({
+  images,
+  userImages,
+  loadingImage,
+  userImgNull,
+}) {
   const { styleState, height, width } = useContext(StyleController);
   const [modalVisible, setModalVisible] = useState(false);
 
   // console.log(userImages, "userImages");
-  
+
   const ImageData = useMemo(() => {
     return (
       <>
@@ -36,15 +40,15 @@ export default function PreviewImage({ images, userImages, loadingImage,userImgN
           <Image
             source={
               userImages === "https://storage.go-globalschool.com/api" ||
-              null || userImgNull === null
-              // ||
-              // "https://storage.go-globalschool.com/apinull"
-                ? require("../../assets/Images/user.png")
+              null ||
+              userImgNull === null
+                ? // ||
+                  // "https://storage.go-globalschool.com/apinull"
+                  require("../../assets/Images/user.png")
                 : { uri: userImages + "?time=" + new Date(), cache: "reload" }
             }
             style={styles.image}
             resizeMode={"cover"}
-
           />
         )}
       </>
@@ -55,10 +59,9 @@ export default function PreviewImage({ images, userImages, loadingImage,userImgN
     return (
       <AutoHeightImage
         source={
-          userImages === "https://storage.go-globalschool.com/api" ||
-          null 
-          // || "https://storage.go-globalschool.com/apinull"
-            ? require("../../assets/Images/defaultUser.png")
+          userImages === "https://storage.go-globalschool.com/api" || null
+            ? // || "https://storage.go-globalschool.com/apinull"
+              require("../../assets/Images/defaultUser.png")
             : { uri: userImages + "?time=" + new Date(), cache: "reload" }
         }
         resizeMode="contain"
@@ -78,50 +81,49 @@ export default function PreviewImage({ images, userImages, loadingImage,userImgN
         <ActivityIndicator size="large" color="#EFB419" />
       </View>
     );
-  } else {
-    return (
-      <View>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
+  }
+  return (
+    <View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.bgModal} />
+        <View
+          style={{
+            flexDirection: "row-reverse",
+            right: 5,
+            padding: 5,
           }}
         >
-          <View style={styles.bgModal} />
-          <View
-            style={{
-              flexDirection: "row-reverse",
-              right: 5,
-              padding: 5,
-            }}
-          >
-            <Entypo
-              name="circle-with-cross"
-              size={26}
-              color="white"
-              onPress={() => setModalVisible(!modalVisible)}
-            />
-          </View>
-          <ImageZoom
-            cropWidth={width}
-            cropHeight={Dimensions.get("window").height / 1.15}
-            imageWidth={400}
-            imageHeight={height}
-            panToMove={true}
-            pinchToZoom={true}
-            useHardwareTextureAndroid={false}
-          >
-            {ImagePreview}
-          </ImageZoom>
-        </Modal>
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-          {ImageData}
-        </TouchableOpacity>
-      </View>
-    );
-  }
+          <Entypo
+            name="circle-with-cross"
+            size={26}
+            color="white"
+            onPress={() => setModalVisible(!modalVisible)}
+          />
+        </View>
+        <ImageZoom
+          cropWidth={width}
+          cropHeight={Dimensions.get("window").height / 1.15}
+          imageWidth={400}
+          imageHeight={height}
+          panToMove={true}
+          pinchToZoom={true}
+          useHardwareTextureAndroid={false}
+        >
+          {ImagePreview}
+        </ImageZoom>
+      </Modal>
+      <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        {ImageData}
+      </TouchableOpacity>
+    </View>
+  );
 }
 const H = Dimensions.get("screen").height;
 const W = Dimensions.get("screen").width;

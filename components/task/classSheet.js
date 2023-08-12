@@ -1,22 +1,17 @@
-import React, { useContext, useRef,useState } from "react";
-import { TouchableOpacity, View, Text,Image } from "react-native";
+import React, { useContext, useRef, useState } from "react";
+import { TouchableOpacity, View, Text, Image } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { COLORS } from "../../color";
 import { StyleController } from "../../static/styleProvider";
 import ClassCard from "../ClassCard";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { DataController } from "../../context/Provider";
 
-export default function ClassSheet({navigation, data }) {
+export default function ClassSheet({ navigation, data }) {
   const { styleState, height, width } = useContext(StyleController);
   const [selectData, setSelectData] = useState({});
-  const refRBSheet = useRef(
-    // setSelectData(data)
-  );
-
-//   const openModalStu = (e, data) => {
-//     setModalVisible(e);
-//     setSelectData(data);
-//   };
+  const refRBSheet = useRef();
+  // setSelectData(data)
 
   const ChildhoodReport = () => {
     if (selectData?.classGroupNameEn === "ECE") {
@@ -98,7 +93,6 @@ export default function ClassSheet({navigation, data }) {
         }}
         animationType="fade"
         height={height * 0.7}
-        
       >
         <View
           style={{
@@ -140,39 +134,39 @@ export default function ClassSheet({navigation, data }) {
             }}
           >
             <View
-            style={{
-              width: "90%",
-              paddingTop: 15,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                refRBSheet.current.close();
-                navigation?.navigate("Schedule", { schedule: selectData });
+              style={{
+                width: "90%",
+                paddingTop: 15,
               }}
             >
-              <View style={{ flexDirection: "row", paddingVertical: 10 }}>
-                <View style={{ justifyContent: "center" }}>
-                  <Image
-                    source={require("../../assets/Images/calendar-clock.png")}
-                    style={{ width: 18, height: 18 }}
-                  />
+              <TouchableOpacity
+                onPress={() => {
+                  refRBSheet.current.close();
+                  navigation?.navigate("Schedule", { schedule: selectData });
+                }}
+              >
+                <View style={{ flexDirection: "row", paddingVertical: 10 }}>
+                  <View style={{ justifyContent: "center" }}>
+                    <Image
+                      source={require("../../assets/Images/calendar-clock.png")}
+                      style={{ width: 18, height: 18 }}
+                    />
+                  </View>
+                  <View style={{ justifyContent: "center" }}>
+                    <Text
+                      style={{
+                        fontFamily: "Bayon-Regular",
+                        fontSize: 16,
+                        color: COLORS.MAIN,
+                        left: 12,
+                      }}
+                    >
+                      កាលវិភាគសិក្សា
+                    </Text>
+                  </View>
                 </View>
-                <View style={{ justifyContent: "center" }}>
-                  <Text
-                    style={{
-                      fontFamily: "Bayon-Regular",
-                      fontSize: 16,
-                      color: COLORS.MAIN,
-                      left: 12,
-                    }}
-                  >
-                    កាលវិភាគសិក្សា
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-            {/* <TouchableOpacity
+              </TouchableOpacity>
+              {/* <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
                 navigation?.navigate("Attendance", {
@@ -200,8 +194,8 @@ export default function ClassSheet({navigation, data }) {
                   </Text>
                 </View>
               </View>
-            {/* </TouchableOpacity> */}
-            {/* <TouchableOpacity
+              {/* </TouchableOpacity> */}
+              {/* <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
                 navigation?.navigate("AcedemicFees", {
@@ -229,9 +223,9 @@ export default function ClassSheet({navigation, data }) {
                   </Text>
                 </View>
               </View>
-            {/* </TouchableOpacity> */}
-            {/* {ChildhoodReport()} */}
-          </View>
+              {/* </TouchableOpacity> */}
+              {/* {ChildhoodReport()} */}
+            </View>
           </View>
         </View>
       </RBSheet>

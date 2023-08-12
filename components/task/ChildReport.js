@@ -49,10 +49,6 @@ export default function ChildReport({ navigation, route }) {
   const [isChecked, setChecked] = useState(false);
   const t = useTranslation();
 
-
-  // var selectDate = date?.format("YYYY-MM-DD")
-  // console.log(date, "data");
-
   //
   const {
     data: EysData,

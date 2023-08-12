@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import AcedemicFees from "../../components/task/AcedemicFees";
-import Attendance from "../../components/task/Attendent";
+import Attendance from "../../components/task/Attendance";
 import ChildReport from "../../components/task/ChildReport";
 import ExecuteScore from "../../components/task/ExecuteScore";
 import LunchAtt from "../../components/task/LunchAtt";
@@ -13,8 +13,9 @@ import RecordAttendance from "../../components/task/RecordAttendance";
 import LeaveScreen from "../../components/task/LeaveScreen";
 import RequestDetail from "../../components/task/RequestDetail";
 import LeaveRequest from "../../components/task/LeaveRequest";
-import NotificationList from "../../components/transportation/notificationList";
 import AnnouncementDetail from "../../components/dashboard/AnnouncementDetail";
+import NotificationScreen from "../../screens/notification";
+import TransportationList from "../../components/transportation/transportationList";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,8 +35,9 @@ const TaskStack = () => {
       <Stack.Screen name="LeaveScreen" component={LeaveScreen} />
       <Stack.Screen name="RequestDetail" component={RequestDetail} />
       <Stack.Screen name="LeaveRequest" component={LeaveRequest} />
-      {/* <Stack.Screen name="NotificationList" component={NotificationList} /> */}
-      {/* <Stack.Screen name="AnnouncementDetail" component={AnnouncementDetail} /> */}
+      <Stack.Screen name="TransportationList" component={TransportationList} />
+      <Stack.Screen name="AnnouncementDetail" component={AnnouncementDetail} />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
     </Stack.Navigator>
   );
 };

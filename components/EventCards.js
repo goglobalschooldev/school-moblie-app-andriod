@@ -31,7 +31,9 @@ export default function EventCards(props) {
             " " +
             km.localeData().months(moment(props?.endEventDate)) +
             " " +
-            moment(props?.endEventDate).locale("km", localization).format("YYYY")}
+            moment(props?.endEventDate)
+              .locale("km", localization)
+              .format("YYYY")}
         </Text>
       );
     } else {
@@ -47,7 +49,9 @@ export default function EventCards(props) {
             " " +
             en.localeData().months(moment(props?.endEventDate)) +
             " " +
-            moment(props?.endEventDate).locale("en", localization).format("YYYY")}
+            moment(props?.endEventDate)
+              .locale("en", localization)
+              .format("YYYY")}
         </Text>
       );
     }
@@ -71,7 +75,9 @@ export default function EventCards(props) {
             " " +
             km.localeData().months(moment(props?.endEventDate)) +
             " " +
-            moment(props?.endEventDate).locale("km", localization).format("YYYY")}
+            moment(props?.endEventDate)
+              .locale("km", localization)
+              .format("YYYY")}
         </Text>
       );
     } else {
@@ -91,7 +97,9 @@ export default function EventCards(props) {
             " " +
             en.localeData().months(moment(props?.endEventDate)) +
             " " +
-            moment(props?.endEventDate).locale("en", localization).format("YYYY")}
+            moment(props?.endEventDate)
+              .locale("en", localization)
+              .format("YYYY")}
         </Text>
       );
     }

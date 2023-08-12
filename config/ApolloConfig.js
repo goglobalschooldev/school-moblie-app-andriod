@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ApolloClient,
@@ -14,7 +14,6 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { onError } from "@apollo/client/link/error";
 import LoginScreen from "../screens/loginScreen";
 import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import {
   setTranslations,
   setDefaultLanguage,
@@ -24,6 +23,9 @@ import {
 import en from "../translations/en.json";
 import kh from "../translations/kh.json";
 import { useNavigation } from "@react-navigation/native";
+import { PermissionsAndroid } from "react-native";
+import { DataController } from "../context/Provider";
+import { ACTION } from "../context/Reducer";
 
 setTranslations({ kh, en });
 setDefaultTranslations({ kh, en });
@@ -38,50 +40,94 @@ Notifications.setNotificationHandler({
 });
 
 const ApolloConfig = ({ children }) => {
+  //endpoint1
   const URI = "sms-endpoint.go-globalschool.com/graphql";
-  // const URI = "192.168.2.10:2000/graphql";
+  // const URI = "192.168.2.30:4300/graphql";
   const [token, setToken] = useState("");
   const navigation = useNavigation();
-
   //noti
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+  const [isOpenedByNotification, setOpenedByNotification] = useState(true);
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+  const [appStatus, setAppStatus] = useState();
 
-  const setLocalStorage = async (value) => {
-    // console.log(value, "value");
-    if (value) {
-      await AsyncStorage.setItem("@tokenNoti", value);
-    }
-    setDefaultLanguage("kh");
-    setTranslations({ kh, en });
-    setDefaultTranslations({ kh, en });
+  // const setLocalStorage = async (value) => {
+  //   // console.log(value, "value");
+  //   if (value) {
+  //     await AsyncStorage.setItem("@tokenNoti", value);
+  //   }
+  //   setDefaultLanguage("kh");
+  //   setTranslations({ kh, en });
+  //   setDefaultTranslations({ kh, en });
+  // };
+
+  // console.log(
+  //   lastNotificationResponse?.notification?.request?.content?.data,
+  //   "lastNotificationResponse"
+  // );
+
+  // React.useEffect(() => {
+  //   if (
+  //     lastNotificationResponse &&
+  //     lastNotificationResponse.notification.request.content.data[
+  //       "someDataToCheck"
+  //     ] &&
+  //     lastNotificationResponse.actionIdentifier ===
+  //       Notifications.DEFAULT_ACTION_IDENTIFIER
+  //   ) {
+  //     // navigate to your desired screen
+  //   }
+  // }, [lastNotificationResponse]);
+
+  const getLocalStorage = async () => {
+    let appState = await AsyncStorage.getItem("@appState");
+    setAppStatus(appState);
+    return appState;
   };
+
+  useEffect(() => {
+    let interV = setInterval(() => {
+      getLocalStorage();
+    }, 2000);
+
+    return () => {
+      clearInterval(interV);
+    };
+  }, []);
+
+  // console.log(appStatus, "appStatus");
 
   //noti
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      // console.log(token, "tokenForPush");
-      if (token) {
-        setLocalStorage(token);
-        setExpoPushToken(token);
-        setDefaultLanguage("kh");
-        setTranslations({ kh, en });
-        setDefaultTranslations({ kh, en });
-      }
-    });
+    // registerForPushNotificationsAsync().then((token) => {
+    //   // console.log(token, "tokenForPush");
+    //   if (token) {
+    //     setLocalStorage(token);
+    //     setExpoPushToken(token);
+    //     setDefaultLanguage("kh");
+    //     setTranslations({ kh, en });
+    //     setDefaultTranslations({ kh, en });
+    //   }
+    // });
 
+    // registerForPushNotificationsAsync();
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
+        setOpenedByNotification(notification.wasOpenedByUser);
+        // console.log(notification, "notification");
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response.notification.request.content, "response");
+        console.log(response.notification.request.content.data, "response");
         notificationNavigationHandler(response.notification.request.content);
-        announcementNavigationHandler(response.notification.request.content);
+        // if (appStatus === true) {
+        //   notificationNavigationHandler(response.notification.request.content);
+        // }
       });
 
     return () => {
@@ -93,55 +139,23 @@ const ApolloConfig = ({ children }) => {
   }, []);
 
   const notificationNavigationHandler = ({ data }) => {
-    // console.log("A notification has been touched", data);
-    navigation.navigate("NotificationList", {
-      studentId: data?.attId,
-    });
+    console.log("A notification has been touched", data);
+    if (data?.action === "approveLeave") {
+      navigation.navigate(
+        "NotificationScreen"
+        //  , {
+        //         studentId: data?.stu_id,
+        //       }
+      );
+    }
   };
 
-  const announcementNavigationHandler = ({ data }) => {
-    // console.log("A notification has been touched", data);
-    navigation.navigate("AnnouncementDetail", {
-      announcementId: data?.attId,
-    });
-  };
-
-  async function registerForPushNotificationsAsync() {
-    let token;
-
-    if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    if (Device.isDevice) {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
-        return;
-      }
-      token = (
-        await Notifications.getExpoPushTokenAsync({
-          experienceId: "@goglobalschool/school-mobile",
-        })
-      ).data;
-      // console.log(token, "token");
-    } else {
-      alert("Must use physical device for Push Notifications");
-    }
-
-    return token;
-  }
+  // const announcementNavigationHandler = ({ data }) => {
+  //   // console.log("A notification has been touched", data);
+  //   navigation.navigate("AnnouncementDetail", {
+  //     announcementId: data?.attId,
+  //   });
+  // };
 
   useEffect(() => {
     async function fetchData() {
@@ -175,7 +189,7 @@ const ApolloConfig = ({ children }) => {
       ) {
         console.log(networkError?.response?.errors[0]?.message);
         // AsyncStorage.clear();
-        AsyncStorage.removeItem("@tokenNoti");
+        // AsyncStorage.removeItem("@tokenNoti");
         AsyncStorage.removeItem("@login");
         setToken("");
       }
@@ -220,6 +234,7 @@ const ApolloConfig = ({ children }) => {
 
   const client = new ApolloClient({
     link: new ApolloLink.from([logoutLink, splitLink]),
+    // link: new ApolloLink.from([splitLink]),
     cache: new InMemoryCache({
       typePolicies: {
         Query: {

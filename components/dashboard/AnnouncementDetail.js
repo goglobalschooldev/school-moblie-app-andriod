@@ -41,13 +41,13 @@ export default function AnnouncementDetail({ navigation, route, loading }) {
   });
   // console.log(Data, "Data");
 
-  if (loading || announcementtLoading) {
-    return (
-      <View style={styles.loadingStyle}>
-        <ActivityIndicator size="large" color="#EFB419" />
-      </View>
-    );
-  }
+  // if (loading || announcementtLoading) {
+  //   return (
+  //     <View style={styles.loadingStyle}>
+  //       <ActivityIndicator size="large" color="#EFB419" />
+  //     </View>
+  //   );
+  // }
 
   if (announcementId !== "" && announcementId !== undefined) {
     return (

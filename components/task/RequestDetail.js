@@ -1,13 +1,12 @@
 import { View, Text, StyleSheet, BackHandler } from "react-native";
 import React, { useContext, useMemo } from "react";
-import { CheckCircleIcon } from "react-native-heroicons/outline";
+import { Feather } from "@expo/vector-icons";
 import tailwind from "twrnc";
 import moment from "moment";
 import Root from "../../root";
 import localization from "moment/locale/km";
 import { COLORS } from "../../color";
 import { StyleController } from "../../static/styleProvider";
-import { DataController } from "../../context/Provider";
 import Header5 from "../../routes/header/Header5";
 import { useTranslation } from "react-multi-lang";
 import { useFocusEffect } from "@react-navigation/native";
@@ -32,7 +31,9 @@ const RequestDetail = ({ navigation, route }) => {
   );
 
   return (
-    <Root Header={<Header5 title={"ព័ត៌មានលំអិត"} navigation={navigation} />}>
+    <Root
+      Header={<Header5 title={t("ព័ត៌មានលំអិត")} navigation={navigation} />}
+    >
       <View
         style={{
           flex: 1,
@@ -104,7 +105,8 @@ const RequestDetail = ({ navigation, route }) => {
               </View>
               <View className="flex flex-row items-center h-9">
                 <View className="flex-row w-[100%] items-center self-center">
-                  <CheckCircleIcon
+                  <Feather
+                    name="check-circle"
                     size={18}
                     color="#3ab731"
                     className="items-center"

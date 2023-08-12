@@ -21,7 +21,6 @@ export default function SuccessModal({ modalVisible, setModalVisible, data }) {
   const [visible, setVisible] = useState(false);
   const [pickResult, setPickResult] = useState();
   
-
   const {
     data: stuData,
     loading: stuLoading,

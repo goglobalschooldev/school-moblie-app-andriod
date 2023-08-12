@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { string } from "yup";
 import { COLORS } from "../color";
 import { StyleController } from "../static/styleProvider";
 import { getLanguage } from "react-multi-lang";
@@ -36,20 +35,20 @@ const StudentSchoolVanCard = (props) => {
         </Text>
       );
     } else {
-      return(
-      <Text
-        style={{
-          fontFamily: "Kantumruy-Regular",
-          alignSelf: "center",
-          color: COLORS.WHITE,
-          fontSize: 14,
-          alignItems: "center",
-        }}
-        numberOfLines={1}
-      >
-        {props?.lastName + " " + props?.firstName}
-      </Text>
-      )
+      return (
+        <Text
+          style={{
+            fontFamily: "Kantumruy-Regular",
+            alignSelf: "center",
+            color: COLORS.WHITE,
+            fontSize: 14,
+            alignItems: "center",
+          }}
+          numberOfLines={1}
+        >
+          {props?.lastName + " " + props?.firstName}
+        </Text>
+      );
     }
   };
 

@@ -14,6 +14,7 @@ export const ACTION = {
   QUERY_STUDENT: "QUERY_STUDENT",
   ENROLLMENT_STUDENTS: "ENROLLMENT_STUDENTS",
   LIST_LEAVE: "LIST_LEAVE",
+  TEST_NOTI: "TEST_NOTI",
 };
 
 export const reducer = (state, action) => {
@@ -47,6 +48,8 @@ export const reducer = (state, action) => {
     case ACTION.ENROLLMENT_STUDENTS:
       return action.payload;
     case ACTION.LIST_LEAVE:
+      return action.payload;
+    case ACTION.TEST_NOTI:
       return action.payload;
     default:
       throw new Error();

@@ -139,107 +139,106 @@ const Events = ({ navigation }) => {
         <ActivityIndicator size="large" color="#EFB419" />
       </View>
     );
-  } else {
-    return (
-      <>
-        <StatusBar
-          barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
-        />
-        <SafeAreaView>
-          <Header title={t("ប្រតិទិនសិក្សា")} navigation={navigation} />
-        </SafeAreaView>
+  }
+  return (
+    <>
+      <StatusBar
+        barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+      />
+      <SafeAreaView>
+        <Header title={t("ប្រតិទិនសិក្សា")} navigation={navigation} />
+      </SafeAreaView>
 
+      <View
+        style={{
+          flex: 1,
+          height: height * 1,
+          backgroundColor: COLORS.WHITE,
+        }}
+      >
         <View
           style={{
-            flex: 1,
-            height: height * 1,
-            backgroundColor: COLORS.WHITE,
+            flexDirection: "column",
+            height: height * 0.17,
+            width: width * 0.95,
+            alignSelf: "center",
+            top: 10,
           }}
         >
           <View
             style={{
-              flexDirection: "column",
-              height: height * 0.17,
               width: width * 0.95,
+              height: height * 0.09,
               alignSelf: "center",
-              top: 10,
+              borderRadius: 15,
+              backgroundColor: COLORS.BLUE_LIGHT,
+              justifyContent: "center",
             }}
           >
-            <View
-              style={{
-                width: width * 0.95,
-                height: height * 0.09,
-                alignSelf: "center",
-                borderRadius: 15,
-                backgroundColor: COLORS.BLUE_LIGHT,
-                justifyContent: "center",
-              }}
-            >
-              <View style={{ flexDirection: "row", left: 10 }}>
-                <View
+            <View style={{ flexDirection: "row", left: 10 }}>
+              <View
+                style={{
+                  justifyContent: "center",
+                  width: 50,
+                  height: 50,
+                  backgroundColor: COLORS.WHITE,
+                  borderRadius: 50,
+                }}
+              >
+                <Entypo
+                  name="graduation-cap"
+                  size={32}
                   style={{
-                    justifyContent: "center",
-                    width: 50,
-                    height: 50,
-                    backgroundColor: COLORS.WHITE,
-                    borderRadius: 50,
+                    alignSelf: "center",
+                    color: COLORS.MAIN,
+                  }}
+                />
+              </View>
+              <View style={{ justifyContent: "center", left: 10 }}>
+                <Text
+                  style={{
+                    fontFamily: "Bayon-Regular",
+                    color: COLORS.MAIN,
+                    fontSize: 20,
                   }}
                 >
-                  <Entypo
-                    name="graduation-cap"
-                    size={32}
-                    style={{
-                      alignSelf: "center",
-                      color: COLORS.MAIN,
-                    }}
-                  />
-                </View>
-                <View style={{ justifyContent: "center", left: 10 }}>
-                  <Text
-                    style={{
-                      fontFamily: "Bayon-Regular",
-                      color: COLORS.MAIN,
-                      fontSize: 20,
-                    }}
-                  >
-                    {t("ឆ្នាំសិក្សា") + " " + academicYear}
-                  </Text>
-                </View>
+                  {t("ឆ្នាំសិក្សា") + " " + academicYear}
+                </Text>
               </View>
             </View>
-            <View style={{ top: 10 }}>
-              <PartComponent title={t("ខែ តុលា ឆ្នាំ ២០២២")} />
-            </View>
           </View>
-          <ScrollView
-            contentContainerStyle={styles.scrollView}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                progressBackgroundColor="white"
-              />
-            }
-          >
-            {dataArray?.map((item) => {
-              num++;
-              return (
-                <View key={item?._id}>
-                  <EventCards
-                    {...item}
-                    bgColor={
-                      num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
-                    }
-                    color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
-                  />
-                </View>
-              );
-            })}
-          </ScrollView>
+          <View style={{ top: 10 }}>
+            <PartComponent title={t("ខែ តុលា ឆ្នាំ ២០២២")} />
+          </View>
         </View>
-      </>
-    );
-  }
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              progressBackgroundColor="white"
+            />
+          }
+        >
+          {dataArray?.map((item) => {
+            num++;
+            return (
+              <View key={item?._id}>
+                <EventCards
+                  {...item}
+                  bgColor={
+                    num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
+                  }
+                  color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
+                />
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </>
+  );
 };
 export default Events;
 const styles = StyleSheet.create({

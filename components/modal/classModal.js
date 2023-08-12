@@ -28,8 +28,9 @@ export default function ClassModal({ navigation, data }) {
   const t = useTranslation();
 
   // console.log(selectData, "selectData");
+
   const ChildhoodReport = () => {
-    if (selectData?.classGroupNameEn === "ECE") {
+    if (selectData?.classGroupCode === "ECE") {
       return (
         <TouchableOpacity
           onPress={() => {
@@ -77,16 +78,17 @@ export default function ClassModal({ navigation, data }) {
         }}
       >
         <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-        <View style={styles.bgModal} />
+          <View style={styles.bgModal} />
         </TouchableOpacity>
         <View style={styles.modalView}>
           <View
             style={{
               height: 40,
-              width: "95%",
+              width: "90%",
               flexDirection: "row",
               justifyContent: "space-between",
               paddingTop: 10,
+              // backgroundColor:"pink"
             }}
           >
             <View style={{ justifyContent: "center" }}>
@@ -110,7 +112,7 @@ export default function ClassModal({ navigation, data }) {
           <View
             style={{
               width: "90%",
-              paddingTop: 15,
+              paddingTop: 10,
             }}
           >
             <TouchableOpacity
@@ -144,7 +146,7 @@ export default function ClassModal({ navigation, data }) {
               onPress={() => {
                 setModalVisible(false);
                 navigation?.navigate("Attendance", {
-                  attendanceData: selectData,
+                  enrollmentData: selectData,
                 });
               }}
             >
@@ -202,11 +204,12 @@ export default function ClassModal({ navigation, data }) {
           </View>
         </View>
       </Modal>
-      {data?.map((load) => {
+      {data?.map((load, index) => {
+        // console.log(load, "load");
         num++;
         return (
           <TouchableOpacity
-            key={load?.enrollmentId}
+            key={index}
             onPress={() => openModalStu(true, load)}
           >
             <ClassCard

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -32,8 +32,13 @@ import moment from "moment";
 import { EVENT_PAGINATION } from "../graphql/gql_eventWithPagination";
 import { ACADEMIC_YEAR } from "../graphql/gql_academicYear";
 import { MaterialIcons } from "@expo/vector-icons";
-import { DELETE_NOTIFICATION } from "../graphql/gql_deleteNotificationByMobileUserId";
 import { useTranslation } from "react-multi-lang";
+import * as Notifications from "expo-notifications";
+import AttCard from "../components/AttCard";
+import LeaveCard from "../components/LeaveCard";
+import { ENROLLMENT_STUDENTS } from "../graphql/gql_enrollmentByStudents";
+import LeaveBottomSheet from "../components/dashboard/LeaveBottomSheet";
+import ViewLeaveCard from "../components/ViewLeaveCard";
 //
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -48,35 +53,48 @@ export default function Dashboard({ navigation }) {
     accountDBCtxDispatch,
     studentsDBCtxDispatch,
     logined,
+    enrollmentDBCtxDispatch,
     studentsDBCtx,
   } = useContext(DataController);
   const t = useTranslation();
-  // console.log(studentsDBCtx,"studentsDBCtx")
+  const [notiTest, setNotiTest] = useState("");
 
-  //
   var num = 1;
-  //
   let currentDate = moment().locale("en").format("YYYY-MM-DD");
-  //
-  const [deleteNotificationByMobileUserId] = useMutation(DELETE_NOTIFICATION, {
-    onCompleted: ({ deleteNotificationByMobileUserId }) => {
-      // console.log(
-      //   deleteNotificationByMobileUserId,
-      //   "test deleteNotificationByMobileUserId"
-      // );
-    },
-    onError: (e) => {
-      console.log(e.message);
-    },
-  });
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
+  // console.log(accountDBCtx,"accountDBCtx")
+
+  //noti
   useEffect(() => {
-    deleteNotificationByMobileUserId({
-      variables: {
-        mobileUserId: accountDBCtx?.user?._id,
-      },
-    });
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotiTest(notification.request.content.data?.stu_id);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response.notification.request.content.data, "response");
+        notificationNavigationHandler(response.notification.request.content);
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
+
+  const notificationNavigationHandler = ({ data }) => {
+    // console.log("A notification has been touched", data);
+    if (data?.action === "transportaion") {
+      navigation.navigate("NotificationList", {
+        studentId: data?.stu_id,
+      });
+    }
+  };
 
   //Active Academic
   const { data: academicData, loading: academicLoading } =
@@ -124,33 +142,7 @@ export default function Dashboard({ navigation }) {
   // console.log(dataArray,"dataArray")
 
   let sliceEvent = dataArray?.slice(0, 3);
-
-  //Query Announcement
-  const {
-    data: Announcement,
-    loading: announcementLoading,
-    refetch: refetchAnnoucement,
-  } = useQuery(QUERY_ANNOUNCEMENT, {
-    notifyOnNetworkStatusChange: true,
-  });
-  let AnnouncementData = useMemo(() => {
-    if (!Announcement?.getAnnouncement) {
-      return [];
-    }
-    return Announcement?.getAnnouncement;
-  }, [Announcement?.getAnnouncement]);
-  // console.log(AnnouncementData,"AnnouncementData")
-
-  useEffect(() => {
-    const announcementInterval = setInterval(() => {
-      refetchAnnoucement();
-    }, 10000);
-
-    return () => {
-      clearInterval(announcementInterval);
-    };
-    // refetchAnnoucement();
-  }, [Announcement?.getAnnouncement]);
+  // console.log(sliceEvent, "sliceEvent");
 
   //LocalStorage
   const setLocalStorage = async () => {
@@ -182,14 +174,33 @@ export default function Dashboard({ navigation }) {
     },
     pollInterval: 2000,
     onCompleted: ({ getStudentsByParents }) => {
-      // console.log(getStudentsByParents, "test");
+      // console.log(getStudentsByParents, "getStudentsByParents");
     },
     onError: async (error) => {
       console.log(error.message, "Error student");
     },
   });
 
-  // console.log(userDB,"userDB")
+  // console.log(userDB?.getStudentsByParents, "userDB?.getStudentsByParents");
+  //
+  //  const {
+  //   data: enrollmentStudent,
+  //   loading: enrollmentLoading,
+  //   errors: errorsEnrollment,
+  //   refetch: enrollmentRefetch,
+  // } = useQuery(ENROLLMENT_STUDENTS, {
+  //   variables: {
+  //     studentId: data?._id,
+  //   },
+  //   onCompleted: ({ getEvents }) => {
+  //     // console.log(getEvents, "test");
+  //   },
+  //   onError: (error) => {
+  //     console.log(error.message, "error stuClass");
+  //   },
+  // });
+  // let enrollStudent = enrollmentStudent?.getEnrollmentByStudents;
+
   useEffect(() => {
     if (userDB) {
       refetch();
@@ -199,207 +210,208 @@ export default function Dashboard({ navigation }) {
       });
       setDataSubUser(userDB?.getStudentsByParents);
     }
-  }, [userDB, ParentId, Announcement]);
+  }, [userDB, ParentId]);
 
-  //
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
   //
-  if ((loading && eventLoading && announcementLoading) || refreshing) {
+  if ((loading && eventLoading) || refreshing) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
       </View>
     );
-  } else {
-    return (
-      <>
-        <StatusBar
-          barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
-        />
+  }
+  return (
+    <>
+      <StatusBar
+        barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+      />
 
-        <SafeAreaView>
-          <Header title={t("ទំព័រដើម")} navigation={navigation} />
-        </SafeAreaView>
+      <SafeAreaView>
+        <Header title={t("ទំព័រដើម")} navigation={navigation} />
+      </SafeAreaView>
 
+      <View
+        style={{
+          flex: 1,
+          width: width,
+          height: height,
+          backgroundColor: COLORS.WHITE,
+        }}
+      >
+        {/* <ModalProminent/> */}
+        {/*  */}
         <View
           style={{
-            flex: 1,
-            width: width,
-            height: height,
+            width: width * 1,
             backgroundColor: COLORS.WHITE,
+            borderBottomWidth: 1,
+            borderBottomColor: "#E4E4E4",
           }}
         >
-          {/* <ModalProminent/> */}
-          {/*  */}
           <View
             style={{
-              width: width * 1,
+              width: width * 0.95,
+              alignSelf: "center",
+              justifyContent: "center",
+              // flexDirection: "row"
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 20,
+                color: COLORS.MAIN,
+              }}
+            >
+              {t("បុត្រធីតា")}
+            </Text>
+          </View>
+          <View
+            style={{
+              width: width,
+              alignSelf: "center",
+              height: height * 0.24,
               backgroundColor: COLORS.WHITE,
-              borderBottomWidth: 1,
-              borderBottomColor: "#E4E4E4",
+              flexDirection: "column",
+              justifyContent: "center",
+              // paddingTop: 5,
             }}
           >
             <View
               style={{
-                width: width * 0.95,
-                alignSelf: "center",
-                justifyContent: "center",
-                // flexDirection: "row"
+                flex: 1,
               }}
             >
-              {/* <TypeWriter/> */}
-
-              <Text
-                style={{
-                  fontFamily: "Bayon-Regular",
-                  fontSize: 20,
-                  color: COLORS.MAIN,
-                }}
-              >
-                {t("បុត្រធីតា")}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: width,
-                alignSelf: "center",
-                height: height * 0.24,
-                backgroundColor: COLORS.WHITE,
-                flexDirection: "column",
-                justifyContent: "center",
-                // paddingTop: 5,
-              }}
-            >
-              <View
+              <ImageBackground
+                source={require("../assets/Images/Dashboard.png")}
+                resizeMode="cover"
                 style={{
                   flex: 1,
+                  justifyContent: "center",
                 }}
               >
-                <ImageBackground
-                  source={require("../assets/Images/Dashboard.png")}
-                  resizeMode="cover"
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  stickyHeaderIndices={[1]}
+                >
+                  {dataSubUser?.map((load) => (
+                    <TouchableOpacity
+                      key={load?._id}
+                      onPress={() =>
+                        navigation.navigate("StuClass", { data: load })
+                      }
+                    >
+                      <StudentCard {...load} stuLoading={loading} />
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </ImageBackground>
+            </View>
+          </View>
+        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              progressBackgroundColor="white"
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              width: width * 0.95,
+              alignSelf: "center",
+              paddingTop: 8,
+            }}
+          >
+            <MaterialIcons
+              name="notifications-active"
+              size={18}
+              style={{ color: COLORS.MAIN, alignSelf: "center" }}
+            />
+
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 16,
+                color: COLORS.MAIN,
+                left: 3,
+              }}
+            >
+              {t("ព្រឹត្តិការណ៍នាពេលខាងមុខ")}
+            </Text>
+          </View>
+          {sliceEvent?.map((item) => {
+            num++;
+            return (
+              <View key={item?._id}>
+                <EventCards
+                  {...item}
+                  bgColor={
+                    num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
+                  }
+                  color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
+                />
+              </View>
+            );
+          })}
+          <View
+            style={{
+              flex: 1,
+              position: "relative",
+              alignSelf: "center",
+              marginTop: 15,
+            }}
+          >
+            <View style={{ height: 25, justifyContent: "center" }}>
+              <View
+                style={{
+                  height: 1,
+                  width: width * 0.95,
+                  backgroundColor: COLORS.MAIN,
+                }}
+              />
+            </View>
+            <View style={{ alignItems: "baseline", position: "absolute" }}>
+              <View style={{ backgroundColor: "white", paddingRight: 8 }}>
+                <Text
                   style={{
-                    flex: 1,
-                    justifyContent: "center",
+                    fontSize: 14,
+                    color: COLORS.MAIN,
+                    fontFamily: "Bayon-Regular",
                   }}
                 >
-                  <ScrollView
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    stickyHeaderIndices={[1]}
-                  >
-                    {dataSubUser?.map((load) => (
-                      <TouchableOpacity
-                        key={load?._id}
-                        onPress={
-                          () => navigation.navigate("StuClass", { data: load })
-                          // navigation.navigate("StuClass", {
-                          //   data: load,
-                          //   otherParam: distance,
-                          // })
-                        }
-                      >
-                        <StudentCard {...load} stuLoading={loading} />
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </ImageBackground>
+                  {t("ស្នើសុំច្បាប់ និង វត្តមាន")}
+                </Text>
               </View>
             </View>
           </View>
-          <ScrollView
-            contentContainerStyle={styles.scrollView}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                progressBackgroundColor="white"
-              />
+          <LeaveBottomSheet
+            navigation={navigation}
+            dataSubUser={userDB?.getStudentsByParents}
+          />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("ViewAllLeaveScreen", { ParentId: ParentId })
             }
-            showsVerticalScrollIndicator={false}
+            className="pb-3"
           >
-            <View
-              style={{
-                flexDirection: "row",
-                width: width * 0.95,
-                alignSelf: "center",
-                paddingTop: 8,
-              }}
-            >
-              <MaterialIcons
-                name="notifications-active"
-                size={18}
-                style={{ color: COLORS.MAIN, alignSelf: "center" }}
-              />
-
-              <Text
-                style={{
-                  fontFamily: "Bayon-Regular",
-                  fontSize: 16,
-                  color: COLORS.MAIN,
-                  left: 3,
-                }}
-              >
-                {t("ព្រឹត្តិការណ៍នាពេលខាងមុខ")}
-              </Text>
-            </View>
-            {sliceEvent?.map((item) => {
-              num++;
-              return (
-                <View key={item?._id}>
-                  <EventCards
-                    {...item}
-                    bgColor={
-                      num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
-                    }
-                    color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
-                  />
-                </View>
-              );
-            })}
-            <View
-              style={{
-                flexDirection: "row",
-                width: width * 0.95,
-                alignSelf: "center",
-                paddingTop: 2,
-                paddingBottom: 2,
-              }}
-            >
-              <Image
-                source={require("../assets/Images/announcement.png")}
-                style={{ width: 20, height: 20, alignSelf: "center" }}
-              />
-              <Text
-                style={{
-                  fontFamily: "Bayon-Regular",
-                  fontSize: 14,
-                  color: "#EA2877",
-                  left: 3,
-                }}
-              >
-                {t("ដំណឹងថ្មីៗ")}
-              </Text>
-            </View>
-            {AnnouncementData?.map((items) => (
-              <TouchableOpacity
-                key={items?._id}
-                onPress={() =>
-                  navigation.navigate("AnnouncementDetail", { data: items })
-                }
-              >
-                <AnnouncementCard {...items} loading={announcementLoading} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </>
-    );
-  }
+            <ViewLeaveCard />
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

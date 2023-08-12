@@ -14,13 +14,11 @@ import React, { useContext, useEffect, useState } from "react";
 import Header from "../routes/header/Header";
 import { useTranslation } from "react-multi-lang";
 import { COLORS } from "../color";
-import { QUERY_STUDENTS } from "../graphql/gql_students";
-import { useQuery } from "@apollo/client";
 import { StyleController } from "../static/styleProvider";
 import { DataController } from "../context/Provider";
-import { ACTION } from "../context/Reducer";
 import StudentSchoolVanCard from "../components/StudentSchVanCard";
-import { GET_TRANSPORTATION } from "../graphql/get_Transportation";
+import { GET_STUDENT_TRANSPORTATION } from "../graphql/get_studentTransportation";
+import { GraphQLClient } from "graphql-request";
 
 //
 const wait = (timeout) => {
@@ -34,71 +32,59 @@ const Transportation = ({ navigation }) => {
   const [dataSubUser, setDataSubUser] = useState([]);
   const t = useTranslation();
   const [parentDataCheck, setParentDataCheck] = useState(false);
+  const [loadingTime, setLoadingTime] = useState(true);
 
   let ParentId = accountDBCtx?.user?.parentId;
+  // console.log(ParentId, "ParentId");
 
-  const {
-    data,
-    loading: loadingTransportation,
-    refetch: refetchTransportation,
-  } = useQuery(GET_TRANSPORTATION, {
-    onCompleted: ({ getTransportation }) => {
-      // console.log(getTransportation, "getTransportation");
-      getTransportation?.map((item) => {
-        if (item?.parentId?._id === ParentId?._id) {
-          setParentDataCheck(true);
-        } else {
-          setParentDataCheck(false);
-          // alert("Not match");
-        }
-      });
-    },
-    pollInterval: 1000,
-    onError: (error) => {
-      console.log(error.message, "error getTransportation");
-    },
-  });
-
-  const {
-    data: userDB,
-    loading,
-    refetch,
-    error,
-  } = useQuery(QUERY_STUDENTS, {
-    variables: {
-      parentId: ParentId?._id,
-    },
-    onCompleted: ({ getStudentsByParents }) => {
-      // console.log(getStudentsByParents, "test");
-    },
-    onError: (error) => {
-      console.log(error.message, "error getStudentsByParents");
-    },
-  });
+  const URI = "endpoint-visitor-school.go-globalit.com/graphql";
+  // const URI = "192.168.2.30:4300/graphql";
+  const graphQLClient = new GraphQLClient(`https://${URI}`);
 
   useEffect(() => {
-    if (userDB) {
-      refetch();
-      studentsDBCtxDispatch({
-        type: ACTION.QUERY_STUDENTS,
-        payload: userDB?.getStudentsByParents,
-      });
-      setDataSubUser(userDB?.getStudentsByParents);
+    async function fetchData() {
+      try {
+        const getStuTransportation = await graphQLClient.request(
+          GET_STUDENT_TRANSPORTATION,
+          {
+            id: ParentId?._id,
+          }
+        );
+        // console.log(getStuTransportation, "getStuTransportation");
+        if (getStuTransportation) {
+          setLoadingTime(false);
+          setParentDataCheck(true);
+          if (getStuTransportation !== undefined) {
+            setDataSubUser(
+              getStuTransportation?.getStudentTransportationByMobileUser
+            );
+          }
+        }
+      } catch (error) {
+        console.log(error.message, "errorGetStuTransportation");
+        setLoadingTime(true);
+        setParentDataCheck(false);
+      }
     }
-  }, [userDB, ParentId]);
+    fetchData();
+    const interval = setInterval(fetchData, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false) && refetch());
   }, []);
 
-  if (loading || refreshing || loadingTransportation) {
+  if (loadingTime) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
       </View>
     );
   }
+
   return (
     <>
       <StatusBar
@@ -175,11 +161,11 @@ const Transportation = ({ navigation }) => {
                     showsHorizontalScrollIndicator={false}
                     stickyHeaderIndices={[1]}
                   >
-                    {dataSubUser.map((load) => (
+                    {dataSubUser?.map((load) => (
                       <TouchableOpacity
                         key={load?._id}
                         onPress={() =>
-                          navigation.navigate("NotificationList", {
+                          navigation.navigate("TransportationList", {
                             data: load,
                           })
                         }

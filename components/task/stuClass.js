@@ -5,6 +5,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  ScrollView,
+  StatusBar,
+  SafeAreaView,
 } from "react-native";
 import { COLORS } from "../../color";
 import Root from "../../root";
@@ -24,6 +27,10 @@ import AttCard from "../AttCard";
 import LeaveCard from "../LeaveCard";
 import { DataController } from "../../context/Provider";
 import { ACTION } from "../../context/Reducer";
+import { SECTION_SHIFT_BY_STUDENT } from "../../graphql/get_SectionShiftByStudent";
+import { GraphQLClient } from "graphql-request";
+import localization from "moment/locale/km";
+import moment from "moment";
 
 const StuClass = ({ navigation, route }) => {
   const { styleState, height, width } = useContext(StyleController);
@@ -32,10 +39,13 @@ const StuClass = ({ navigation, route }) => {
   const [academicYear, setAcademicYear] = useState();
   const [isAllow, setIsAllow] = useState(false);
   const t = useTranslation();
-  const { studentDBCtxDispatch, enrollmentDBCtx, enrollmentDBCtxDispatch } =
+  const { studentDBCtxDispatch, enrollmentDBCtxDispatch } =
     useContext(DataController);
-  // console.log(data, "getStudenAttendancePermissionById");
-  // console.log(enrollmentDBCtx[0]?.studentId,"enrollmentDBCtx")
+  const [loading, setLoading] = useState(true);
+  const [sectionShift, setSectionShift] = useState("");
+
+  // console.log(data, "data");
+
   useEffect(() => {
     if (data) {
       studentDBCtxDispatch({
@@ -115,79 +125,83 @@ const StuClass = ({ navigation, route }) => {
     }
   };
 
-  const StuAttLunch = () => {
-    if (getLanguage() === "en") {
-      return (
-        <Text
-          style={{
-            fontSize: 14,
-            color: COLORS.MAIN,
-            fontFamily: "Bayon-Regular",
-          }}
-        >
-          {data?.englishName} {t("វត្តមានការញ៉ាំអាហាររបស់")}
-        </Text>
-      );
-    } else {
-      return (
-        <Text
-          style={{
-            fontSize: 14,
-            color: COLORS.MAIN,
-            fontFamily: "Bayon-Regular",
-          }}
-        >
-          {t("វត្តមានការញ៉ាំអាហាររបស់")}{" "}
-          {data?.lastName + " " + data?.firstName}
-        </Text>
-      );
-    }
-  };
-
-  //
-  const {
-    data: enrollmentStudent,
-    loading: enrollmentLoading,
-    errors,
-    refetch: enrollmentRefetch,
-  } = useQuery(ENROLLMENT_STUDENTS, {
-    variables: {
-      studentId: data?._id,
-    },
-    onCompleted: ({ getEvents }) => {
-      // console.log(getEvents, "test");
-    },
-    onError: (error) => {
-      console.log(error.message, "error stuClass");
-    },
-  });
-  let enrollStudent = enrollmentStudent?.getEnrollmentByStudents;
+  // const URI = "endpoint-visitor-school.go-globalit.com/graphql";
+  const URI = "192.168.2.30:4300/graphql";
+  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
   useEffect(() => {
-    if (enrollmentStudent) {
-      enrollmentRefetch();
-      enrollmentDBCtxDispatch({
-        type: ACTION.ENROLLMENT_STUDENTS,
-        payload: enrollmentStudent?.getEnrollmentByStudents,
-      });
+    async function fetchData() {
+      try {
+        const getSectionShift = await graphQLClient?.request(
+          SECTION_SHIFT_BY_STUDENT,
+          {
+            studentId: data?._id,
+          }
+        );
+        // console.log(getSectionShift, "getSectionShift");
+        if (getSectionShift) {
+          setLoading(false);
+          setSectionShift(getSectionShift?.getSectionShiftByStudent);
+          // if (getSectionShift !== undefined) {
+          //   setSectionShift(getSectionShift?.getSectionShiftByStudent);
+          // }
+        }
+      } catch (error) {
+        console.log(error.message, "errorGetSectionShift");
+        setLoading(true);
+      }
     }
-  }, [enrollmentStudent]);
+    fetchData();
+    const interval = setInterval(fetchData, 2000);
+
+    return () => clearInterval(interval);
+  }, [data?._id]);
+  // console.log(sectionShift,"section")
+
+  //old query
+  // const {
+  //   data: enrollmentStudent,
+  //   loading: enrollmentLoading,
+  //   errors,
+  //   refetch: enrollmentRefetch,
+  // } = useQuery(ENROLLMENT_STUDENTS, {
+  //   variables: {
+  //     studentId: data?._id,
+  //   },
+  //   onCompleted: ({ getEvents }) => {
+  //     // console.log(getEvents, "test");
+  //   },
+  //   onError: (error) => {
+  //     console.log(error.message, "error stuClass");
+  //   },
+  // });
+  // let enrollStudent = enrollmentStudent?.getEnrollmentByStudents;
+
+  // useEffect(() => {
+  //   if (enrollmentStudent) {
+  //     enrollmentRefetch();
+  //     enrollmentDBCtxDispatch({
+  //       type: ACTION.ENROLLMENT_STUDENTS,
+  //       payload: enrollmentStudent?.getEnrollmentByStudents,
+  //     });
+  //   }
+  // }, [enrollmentStudent]);
 
   // ========== check shift of student ===================
-  const [arrayShiftData, setArrayShiftData] = useState([]);
-  useEffect(() => {
-    if (enrollmentStudent?.getEnrollmentByStudents) {
-      let shiftData = [];
-      enrollmentStudent?.getEnrollmentByStudents?.forEach((elem) => {
-        let newRow = {
-          shiftId: elem?.shiftId,
-          shiftName: (elem?.shiftName).split("")[0],
-        };
-        shiftData.push(newRow);
-      });
-      setArrayShiftData(shiftData);
-    }
-  }, [enrollStudent]);
+  // const [arrayShiftData, setArrayShiftData] = useState([]);
+  // useEffect(() => {
+  //   if (enrollmentStudent?.getEnrollmentByStudents) {
+  //     let shiftData = [];
+  //     enrollmentStudent?.getEnrollmentByStudents?.forEach((elem) => {
+  //       let newRow = {
+  //         shiftId: elem?.shiftId,
+  //         shiftName: (elem?.shiftName).split("")[0],
+  //       };
+  //       shiftData.push(newRow);
+  //     });
+  //     setArrayShiftData(shiftData);
+  //   }
+  // }, [enrollStudent]);
 
   // console.log(arrayShiftData)
 
@@ -212,6 +226,7 @@ const StuClass = ({ navigation, route }) => {
       }
     }
   }, [academicData]);
+
   useEffect(() => {
     if (academicName === "២០២២~២០២៣") {
       setAcademicYear(`${t("២០២២~២០២៣")}`);
@@ -230,7 +245,7 @@ const StuClass = ({ navigation, route }) => {
     }
   });
 
-  if (enrollmentLoading || academicLoading) {
+  if (academicLoading || loading) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
@@ -245,169 +260,142 @@ const StuClass = ({ navigation, route }) => {
     );
   }
 
-  if (!enrollmentLoading && !academicLoading) {
+  if (!academicLoading) {
     return (
-      <Root
-        Header={
+      <>
+        <StatusBar
+          barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+        />
+        <SafeAreaView className="bg-white">
           <Header2
             title={t("ឆ្នាំសិក្សា") + " " + academicYear}
             navigation={navigation}
           />
-        }
-      >
-        <View
-          style={{
-            width: width * 0.95,
-            alignSelf: "center",
-            paddingTop: 10,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              position: "relative",
-              alignSelf: "center",
-            }}
-          >
-            <View style={{ height: 25, justifyContent: "center" }}>
+        </SafeAreaView>
+        <View className="flex-1 w-full h-screen bg-white">
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View className="w-[95%] h-fit self-center pt-2">
               <View
                 style={{
-                  height: 1,
-                  width: width * 0.95,
-                  backgroundColor: COLORS.MAIN,
+                  flex: 1,
+                  position: "relative",
+                  alignSelf: "center",
                 }}
-              />
-            </View>
-            <View style={{ alignItems: "baseline", position: "absolute" }}>
-              <View style={{ backgroundColor: "white", paddingRight: 8 }}>
-                {StudentName()}
-              </View>
-            </View>
-          </View>
-          <View>
-            <ClassModal navigation={navigation} data={enrollStudent} />
-            {/* <ClassSheet data={enrollStudent}/> */}
-          </View>
-          {enrollStudent?.map((item) => {
-            if (item?.classGroupNameEn === "ECE") {
-              return (
-                <View key={item?.studentId}>
+              >
+                <View style={{ height: 25, justifyContent: "center" }}>
                   <View
                     style={{
-                      flex: 1,
-                      // position: "relative",
-                      alignSelf: "center",
-                      top: 15,
+                      height: 1,
+                      width: width * 0.95,
+                      backgroundColor: COLORS.MAIN,
                     }}
-                  >
-                    <View style={{ height: 25, justifyContent: "center" }}>
+                  />
+                </View>
+                <View style={{ alignItems: "baseline", position: "absolute" }}>
+                  <View style={{ backgroundColor: "white", paddingRight: 8 }}>
+                    {StudentName()}
+                  </View>
+                </View>
+              </View>
+              <View>
+                <ClassModal navigation={navigation} data={sectionShift} />
+                {/* <ClassSheet data={enrollStudent}/> */}
+              </View>
+              {sectionShift?.map((item, index) => {
+                if (item?.classGroupCode === "ECE") {
+                  return (
+                    <View key={index}>
                       <View
                         style={{
-                          height: 1,
-                          width: width * 0.95,
-                          backgroundColor: COLORS.MAIN,
+                          flex: 1,
+                          // position: "relative",
+                          alignSelf: "center",
+                          top: 15,
                         }}
-                      />
-                    </View>
-                    <View
-                      style={{ alignItems: "baseline", position: "absolute" }}
-                    >
-                      <View
-                        style={{ backgroundColor: "white", paddingRight: 8 }}
                       >
-                        {PickupStu()}
+                        <View style={{ height: 25, justifyContent: "center" }}>
+                          <View
+                            style={{
+                              height: 1,
+                              width: width * 0.95,
+                              backgroundColor: COLORS.MAIN,
+                            }}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            alignItems: "baseline",
+                            position: "absolute",
+                          }}
+                        >
+                          <View
+                            style={{
+                              backgroundColor: "white",
+                              paddingRight: 8,
+                            }}
+                          >
+                            {PickupStu()}
+                          </View>
+                        </View>
                       </View>
+                      <PickupModal data={data} />
                     </View>
-                  </View>
-                  <PickupModal data={data} />
-                </View>
-              );
-            }
-          })}
+                  );
+                }
+              })}
 
-          <View
-            style={{
-              flex: 1,
-              position: "relative",
-              alignSelf: "center",
-              marginTop: 15,
-            }}
-          >
-            <View style={{ height: 25, justifyContent: "center" }}>
-              <View
+              {/* <View
                 style={{
-                  height: 1,
-                  width: width * 0.95,
-                  backgroundColor: COLORS.MAIN,
+                  flex: 1,
+                  position: "relative",
+                  alignSelf: "center",
+                  marginTop: 15,
                 }}
-              />
-            </View>
-            <View style={{ alignItems: "baseline", position: "absolute" }}>
-              <View style={{ backgroundColor: "white", paddingRight: 8 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: COLORS.MAIN,
-                    fontFamily: "Bayon-Regular",
-                  }}
-                >
-                  {t("ស្នើសុំច្បាប់")}
-                </Text>
+              >
+                <View style={{ height: 25, justifyContent: "center" }}>
+                  <View
+                    style={{
+                      height: 1,
+                      width: width * 0.95,
+                      backgroundColor: COLORS.MAIN,
+                    }}
+                  />
+                </View>
+                <View style={{ alignItems: "baseline", position: "absolute" }}>
+                  <View style={{ backgroundColor: "white", paddingRight: 8 }}>
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: COLORS.MAIN,
+                        fontFamily: "Bayon-Regular",
+                      }}
+                    >
+                      {t("ស្នើសុំច្បាប់")}
+                    </Text>
+                  </View>
+                </View>
               </View>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("RecordAttendance", {
+                    data: enrollStudent,
+                    otherParam: arrayShiftData,
+                  })
+                }
+              >
+                <AttCard />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("LeaveScreen", { data: enrollStudent })
+                }
+              >
+                <LeaveCard />
+              </TouchableOpacity> */}
             </View>
-          </View>
-          {/* <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("RecordAttendance", {
-                data: enrollStudent,
-                otherParam: arrayShiftData,
-              })
-            }
-          >
-            <AttCard />
-          </TouchableOpacity> */}
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("LeaveScreen", { data: enrollStudent })
-            }
-          >
-            <LeaveCard />
-          </TouchableOpacity>
-          {/* <View
-            style={{
-              flex: 1,
-              position: "relative",
-              alignSelf: "center",
-              top: 15,
-            }}
-          >
-            <View style={{ height: 25, justifyContent: "center" }}>
-              <View
-                style={{
-                  height: 1,
-                  width: width * 0.95,
-                  backgroundColor: COLORS.MAIN,
-                }}
-              />
-            </View>
-            <View style={{ alignItems: "baseline", position: "absolute" }}>
-              <View style={{ backgroundColor: "white", paddingRight: 8 }}>
-                {StuAttLunch()}
-              </View>
-            </View>
-          </View>
-          <TouchableOpacity
-            style={{ paddingTop: 20 }}
-            // onPress={() => {
-            //   navigation?.navigate("LunchAtt", {
-            //     attendanceData: selectData,
-            //   });
-            // }}
-          >
-            <LunchAttCard />
-          </TouchableOpacity> */}
+          </ScrollView>
         </View>
-      </Root>
+      </>
     );
   }
 };

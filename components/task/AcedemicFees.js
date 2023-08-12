@@ -29,7 +29,6 @@ export default function AcedemicFees({ navigation, route }) {
   const t = useTranslation();
   const [unitLng, setUnitLng] = useState("")
 
-
   const [showInvoice, setShowInvoice] = useState([]);
   const {
     data: invoice,

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Go Global School",
     "slug": "school-mobile",
-    "version": "1.0.20",
+    "version": "1.0.21",
     "orientation": "portrait",
     "icon": "./assets/Images/playstore.png",
     "userInterfaceStyle": "light",
@@ -11,6 +11,7 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
+    "scheme": "school-mobile",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -41,7 +42,7 @@
         "android.permission.ACCESS_BACKGROUND_LOCATION"
       ],
       "package": "com.goglobalschool.schoolmobile",
-      "versionCode": 19,
+      "versionCode": 20,
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -80,7 +81,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "af77fab8-a2fd-4017-9bfe-679644c3670c"
+        "projectId": "84e1bb05-3716-4b60-b03d-6c86fdaa4488"
       }
     }
   }

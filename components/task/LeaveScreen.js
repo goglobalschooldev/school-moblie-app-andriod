@@ -8,13 +8,9 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
-  StatusBar,
-  Animated,
-  FlatList,
 } from "react-native";
 import React, { useState, useEffect, useMemo, useContext } from "react";
-import { PlusIcon } from "react-native-heroicons/outline";
-import SelectDropdown from "react-native-select-dropdown";
+import { Feather } from "@expo/vector-icons";
 import { useTranslation, getLanguage } from "react-multi-lang";
 import RequestCard from "../RequestCard";
 import Header4 from "../../routes/header/Header4";
@@ -22,8 +18,6 @@ import { useQuery } from "@apollo/client";
 import { STUDENT_ATT_PERMISSION } from "../../graphql/gql_GetStudentAttPermission";
 import { StyleController } from "../../static/styleProvider";
 import { DataController } from "../../context/Provider";
-import moment from "moment";
-import localization from "moment/locale/km";
 
 const LeaveScreen = ({ navigation, route }) => {
   const { styleState, height, width } = useContext(StyleController);
@@ -156,7 +150,7 @@ const LeaveScreen = ({ navigation, route }) => {
               elevation: 6,
             }}
           >
-            <PlusIcon size={35} color="white" />
+            <Feather name="plus" size={35} color="white" />
           </View>
         </TouchableOpacity>
       </View>

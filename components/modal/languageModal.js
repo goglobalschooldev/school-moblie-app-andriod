@@ -33,46 +33,32 @@ setDefaultLanguage("kh");
 setDefaultTranslations({ kh });
 
 export default function LanguageModal() {
-  const { styleState, height, width } = useContext(StyleController);
   const [openSelectLng, setOpenSelectLng] = useState(false);
-  const { langDBCtxDispatch } = useContext(DataController);
-  const [test, setTest] = useState()
   const t = useTranslation();
 
   const ImageFlag = () => {
     if (getLanguage() === "kh") {
-      return(
+      return (
         <Image
           source={require("../../assets/Images/Cambodia-Flag.png")}
           style={styles.imageStyle}
         />
-      )
-    }else{
-      return(
+      );
+    } else {
+      return (
         <Image
           source={require("../../assets/Images/English-Flag.png")}
           style={styles.imageStyle}
         />
-      )
+      );
     }
-  }
- 
+  };
 
   //step1
   const setLocalLang = async (lang) => {
     await AsyncStorage.setItem("@lang", lang);
     // console.log(lang, "lang");
   };
-
-  //step3
-  useEffect(() => {
-    async function fetchData() {
-      let getLang = await AsyncStorage.getItem("@lang");
-      setLanguage(getLang);
-      // setTest(getLang);  
-    }
-    fetchData();
-  }, []);
 
   //step2
   const ChangeEng = () => {
@@ -86,6 +72,16 @@ export default function LanguageModal() {
     setLocalLang("kh");
     setOpenSelectLng(!openSelectLng);
   };
+
+  //step3
+  useEffect(() => {
+    async function fetchData() {
+      let getLang = await AsyncStorage.getItem("@lang");
+      setLanguage(getLang);
+      // setTest(getLang);
+    }
+    fetchData();
+  }, []);
 
   return (
     <View style={{ width: "100%" }}>

@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Divider } from "react-native-paper";
 import { COLORS } from "../../color";
-import QRCodeCard from "../QRCodeCard";
+import PickupCard from "../PickupCard";
 import SuccessModal from "./successModal";
 import * as Location from "expo-location";
 import { getDistance } from "geolib";
@@ -226,7 +226,7 @@ const PickupModal = ({ data }) => {
           // style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(true)}
         >
-          <QRCodeCard />
+          <PickupCard />
         </Pressable>
       </View>
     );

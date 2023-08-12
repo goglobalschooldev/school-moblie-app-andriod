@@ -4,10 +4,12 @@ import StyleProvider from "./static/styleProvider";
 import Provider from "./context/Provider";
 import Navigator from "./navigator";
 import ApolloConfig from "./config/ApolloConfig";
-import VersionCheck from "react-native-version-check";
-import { Alert } from "react-native";
-import * as Linking from "expo-linking";
+import { Alert, BackHandler, Linking } from "react-native";
 import Constants from "expo-constants";
+import VersionCheck from "react-native-version-check";
+import * as Notifications from "expo-notifications";
+import { Text } from "react-native";
+import { NativeBaseProvider } from "native-base";
 
 export default function App() {
   // const version = Constants.manifest.version;
@@ -42,13 +44,15 @@ export default function App() {
 
   return (
     <StyleProvider>
-      <Provider>
-        <NavigationContainer>
-          <ApolloConfig>
-            <Navigator />
-          </ApolloConfig>
-        </NavigationContainer>
-      </Provider>
+      <NativeBaseProvider>
+        <Provider>
+          <NavigationContainer>
+            <ApolloConfig>
+              <Navigator />
+            </ApolloConfig>
+          </NavigationContainer>
+        </Provider>
+      </NativeBaseProvider>
     </StyleProvider>
   );
 }

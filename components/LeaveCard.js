@@ -7,8 +7,8 @@ import { Image } from "react-native";
 import { useTranslation } from "react-multi-lang";
 
 const LeaveCard = () => {
-    const { styleState, height, width } = useContext(StyleController);
-    const t = useTranslation();
+  const { styleState, height, width } = useContext(StyleController);
+  const t = useTranslation();
   return (
     <View
       style={{
@@ -42,7 +42,7 @@ const LeaveCard = () => {
             }}
           >
             <Image
-              source={require("../assets/Images/file-export.png")}
+              source={require("../assets/Images/quote-request.png")}
               style={{ alignSelf: "center", width: 30, height: 30 }}
             />
           </View>
@@ -66,7 +66,7 @@ const LeaveCard = () => {
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default LeaveCard
+export default LeaveCard;

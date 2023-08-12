@@ -6,16 +6,16 @@ import AutoHeightImage from "react-native-auto-height-image";
 
 export default function AnnouncementCard(props) {
   const { height, width } = useContext(StyleController);
-// console.log(props?.loading,"loading")
+  // console.log(props?.loading,"loading")
   const Image = useMemo(() => {
-    if (props?.loading) {
-      return (
-        <View style={styles.loadingStyle}>
-          {/* <ActivityIndicator size="large" color="#EFB419" /> */}
-          <Text>Hello</Text>
-        </View>
-      );
-    }else{
+    // if (props?.loading) {
+    //   return (
+    //     <View style={styles.loadingStyle}>
+    //       <ActivityIndicator size="large" color="#EFB419" />
+    //     </View>
+    //   );
+    // } else {
+
     return (
       <AutoHeightImage
         source={{
@@ -27,7 +27,7 @@ export default function AnnouncementCard(props) {
         style={{ alignSelf: "center", borderRadius: 15, margin: 5 }}
       />
     );
-  }
+    // }
   }, [props?.picture]);
 
   return (
@@ -68,4 +68,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-

@@ -15,7 +15,7 @@ export const SubjectSchedule = (props) => {
   const { styleState, height, width } = useContext(StyleController);
   const [teacherName, setTeacherName] = useState();
 
-  // console.log(props?.leadTeacherId,"props");
+  // console.log(props,"props");
   const teacherImage =
     "https://storage.go-globalschool.com/api" +
     props?.leadTeacherId?.profileImg;
@@ -208,12 +208,7 @@ export const SubjectSchedule = (props) => {
                   }}
                   numberOfLines={1}
                 >
-                  {/* {if (props?.leadTeacherId?.lastName && props?.leadTeacherId?.firstName !== undefined) {
-                    
-                  } props?.leadTeacherId?.lastName +
-                    " " +
-                    props?.leadTeacherId?.firstName} */}
-                  {teacherName}
+                  {getLanguage() === "en" ? props?.leadTeacherId?.englishName : props?.leadTeacherId?.lastName + " " + props?.leadTeacherId?.firstName}
                 </Text>
               </View>
             </View>

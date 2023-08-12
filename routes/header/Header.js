@@ -69,7 +69,7 @@ export default function Header({ title, navigation }) {
         <View style={styles.insideBar}>
           <View
             style={{
-              width: width * 0.7,
+              width: width * 0.65,
               height: 50,
               flexDirection: "row",
               alignItems: "center",
@@ -86,13 +86,24 @@ export default function Header({ title, navigation }) {
           </View>
           <View
             style={{
-              width: width * 0.25,
+              width: width * 0.35,
               height: 50,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-end",
+              // backgroundColor: "red",
+              paddingRight: 20,
             }}
           >
+            <TouchableOpacity
+              style={{ paddingHorizontal: 15 }}
+              onPress={() => navigation.navigate("NotificationScreen")}
+            >
+              <Image
+                source={require("../../assets/Images/bell.png")}
+                style={{ width: width * 0.055, height: height * 0.025 }}
+              />
+            </TouchableOpacity>
             <View
               style={{
                 right: 5,

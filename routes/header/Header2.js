@@ -5,6 +5,7 @@ import { COLORS } from "../../color";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleController } from "../../static/styleProvider";
 import { DataController } from "../../context/Provider";
+import LanguageModal from "../../components/modal/languageModal";
 
 export default function Header2({ navigation, title }) {
   const { styleState, height, width } = useContext(StyleController);
@@ -81,8 +82,20 @@ export default function Header2({ navigation, title }) {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-end",
+              flexDirection:"row"
             }}
           >
+            <View
+              style={{
+                right: 5,
+                alignSelf: "flex-end",
+                justifyContent: "center",
+                alignItems: "center",
+                alignSelf: "center",
+              }}
+            >
+              <LanguageModal />
+            </View>
             <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
               <Avatar
                 size={30}

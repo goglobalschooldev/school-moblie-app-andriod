@@ -26,10 +26,10 @@ import { UPDATE_MOBILE_TOKEN } from "../graphql/gql_updateMobileToken";
 import Checkbox from "expo-checkbox";
 import { useTranslation, getLanguage, setTranslations } from "react-multi-lang";
 import LanguageModal from "../components/modal/languageModal";
-import en from "../translations/en.json";
-import kh from "../translations/kh.json";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
+import { GraphQLClient } from "graphql-request";
+import { ADD_MOBILE_USER_TOKEN } from "../graphql/add_mobileUserToken";
 
 export default function LoginScreen(props) {
   const { styleState, width, height } = useContext(StyleController);
@@ -40,10 +40,7 @@ export default function LoginScreen(props) {
   const [password, setPassword] = useState("");
   const [notiToken, setNotiToken] = useState("");
   const [isChecked, setChecked] = useState(false);
-  const [item, setItem] = useState("");
   const t = useTranslation();
-
-  // const {T} = props.screenProps;
 
   //getItem
   const getLocalStorage = async () => {
@@ -62,43 +59,49 @@ export default function LoginScreen(props) {
     };
   }, []);
 
-  // async function registerForPushNotificationsAsync() {
-  //   let token;
+  //endpoint2
+  // const URI = "sms-endpoint.go-globalschool.com/graphql";
+  const URI = "192.168.2.30:4300/graphql";
+  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
-  //   if (Platform.OS === "android") {
-  //     await Notifications.setNotificationChannelAsync("default", {
-  //       name: "default",
-  //       importance: Notifications.AndroidImportance.MAX,
-  //       vibrationPattern: [0, 250, 250, 250],
-  //       lightColor: "#FF231F7C",
-  //     });
-  //   }
-  //   if (Device.isDevice) {
-  //     const { status: existingStatus } =
-  //       await Notifications.getPermissionsAsync();
-  //     let finalStatus = existingStatus;
-  //     if (existingStatus !== "granted") {
-  //       const { status } = await Notifications.requestPermissionsAsync();
-  //       finalStatus = status;
-  //     }
-  //     if (finalStatus !== "granted") {
-  //       alert("Failed to get push token for push notification!");
-  //       return;
-  //     }
-  //     token = (
-  //       await Notifications.({
-  //         experienceId: "@goglobalschool/school-mobile",
-  //       })
-  //     ).data;
-  //     // console.log(token, "token");
-  //   } else {
-  //     alert("Must use physical device for Push Notifications");
-  //   }
-  //   return token;
-  // }
+  async function registerForPushNotificationsAsync() {
+    let token;
 
-  // console.log(notiToken, "notiToken");
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
 
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      // const token = (await Notifications.getDevicePushTokenAsync()).data
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          experienceId: "@goglobal_school/school-mobile",
+        })
+      ).data;
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    return token;
+  }
+
+  //old noti token
   const [updateMobileToken] = useMutation(UPDATE_MOBILE_TOKEN, {
     onCompleted: ({ updateMobileToken }) => {
       // console.log(updateMobileToken, "test updateMobileToken");
@@ -110,15 +113,15 @@ export default function LoginScreen(props) {
 
   const [login, { loading, data }] = useMutation(LOGIN_USER, {
     onCompleted: ({ login }) => {
-      updateMobileToken({
-        variables: {
-          mobileUserId: login?.user?._id,
-          newToken: {
-            plateformToken: "android",
-            deviceToken: notiToken,
-          },
-        },
-      });
+      // updateMobileToken({
+      //   variables: {
+      //     mobileUserId: login?.user?._id,
+      //     newToken: {
+      //       plateformToken: "android",
+      //       deviceToken: notiToken,
+      //     },
+      //   },
+      // });
     },
     onError: (e) => {
       console.log(e.message);
@@ -128,6 +131,7 @@ export default function LoginScreen(props) {
   const setLocalStorage = async (value) => {
     await AsyncStorage.setItem("@login", JSON.stringify(value));
   };
+
   const setLocalDataUser = async ({ email, password, isChecked }) => {
     await AsyncStorage.setItem(
       "@userData",
@@ -151,7 +155,19 @@ export default function LoginScreen(props) {
     }
     fetchData();
   }, []);
-  // console.log(accountDBCtx, "accountDBCtx");
+
+  const setMobileUserToken = async (userId) => {
+    try {
+      const addUsertoken = await graphQLClient.request(ADD_MOBILE_USER_TOKEN, {
+        user: userId,
+        token: notiToken,
+        osType: "android",
+      });
+      console.log(addUsertoken, "addUsertoken");
+    } catch (error) {
+      console.log(error.message, "erroraddUsertoken");
+    }
+  };
 
   const HandleLogin = async () => {
     if (email === "" && password === "") {
@@ -170,21 +186,37 @@ export default function LoginScreen(props) {
           password: password,
         },
         update(_, result) {
+          // console.log(result?.data?.login, "result?.data?.login");
           if (result?.data?.login?.user) {
-            // registerForPushNotificationsAsync().then(async (token) => {
-            //   console.log(token, "token");
-            //   if (token) {
-            //     await AsyncStorage.setItem("@tokenNoti", token);
-            //   }
-            // });
+            registerForPushNotificationsAsync().then(async (token) => {
+              console.log(token, "token");
+              if (token) {
+                await AsyncStorage.setItem("@tokenNoti", token);
+              }
+              setMobileUserToken(result?.data?.login?.user?.parentId?._id);
+              // try {
+              //   const addUsertoken = await graphQLClient.request(
+              //     ADD_MOBILE_USER_TOKEN,
+              //     {
+              //       user: result?.data?.login?.user?.parentId?._id,
+              //       token: token,
+              //       osType: "android",
+              //     }
+              //   );
+              //   console.log(addUsertoken, "addUsertoken");
+              //   return addUsertoken;
+              // } catch (error) {
+              //   console.log(error.message, "erroraddUsertoken");
+              // }
+            });
+
             accountDBCtxDispatch({
               type: ACTION.LOGIN_USER,
               payload: result?.data?.login,
             });
             setLocalStorage(result?.data?.login);
-            // setTranslations({ en, kh });
-            // Alert.alert("sucessful")
             AsyncStorage.setItem("@user", JSON.stringify(user));
+            AsyncStorage.setItem("@appState", JSON.stringify(true));
             setLocalDataUser({ email, password, isChecked });
             loginedDispatch({
               type: ACTION.LOGIN_USER,
@@ -200,7 +232,6 @@ export default function LoginScreen(props) {
       });
     }
   };
-  // console.log(t("ចូលប្រើកម្មវិធី"), "testgg")
 
   if (loading) {
     return (

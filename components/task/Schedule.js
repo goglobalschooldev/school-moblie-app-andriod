@@ -68,7 +68,7 @@ export default function Schedule({ navigation, route }) {
     }
   }, [sectionDB, ClassId, AcademicYearId, ProgramId]);
 
-  // console.log(sectionDB, "sectionDB");
+  // console.log(sectionData?.sections, "sectionData?.sections");
   //
   // let stuSections = sectionData?.sections;
   // const scheduleByDay = stuSections?.filter((e) => e.dayOfWeek === selectDay);
@@ -245,6 +245,22 @@ export default function Schedule({ navigation, route }) {
                       borderBottomWidth: 2,
                       borderBottomColor:
                         selectDay === "Saturday" ? COLORS.MAIN : "white",
+                      margin: 5,
+                      // top: 5,
+                    }}
+                  />
+                </View>
+                <View style={{ flexDirection: "column" }}>
+                  <BtnDay
+                    style={{ backgroundColor: "#fc4141" }}
+                    dayName={t("អាទិត្យ")}
+                    onPress={() => setSelectDay("Sunday")}
+                  />
+                  <View
+                    style={{
+                      borderBottomWidth: 2,
+                      borderBottomColor:
+                        selectDay === "Sunday" ? COLORS.MAIN : "white",
                       margin: 5,
                       // top: 5,
                     }}

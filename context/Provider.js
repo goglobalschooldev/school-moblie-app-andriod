@@ -23,6 +23,7 @@ export default function Provider({ children }) {
   useEffect(() => {
     const fetchData = async () => {
       let data = await AsyncStorage.getItem("@user");
+      // console.log(data, "data");
       loginedDispatch({
         type: ACTION.LOGIN_USER,
         payload: data !== null ? true : false,
