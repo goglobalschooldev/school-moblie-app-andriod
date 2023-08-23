@@ -16,7 +16,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import { useTranslation } from "react-multi-lang";
 
-export default function ForgotPassword() {
+export default function ForgotPasswordModal() {
   const { styleState, height, width } = useContext(StyleController);
   const [modalVisible, setModalVisible] = useState(false);
   const t = useTranslation();

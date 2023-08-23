@@ -20,7 +20,6 @@ import { useMutation } from "@apollo/client/react";
 import { DataController } from "../context/Provider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ACTION } from "../context/Reducer";
-import ForgotPassword from "../components/modal/forgotPassword";
 import RootLog from "../rootLog";
 import { UPDATE_MOBILE_TOKEN } from "../graphql/gql_updateMobileToken";
 import Checkbox from "expo-checkbox";
@@ -28,8 +27,8 @@ import { useTranslation, getLanguage, setTranslations } from "react-multi-lang";
 import LanguageModal from "../components/modal/languageModal";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import { GraphQLClient } from "graphql-request";
 import { ADD_MOBILE_USER_TOKEN } from "../graphql/add_mobileUserToken";
+import graphQLClient from "../config/endpoint_2";
 
 export default function LoginScreen(props) {
   const { styleState, width, height } = useContext(StyleController);
@@ -58,11 +57,6 @@ export default function LoginScreen(props) {
       clearInterval(interV);
     };
   }, []);
-
-  //endpoint2
-  // const URI = "sms-endpoint.go-globalschool.com/graphql";
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -189,7 +183,7 @@ export default function LoginScreen(props) {
           // console.log(result?.data?.login, "result?.data?.login");
           if (result?.data?.login?.user) {
             registerForPushNotificationsAsync().then(async (token) => {
-              console.log(token, "token");
+              // console.log(token, "token");
               if (token) {
                 await AsyncStorage.setItem("@tokenNoti", token);
               }
@@ -379,7 +373,7 @@ export default function LoginScreen(props) {
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  <View
+                  {/* <View
                     style={{
                       paddingVertical: 10,
                       alignItems: "center",
@@ -421,8 +415,38 @@ export default function LoginScreen(props) {
                         </Text>
                       </View>
                     </View>
-                    {/* forgetPassword */}
-                    <ForgotPassword />
+                    <View>
+                      <TouchableOpacity className="flex-row w-[50%] my-2 items-end justify-end ">
+                        <Text
+                          style={{
+                            fontFamily: "Bayon-Regular",
+                            color: COLORS.MAIN,
+                            fontSize: 14,
+                          }}
+                        >
+                          {t("ភ្លេចពាក្យសម្ងាត់?")}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View> */}
+
+                  <View className="flex-row w-full items-center">
+                    <View className="flex-row w-[50%] my-2 items-center">
+                      <Checkbox
+                        style={{ padding: 8, borderColor: COLORS.MAIN }}
+                        value={isChecked}
+                        onValueChange={setChecked}
+                        color={isChecked ? COLORS.MAIN : undefined}
+                      />
+                      <Text className="mx-2 text-sm font-bayon leading-7 text-[#3C6EFB]">
+                        {t("ចងចាំពាក្យសម្ងាត់")}
+                      </Text>
+                    </View>
+                    <TouchableOpacity className="flex-row w-[50%] my-2 items-end justify-end ">
+                      <Text className="mx-2 text-sm font-bayon leading-7 text-[#3C6EFB]">
+                        {t("ភ្លេចពាក្យសម្ងាត់?")}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>

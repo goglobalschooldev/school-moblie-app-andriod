@@ -11,11 +11,10 @@ import {
   Image,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
-import Header2 from "../routes/header/Header2";
 import NotificationCard from "../components/notificationCard";
-import { GraphQLClient } from "graphql-request";
 import {
   GET_NOTIFICATION,
+  MARK_AS_READ,
   VIEW_NOTIFICATION,
 } from "../graphql/get_notification";
 import { DataController } from "../context/Provider";
@@ -25,6 +24,9 @@ import { StyleController } from "../static/styleProvider";
 import { MaterialIcons } from "@expo/vector-icons";
 import LanguageModal from "../components/modal/languageModal";
 import { Popover, Box } from "native-base";
+import { Feather, Entypo } from "@expo/vector-icons";
+import { useToast } from "react-native-toast-notifications";
+import graphQLClient from "../config/endpoint_2";
 
 const NotificationScreen = ({ navigation }) => {
   const { styleState, height, width } = useContext(StyleController);
@@ -32,9 +34,7 @@ const NotificationScreen = ({ navigation }) => {
   const [notiData, setNotiData] = useState("");
   const [notiLimit, setNotiLimit] = useState(10);
   const [loadingTime, setLoadingTime] = useState(true);
-
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
+  const toast = useToast();
 
   useEffect(() => {
     async function fetchData() {
@@ -79,6 +79,48 @@ const NotificationScreen = ({ navigation }) => {
       console.log(viewNotification, "viewNotification");
     } catch (error) {
       console.log(error.message, "errorViewNotification");
+    }
+  };
+
+  const handleMarkAsRead = async () => {
+    try {
+      const viewAllNotification = await graphQLClient.request(MARK_AS_READ, {
+        id: accountDBCtx?.user?.parentId?._id,
+      });
+      // console.log(viewAllNotification, "viewAllNotification");
+      if (viewAllNotification?.markReadNofitication?.status === true) {
+        let id = toast.show(
+          viewAllNotification?.markReadNofitication?.message,
+          {
+            type: "success",
+            placement: "bottom",
+            duration: 3000,
+            offset: 30,
+            animationType: "zoom-in",
+            successIcon: (
+              <Feather name="check-circle" size={24} color="white" />
+            ),
+          }
+        );
+        toast.hideAll(id, "Loading complete");
+      } else {
+        let id = toast.show(
+          viewAllNotification?.markReadNofitication?.message,
+          {
+            type: "danger",
+            placement: "bottom",
+            duration: 3000,
+            offset: 30,
+            animationType: "zoom-in",
+            dangerIcon: (
+              <Entypo name="circle-with-cross" size={24} color="white" />
+            ),
+          }
+        );
+        toast.hideAll(id, "Loading complete");
+      }
+    } catch (error) {
+      console.log(error.message, "errorViewAllNotification");
     }
   };
 
@@ -148,7 +190,7 @@ const NotificationScreen = ({ navigation }) => {
                       <Popover.Content w="32">
                         <Popover.Arrow />
                         <Popover.Body>
-                          <TouchableOpacity>
+                          <TouchableOpacity onPress={() => handleMarkAsRead()}>
                             <Text className="font-kantunruy-regular font-bold text-sm text-main">
                               Mark as read
                             </Text>
@@ -199,8 +241,8 @@ const NotificationScreen = ({ navigation }) => {
                     className="items-center p-1"
                     onPress={() => handleLoadMore}
                   >
-                    <Text className="text-base font-kantunruy-regular text-main leading-10">
-                      Loading...
+                    <Text className="text-sm font-kantunruy-regular text-main leading-10">
+                      {t("កំពុងដំណើរការ")}
                     </Text>
                   </TouchableOpacity>
                 ) : null

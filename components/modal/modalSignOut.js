@@ -16,10 +16,9 @@ import { ACTION } from "../../context/Reducer";
 import { GoButton } from "../../static/btn-com";
 import { MOBILE_USER_LOGOUT } from "../../graphql/gql_mobileUserLogOut";
 import { useMutation } from "@apollo/client/react";
-import { COLORS } from "../../color";
 import { useTranslation } from "react-multi-lang";
-import { GraphQLClient } from "graphql-request";
 import { REMOVE_MOBILE_USER_TOKEN } from "../../graphql/remove_mobileUserToken";
+import graphQLClient from "../../config/endpoint_2";
 
 export default function ModalSignOut() {
   const { userDispatch, loginedDispatch, accountDBCtx } =
@@ -28,10 +27,6 @@ export default function ModalSignOut() {
   const [openModalSignOut, setOpenModalSignOut] = useState(false);
   const [notiToken, setNotiToken] = useState("");
   const t = useTranslation();
-
-  //endpoint2
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
   //
   const getLocalStorage = async () => {

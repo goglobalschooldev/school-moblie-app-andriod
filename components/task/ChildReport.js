@@ -30,7 +30,6 @@ import InputHealth from "./InputHealth";
 import { PartComponent } from "../../static/part-component";
 import { useTranslation } from "react-multi-lang";
 
-
 export default function ChildReport({ navigation, route }) {
   const { styleState, height, width } = useContext(StyleController);
   const [eysReport, setEysReport] = useState({});
@@ -61,6 +60,7 @@ export default function ChildReport({ navigation, route }) {
       date: date.format("YYYY-MM-DD"),
     },
     onCompleted: ({ getEYSReportPagination }) => {
+      console.log(getEYSReportPagination, "getEYSReportPagination");
       setEysReport(getEYSReportPagination?.data);
     },
     onError: (error) => {
@@ -199,7 +199,7 @@ export default function ChildReport({ navigation, route }) {
               }}
             >
               <ScrollView>
-                <PartComponent title={"ផ្នែកអាហារ/ Food"}/>
+                <PartComponent title={"ផ្នែកអាហារ/ Food"} />
                 {filterFood?.map((item, index) => {
                   return (
                     <View key={index}>
@@ -217,8 +217,8 @@ export default function ChildReport({ navigation, route }) {
                     </View>
                   );
                 })}
-               
-                <PartComponent title={"ផ្នែកសកម្មភាព/ Activities"}/>
+
+                <PartComponent title={"ផ្នែកសកម្មភាព/ Activities"} />
                 {filterActivities?.map((items, index) => {
                   return (
                     <View key={index}>
@@ -237,15 +237,17 @@ export default function ChildReport({ navigation, route }) {
                   );
                 })}
 
-                <PartComponent title={"ផ្នែកសុខភាព/ Health"}/>
+                <PartComponent title={"ផ្នែកសុខភាព/ Health"} />
                 <HealthCard eysReport={eysReport} />
 
-                <PartComponent title={"មតិយោបល់/ Feedback"}/>
+                <PartComponent title={"មតិយោបល់/ Feedback"} />
                 <NurseCmt eysReport={eysReport} />
                 <ParentsCmt eysReport={eysReport} />
                 <FeedBackCard eysReport={eysReport} />
 
-                <PartComponent title={"ផ្នែកបញ្ចូលព័ត៌មាន/ Input information"}/>
+                <PartComponent
+                  title={"ផ្នែកបញ្ចូលព័ត៌មាន/ Input information"}
+                />
                 <InputHealth
                   healthInput={healthInput}
                   onChangeHealthInput={onChangeHealthInput}
@@ -299,7 +301,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignSelf: "center",
     backgroundColor: COLORS.WHITE,
-    paddingBottom: 15
+    paddingBottom: 15,
   },
   calendar: {
     // flex:1,

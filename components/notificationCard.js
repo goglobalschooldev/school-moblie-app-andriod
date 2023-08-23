@@ -39,7 +39,7 @@ export default function NotificationCard(props) {
           <View className="flex flex-col w-[80%] justify-around">
             <View className="flex flex-row">
               <Text
-                className="font-kantunruy-regular text-[13px] leading-6 pr-1"
+                className="font-kantunruy-regular text-sm leading-6 pr-1"
                 style={{ color: COLORS.BLUE_DARK }}
               >
                 {props?.notifBy?.name}
@@ -48,7 +48,7 @@ export default function NotificationCard(props) {
                 className={clsx(
                   "rounded-2xl px-2 items-center self-center",
                   props?.action === "approveLeave" ||
-                    props?.action === "cancelLeave"
+                    props?.action === "canceledLeave"
                     ? "bg-[#3c6ffb]"
                     : props?.action === "checkIn" ||
                       props?.action === "checkOut"
@@ -56,9 +56,9 @@ export default function NotificationCard(props) {
                     : "text-[#ff4747]"
                 )}
               >
-                <Text className="font-bayon text-[10px] text-white">
+                <Text className="font-bayon text-[10px] text-white tracking-wide">
                   {props?.action === "approveLeave" ||
-                  props?.action === "cancelLeave"
+                  props?.action === "canceledLeave"
                     ? "Leave"
                     : props?.action === "checkIn" ||
                       props?.action === "checkOut"
@@ -67,40 +67,28 @@ export default function NotificationCard(props) {
                 </Text>
               </View>
             </View>
-            {props?.from === props?.to ? (
-              <Text className="text-sm text-[#6795C0] font-kantunruy-regular leading-6">
-                {getLanguage() === "en"
-                  ? moment(props?.from)
-                      .locale("en", localization)
-                      .format("DD MMM, YYYY")
-                  : moment(props?.from)
-                      .locale("km", localization)
-                      .format("DD MMM, YYYY")}
-              </Text>
-            ) : (
-              <Text className="text-sm text-[#6795C0] font-kantunruy-regular">
-                {getLanguage() === "en"
-                  ? moment(props?.from)
-                      .locale("en", localization)
-                      .format("DD MMM, YYYY")
-                  : moment(props?.from)
-                      .locale("km", localization)
-                      .format("DD MMM, YYYY")}{" "}
-                -{" "}
-                {getLanguage() === "en"
-                  ? moment(props?.to)
-                      .locale("en", localization)
-                      .format("DD MMM, YYYY")
-                  : moment(props?.to)
-                      .locale("km", localization)
-                      .format("DD MMM, YYYY")}
-              </Text>
-            )}
             <View className="flex-row w-full">
               <Text className="text-[#6795C0] text-[13px] font-kantunruy-regular leading-5">
                 {props?.description}
               </Text>
             </View>
+            {getLanguage() === "en" ? (
+              <Text className="text-[11px] text-[#6795C0] font-kantunruy-regular leading-4">
+                {moment
+                  .utc(new Date(props?.createdAt))
+                  .locale("en", localization)
+                  .startOf("seconds")
+                  .fromNow()}
+              </Text>
+            ) : (
+              <Text className="text-[10px] text-[#6795C0] font-kantunruy-regular leading-5">
+                {moment
+                  .utc(new Date(props?.createdAt))
+                  .locale("km", localization)
+                  .startOf("seconds")
+                  .fromNow()}
+              </Text>
+            )}
           </View>
         </View>
       </View>

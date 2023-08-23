@@ -29,3 +29,12 @@ export const VIEW_NOTIFICATION = gql`
     }
   }
 `;
+
+export const MARK_AS_READ = gql`
+  mutation MarkReadNofitication($id: ID!) {
+    markReadNofitication(_id: $id) {
+      message
+      status
+    }
+  }
+`;

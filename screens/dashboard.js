@@ -367,34 +367,28 @@ export default function Dashboard({ navigation }) {
           })}
           <View
             style={{
-              flex: 1,
-              position: "relative",
+              flexDirection: "row",
+              width: width * 0.95,
               alignSelf: "center",
-              marginTop: 15,
+              paddingTop: 8,
             }}
           >
-            <View style={{ height: 25, justifyContent: "center" }}>
-              <View
-                style={{
-                  height: 1,
-                  width: width * 0.95,
-                  backgroundColor: COLORS.MAIN,
-                }}
-              />
-            </View>
-            <View style={{ alignItems: "baseline", position: "absolute" }}>
-              <View style={{ backgroundColor: "white", paddingRight: 8 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: COLORS.MAIN,
-                    fontFamily: "Bayon-Regular",
-                  }}
-                >
-                  {t("ស្នើសុំច្បាប់ និង វត្តមាន")}
-                </Text>
-              </View>
-            </View>
+            <Ionicons
+              name="ios-documents"
+              size={18}
+              style={{ color: "#D73275", alignSelf: "center" }}
+            />
+
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 16,
+                color: "#D73275",
+                left: 3,
+              }}
+            >
+              {t("ការស្នើសុំច្បាប់")}
+            </Text>
           </View>
           <LeaveBottomSheet
             navigation={navigation}

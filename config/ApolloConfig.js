@@ -140,7 +140,7 @@ const ApolloConfig = ({ children }) => {
 
   const notificationNavigationHandler = ({ data }) => {
     console.log("A notification has been touched", data);
-    if (data?.action === "approveLeave") {
+    if (data?.action === "approveLeave" || data?.action === "canceledLeave") {
       navigation.navigate(
         "NotificationScreen"
         //  , {

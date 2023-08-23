@@ -42,7 +42,7 @@ const LeaveCard = () => {
             }}
           >
             <Image
-              source={require("../assets/Images/quote-request.png")}
+              source={require("../assets/Images/written-paper-orange.png")}
               style={{ alignSelf: "center", width: 30, height: 30 }}
             />
           </View>

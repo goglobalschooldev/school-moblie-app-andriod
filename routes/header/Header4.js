@@ -17,7 +17,7 @@ export default function Header4({ navigation, title }) {
     const studentImage =
       "https://storage.go-globalschool.com/api" + ProfileImage;
     if (
-        studentImage === "https://storage.go-globalschool.com/api" ||
+      studentImage === "https://storage.go-globalschool.com/api" ||
       null ||
       ProfileImage === null
     ) {
@@ -82,30 +82,18 @@ export default function Header4({ navigation, title }) {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-end",
-              flexDirection:"row"
+              flexDirection: "row",
             }}
           >
-            <View
-              style={{
-                right: 5,
-                alignSelf: "flex-end",
+            <Avatar
+              size={30}
+              rounded
+              ImageComponent={() => StudentImage}
+              overlayContainerStyle={{
                 justifyContent: "center",
                 alignItems: "center",
-                alignSelf: "center",
               }}
-            >
-              <LanguageModal />
-            </View>
-              <Avatar
-                size={30}
-                rounded
-                ImageComponent={() => StudentImage}
-                overlayContainerStyle={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              />
-           
+            />
           </View>
         </View>
       </View>

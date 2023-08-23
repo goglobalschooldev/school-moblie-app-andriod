@@ -27,10 +27,13 @@ export default function ClassModal({ navigation, data }) {
   };
   const t = useTranslation();
 
-  // console.log(selectData, "selectData");
+  // console.log(data, "data");
 
   const ChildhoodReport = () => {
-    if (selectData?.classGroupCode === "ECE") {
+    if (
+      selectData?.classGroupCode === "ECE" ||
+      selectData?.classGroupNameEn === "Early Childhood Education"
+    ) {
       return (
         <TouchableOpacity
           onPress={() => {
@@ -146,7 +149,7 @@ export default function ClassModal({ navigation, data }) {
               onPress={() => {
                 setModalVisible(false);
                 navigation?.navigate("Attendance", {
-                  enrollmentData: selectData,
+                  sectionShift: selectData,
                 });
               }}
             >

@@ -54,7 +54,7 @@ const TabNavigation = ({ navigation }) => {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="TaskStack"
         component={TaskStack}
         options={{
@@ -80,7 +80,7 @@ const TabNavigation = ({ navigation }) => {
             </View>
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="TransportationStack"
         component={TransportationStack}

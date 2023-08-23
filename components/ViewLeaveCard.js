@@ -30,7 +30,11 @@ const ViewLeaveCard = () => {
         }}
       >
         <View
-          style={{ flexDirection: "row", padding: 10, alignItems: "center" }}
+          style={{
+            flexDirection: "row",
+            padding: 10,
+            alignItems: "center",
+          }}
         >
           <View
             style={{
@@ -42,12 +46,13 @@ const ViewLeaveCard = () => {
             }}
           >
             <Image
-              source={require("../assets/Images/file.png")}
+              source={require("../assets/Images/search.png")}
               style={{ alignSelf: "center", width: 30, height: 30 }}
             />
           </View>
           <View
             style={{
+              width: " 80%",
               flexDirection: "column",
               left: 10,
               justifyContent: "space-evenly",
@@ -60,7 +65,7 @@ const ViewLeaveCard = () => {
                 color: COLORS.BLUE_DARK,
               }}
             >
-              {t("សូមចុចទីនេះដើម្បីមើលការស្នើច្បាប់")}
+              {t("សូមចុចទីនេះដើម្បីមើលប្រវត្តិសុំច្បាប់")}
             </Text>
           </View>
         </View>

@@ -12,13 +12,13 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Header2 from "../../routes/header/Header2";
-import { GraphQLClient } from "graphql-request";
 import { GET_LEAVE_PAGINATION } from "../../graphql/newLeave";
 import { getLanguage, useTranslation } from "react-multi-lang";
 import moment from "moment";
 import localization from "moment/locale/km";
 import { COLORS } from "../../color";
 import clsx from "clsx";
+import graphQLClient from "../../config/endpoint_2";
 
 const ViewAllLeaveScreen = ({ navigation, route }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -28,10 +28,6 @@ const ViewAllLeaveScreen = ({ navigation, route }) => {
   const t = useTranslation();
 
   const { ParentId } = route.params;
-
-  // const URI = "endpoint-visitor-school.go-globalit.com/graphql";
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
   useEffect(() => {
     async function fetchData() {
@@ -178,20 +174,23 @@ const ViewAllLeaveScreen = ({ navigation, route }) => {
                             )}
                           </View>
                           {item?.status === "pending" ? (
-                            <View className=" bg-[#fef08ad8] rounded-lg px-2 self-center">
-                              <Text className="text-[#eab308] font-bayon text-[10px]">
+                            <View className=" bg-[#f7e13b] rounded-lg px-2 self-center">
+                              {/* bg-[#fef08ad8]  text-[#eab308] */}
+                              <Text className="text-[#FFFFFF] font-bayon text-[10px] tracking-wider">
                                 {item?.status}
                               </Text>
                             </View>
                           ) : item?.status === "approved" ? (
-                            <View className=" bg-[#4df85e48] rounded-lg px-2 self-center">
-                              <Text className="text-[#3dcf4c] font-bayon text-[10px]">
+                            <View className=" bg-[#30c03e] rounded-lg px-2 self-center">
+                              {/*bg-[#4df85e48] text-[#3dcf4c]  */}
+                              <Text className="text-[#FFFFFF] font-bayon text-[10px] tracking-wider">
                                 {item?.status}
                               </Text>
                             </View>
                           ) : item?.status === "cancel" ? (
-                            <View className="rounded-lg px-2 bg-[#ff65655e] self-center">
-                              <Text className="text-[#fa0202] font-bayon text-[10px]">
+                            <View className="rounded-lg px-2 bg-[#f33939] self-center">
+                              {/*bg-[#ff65655e] text-[#fa0202] */}
+                              <Text className="text-[#FFFFFF] font-bayon text-[10px] tracking-wider">
                                 {item?.status}
                               </Text>
                             </View>
@@ -210,12 +209,12 @@ const ViewAllLeaveScreen = ({ navigation, route }) => {
                                   .format("DD MMM, YYYY")
                               : moment(item?.from)
                                   .locale("km", localization)
-                                  .format("DD MMM, YYYY")}
+                                  .format("DD MMM YYYY")}
                           </Text>
                         ) : (
                           <Text
                             className={clsx(
-                              "text-sm font-kantunruy-regular pt-1",
+                              "text-xs font-kantunruy-regular pt-1",
                               index % 2 === 0 ? "text-blue" : "text-orange"
                             )}
                           >
@@ -225,7 +224,7 @@ const ViewAllLeaveScreen = ({ navigation, route }) => {
                                   .format("DD MMM, YYYY")
                               : moment(item?.from)
                                   .locale("km", localization)
-                                  .format("DD MMM, YYYY")}{" "}
+                                  .format("DD MMM YYYY")}{" "}
                             -{" "}
                             {getLanguage() === "en"
                               ? moment(item?.to)
@@ -233,7 +232,7 @@ const ViewAllLeaveScreen = ({ navigation, route }) => {
                                   .format("DD MMM, YYYY")
                               : moment(item?.to)
                                   .locale("km", localization)
-                                  .format("DD MMM, YYYY")}
+                                  .format("DD MMM YYYY")}
                           </Text>
                         )}
                         <Text
@@ -253,9 +252,9 @@ const ViewAllLeaveScreen = ({ navigation, route }) => {
               {leaveLimit === leaveData?.length ? (
                 <TouchableOpacity
                   className="items-center pb-5 justify-center"
-                  onPress={() => setLeaveLimit(leaveLimit + 5)}
+                  onPress={() => setLeaveLimit(leaveLimit + 10)}
                 >
-                  <Text className="text-sm font-kantunruy-regular text-main leading-7">
+                  <Text className="text-sm font-bayon text-main leading-7">
                     {t("មើលបន្ថែម")}
                   </Text>
                 </TouchableOpacity>

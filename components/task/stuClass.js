@@ -10,7 +10,6 @@ import {
   SafeAreaView,
 } from "react-native";
 import { COLORS } from "../../color";
-import Root from "../../root";
 import Header2 from "../../routes/header/Header2";
 import { StyleController } from "../../static/styleProvider";
 import ClassModal from "../modal/classModal";
@@ -22,15 +21,10 @@ import { useTranslation, getLanguage } from "react-multi-lang";
 import PickupModal from "../modal/pickupModal";
 import * as Location from "expo-location";
 import ModalProminent from "../modal/modalProminent";
-import LunchAttCard from "../LuchAttCard";
-import AttCard from "../AttCard";
-import LeaveCard from "../LeaveCard";
 import { DataController } from "../../context/Provider";
 import { ACTION } from "../../context/Reducer";
 import { SECTION_SHIFT_BY_STUDENT } from "../../graphql/get_SectionShiftByStudent";
-import { GraphQLClient } from "graphql-request";
-import localization from "moment/locale/km";
-import moment from "moment";
+import graphQLClient from "../../config/endpoint_2";
 
 const StuClass = ({ navigation, route }) => {
   const { styleState, height, width } = useContext(StyleController);
@@ -44,7 +38,7 @@ const StuClass = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [sectionShift, setSectionShift] = useState("");
 
-  // console.log(data, "data");
+  // console.log(sectionShift, "sectionShift");
 
   useEffect(() => {
     if (data) {
@@ -125,11 +119,10 @@ const StuClass = ({ navigation, route }) => {
     }
   };
 
-  // const URI = "endpoint-visitor-school.go-globalit.com/graphql";
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
-
   useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
     async function fetchData() {
       try {
         const getSectionShift = await graphQLClient?.request(
@@ -139,12 +132,8 @@ const StuClass = ({ navigation, route }) => {
           }
         );
         // console.log(getSectionShift, "getSectionShift");
-        if (getSectionShift) {
-          setLoading(false);
+        if (getSectionShift !== undefined) {
           setSectionShift(getSectionShift?.getSectionShiftByStudent);
-          // if (getSectionShift !== undefined) {
-          //   setSectionShift(getSectionShift?.getSectionShiftByStudent);
-          // }
         }
       } catch (error) {
         console.log(error.message, "errorGetSectionShift");
@@ -254,9 +243,9 @@ const StuClass = ({ navigation, route }) => {
   }
   if (!isAllow) {
     return (
-      <View>
+      <>
         <ModalProminent setAlertPopup={setIsAllow} />
-      </View>
+      </>
     );
   }
 
@@ -302,7 +291,10 @@ const StuClass = ({ navigation, route }) => {
                 {/* <ClassSheet data={enrollStudent}/> */}
               </View>
               {sectionShift?.map((item, index) => {
-                if (item?.classGroupCode === "ECE") {
+                if (
+                  item?.classGroupCode === "ECE" ||
+                  item?.classGroupNameEn === "Early Childhood Education"
+                ) {
                   return (
                     <View key={index}>
                       <View

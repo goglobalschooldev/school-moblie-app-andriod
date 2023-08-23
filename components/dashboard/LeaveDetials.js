@@ -6,8 +6,8 @@ import moment from "moment";
 import tailwind from "twrnc";
 import { Feather, AntDesign, Entypo } from "@expo/vector-icons";
 import localization from "moment/locale/km";
-import { GraphQLClient } from "graphql-request";
 import { GET_LEAVE_BYID } from "../../graphql/newLeave";
+import graphQLClient from "../../config/endpoint_2";
 
 const LeaveDetials = ({ navigation, route }) => {
   const [leaveNoti, setLeaveNoti] = useState("");
@@ -15,11 +15,6 @@ const LeaveDetials = ({ navigation, route }) => {
   const t = useTranslation();
   const { data } = route.params;
   const { notiData } = route.params;
-
-  // console.log(data, "data");
-
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
   useEffect(() => {
     setTimeout(() => {
@@ -42,7 +37,6 @@ const LeaveDetials = ({ navigation, route }) => {
     }
     fetchData();
   }, []);
-  // console.log(leaveNoti, "leaveNoti");
 
   if (loadingTime) {
     return (
@@ -65,10 +59,10 @@ const LeaveDetials = ({ navigation, route }) => {
               {getLanguage() === "en"
                 ? moment(leaveNoti?.createdAt)
                     .locale("en", localization)
-                    .format("LLL")
+                    .format("DD MMM YYYY, h:mm a")
                 : moment(leaveNoti?.createdAt)
                     .locale("km", localization)
-                    .format("LLL")}
+                    .format("DD MMM YYYY, h:mm a")}
             </Text>
           </View>
 
@@ -84,7 +78,7 @@ const LeaveDetials = ({ navigation, route }) => {
                           .format("DD MMM, YYYY")
                       : moment(leaveNoti?.from)
                           .locale("km", localization)
-                          .format("DD MMM, YYYY")}
+                          .format("DD MMM YYYY")}
                   </Text>
                 ) : (
                   <Text className="text-sm font-kantunruy-regular p-1 leading-6">
@@ -94,7 +88,7 @@ const LeaveDetials = ({ navigation, route }) => {
                           .format("DD MMM, YYYY")
                       : moment(leaveNoti?.from)
                           .locale("km", localization)
-                          .format("DD MMM, YYYY")}{" "}
+                          .format("DD MMM YYYY")}{" "}
                     -{" "}
                     {getLanguage() === "en"
                       ? moment(leaveNoti?.to)
@@ -102,7 +96,7 @@ const LeaveDetials = ({ navigation, route }) => {
                           .format("DD MMM, YYYY")
                       : moment(leaveNoti?.to)
                           .locale("km", localization)
-                          .format("DD MMM, YYYY")}
+                          .format("DD MMM YYYY")}
                   </Text>
                 )}
                 <View className="flex-row">
@@ -167,7 +161,7 @@ const LeaveDetials = ({ navigation, route }) => {
                       {leaveNoti?.status}
                     </Text>
                   </View>
-                ) : (
+                ) : leaveNoti?.status === "cancel" ? (
                   <View className="flex-row w-[100%] items-center self-center">
                     <Entypo
                       name="circle-with-cross"
@@ -179,7 +173,7 @@ const LeaveDetials = ({ navigation, route }) => {
                       {leaveNoti?.status}
                     </Text>
                   </View>
-                )}
+                ) : null}
               </View>
             </View>
           </View>
@@ -197,7 +191,13 @@ const LeaveDetials = ({ navigation, route }) => {
             {t("ថ្ងៃស្នើសុំសម្រាក")}
           </Text>
           <Text className="text-xs font-kantunruy-regular text-gray p-2 items-center justify-center">
-            {moment(data?.createdAt).locale("en", localization).format("LLL")}
+            {getLanguage() === "en"
+              ? moment(data?.createdAt)
+                  .locale("en", localization)
+                  .format("DD MMM YYYY, h:mm a")
+              : moment(data?.createdAt)
+                  .locale("km", localization)
+                  .format("DD MMM YYYY, h:mm a")}
           </Text>
         </View>
 
@@ -207,19 +207,31 @@ const LeaveDetials = ({ navigation, route }) => {
             <View className="flex-col justify-evenly">
               {data?.from === data?.to ? (
                 <Text className="text-sm font-kantunruy-regular my-1 p-1">
-                  {moment(data?.from)
-                    .locale("en", localization)
-                    .format("DD MMM, YYYY")}
+                  {getLanguage() === "en"
+                    ? moment(data?.from)
+                        .locale("en", localization)
+                        .format("DD MMM, YYYY")
+                    : moment(data?.from)
+                        .locale("km", localization)
+                        .format("DD MMM YYYY")}
                 </Text>
               ) : (
                 <Text className="text-sm font-kantunruy-regular my-1 p-1">
-                  {moment(data?.from)
-                    .locale("en", localization)
-                    .format("DD MMM, YYYY")}{" "}
+                  {getLanguage() === "en"
+                    ? moment(data?.from)
+                        .locale("en", localization)
+                        .format("DD MMM, YYYY")
+                    : moment(data?.from)
+                        .locale("km", localization)
+                        .format("DD MMM YYYY")}{" "}
                   -{" "}
-                  {moment(data?.to)
-                    .locale("en", localization)
-                    .format("DD MMM, YYYY")}
+                  {getLanguage() === "en"
+                    ? moment(data?.to)
+                        .locale("en", localization)
+                        .format("DD MMM, YYYY")
+                    : moment(data?.to)
+                        .locale("km", localization)
+                        .format("DD MMM YYYY")}
                 </Text>
               )}
               <View className="flex-row">
@@ -284,7 +296,7 @@ const LeaveDetials = ({ navigation, route }) => {
                     {data?.status}
                   </Text>
                 </View>
-              ) : (
+              ) : data?.status === "cancel" ? (
                 <View className="flex-row w-[100%] items-center self-center">
                   <Entypo
                     name="circle-with-cross"
@@ -296,7 +308,7 @@ const LeaveDetials = ({ navigation, route }) => {
                     {data?.status}
                   </Text>
                 </View>
-              )}
+              ) : null}
             </View>
           </View>
         </View>

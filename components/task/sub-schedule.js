@@ -46,8 +46,6 @@ export const SubjectSchedule = (props) => {
       : "00"
   }`;
 
-  // console.log(timeSchedule,"timeSchedule")
-
   let startTime = timeSchedule.split(" - ");
   let startTimeFirst = getKhmerNumber(startTime[0].split(":")[0]);
   let startTimelast = getKhmerNumber(startTime[0].split(":")[1]);
@@ -64,7 +62,8 @@ export const SubjectSchedule = (props) => {
   useEffect(() => {
     if (
       (props?.leadTeacherId?.lastName &&
-        props?.leadTeacherId?.firstName && props?.leadTeacherId) !== undefined ||
+        props?.leadTeacherId?.firstName &&
+        props?.leadTeacherId) !== undefined ||
       null
     ) {
       {
@@ -74,12 +73,9 @@ export const SubjectSchedule = (props) => {
                 " " +
                 props?.leadTeacherId?.firstName
             )
-          : setTeacherName(
-              props?.leadTeacherId?.englishName 
-            );
+          : setTeacherName(props?.leadTeacherId?.englishName);
       }
-    }    
-    else {
+    } else {
       setTeacherName("");
     }
   }, []);
@@ -170,7 +166,10 @@ export const SubjectSchedule = (props) => {
                   alignSelf: "center",
                 }}
               >
-                <PreviewTeacherImg teacherImage={teacherImage} teacherLeader={teacherLeader}/>
+                <PreviewTeacherImg
+                  teacherImage={teacherImage}
+                  teacherLeader={teacherLeader}
+                />
                 {/* <Image
                   source={{ uri: teacherImage }}
                   style={{
@@ -208,7 +207,17 @@ export const SubjectSchedule = (props) => {
                   }}
                   numberOfLines={1}
                 >
-                  {getLanguage() === "en" ? props?.leadTeacherId?.englishName : props?.leadTeacherId?.lastName + " " + props?.leadTeacherId?.firstName}
+                  {getLanguage() === "en"
+                    ? props?.leadTeacherId?.englishName !== undefined
+                      ? props?.leadTeacherId?.englishName
+                      : ""
+                    : (props?.leadTeacherId?.lastName !== undefined
+                        ? props?.leadTeacherId?.lastName
+                        : "") +
+                      " " +
+                      (props?.leadTeacherId?.firstName !== undefined
+                        ? props?.leadTeacherId?.firstName
+                        : "")}
                 </Text>
               </View>
             </View>

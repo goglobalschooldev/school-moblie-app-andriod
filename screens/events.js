@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   RefreshControl,
+  SectionList,
 } from "react-native";
 import { COLORS } from "../color";
 import EventCards from "../components/EventCards";
@@ -43,6 +44,7 @@ const Events = ({ navigation }) => {
   //Active Academic
   const { data: academic } = useQuery(ACADEMIC_YEAR);
   let activeAcademic = academic?.getActiveAcademicYear[0];
+  // console.log(activeAcademic, "activeAcademic");
 
   //
   const { data, loading, refetch } = useQuery(QUERY_EVENTS, {
@@ -133,6 +135,7 @@ const Events = ({ navigation }) => {
     }
   });
 
+  // console.log(dataArray, "dataArray");
   if (loading || stuLoading || refreshing) {
     return (
       <View style={styles.loadingStyle}>

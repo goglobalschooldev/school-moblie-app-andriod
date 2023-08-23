@@ -18,7 +18,7 @@ import { StyleController } from "../static/styleProvider";
 import { DataController } from "../context/Provider";
 import StudentSchoolVanCard from "../components/StudentSchVanCard";
 import { GET_STUDENT_TRANSPORTATION } from "../graphql/get_studentTransportation";
-import { GraphQLClient } from "graphql-request";
+import graphQLClient from "../config/endpoint_2";
 
 //
 const wait = (timeout) => {
@@ -35,11 +35,6 @@ const Transportation = ({ navigation }) => {
   const [loadingTime, setLoadingTime] = useState(true);
 
   let ParentId = accountDBCtx?.user?.parentId;
-  // console.log(ParentId, "ParentId");
-
-  const URI = "endpoint-visitor-school.go-globalit.com/graphql";
-  // const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`https://${URI}`);
 
   useEffect(() => {
     async function fetchData() {
@@ -94,92 +89,92 @@ const Transportation = ({ navigation }) => {
         <Header title={t("សេវាកម្មដឹកជញ្ជូន")} navigation={navigation} />
       </SafeAreaView>
       {parentDataCheck ? (
-        <ScrollView
-          // contentContainerStyle={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              progressBackgroundColor="white"
-            />
-          }
+        // <ScrollView
+        //   // contentContainerStyle={styles.scrollView}
+        //   showsVerticalScrollIndicator={false}
+        //   refreshControl={
+        //     <RefreshControl
+        //       refreshing={refreshing}
+        //       onRefresh={onRefresh}
+        //       progressBackgroundColor="white"
+        //     />
+        //   }
+        // >
+        <View
+          style={{
+            width: width,
+            height: height,
+            backgroundColor: COLORS.WHITE,
+          }}
         >
           <View
             style={{
               width: width,
-              height: height,
+              alignSelf: "center",
+              height: height * 0.29,
               backgroundColor: COLORS.WHITE,
+              flexDirection: "column",
+              justifyContent: "center",
+              paddingTop: 5,
             }}
           >
             <View
               style={{
-                width: width,
+                width: width * 0.95,
                 alignSelf: "center",
-                height: height * 0.29,
-                backgroundColor: COLORS.WHITE,
-                flexDirection: "column",
-                justifyContent: "center",
-                paddingTop: 5,
               }}
             >
-              <View
+              <Text
                 style={{
-                  width: width * 0.95,
-                  alignSelf: "center",
+                  fontFamily: "Bayon-Regular",
+                  fontSize: 20,
+                  color: COLORS.MAIN,
                 }}
               >
-                <Text
-                  style={{
-                    fontFamily: "Bayon-Regular",
-                    fontSize: 20,
-                    color: COLORS.MAIN,
-                  }}
-                >
-                  {t("បុត្រធីតា")}
-                </Text>
-              </View>
-              <View
+                {t("បុត្រធីតា")}
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                width: width,
+                alignSelf: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: "#E4E4E4",
+              }}
+            >
+              <ImageBackground
+                source={require("../assets/Images/Dashboard.png")}
+                resizeMode="cover"
                 style={{
                   flex: 1,
-                  width: width,
-                  alignSelf: "center",
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#E4E4E4",
+                  justifyContent: "center",
                 }}
               >
-                <ImageBackground
-                  source={require("../assets/Images/Dashboard.png")}
-                  resizeMode="cover"
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                  }}
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  stickyHeaderIndices={[1]}
                 >
-                  <ScrollView
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    stickyHeaderIndices={[1]}
-                  >
-                    {dataSubUser?.map((load) => (
-                      <TouchableOpacity
-                        key={load?._id}
-                        onPress={() =>
-                          navigation.navigate("TransportationList", {
-                            data: load,
-                          })
-                        }
-                      >
-                        <StudentSchoolVanCard {...load} />
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </ImageBackground>
-              </View>
+                  {dataSubUser?.map((load) => (
+                    <TouchableOpacity
+                      key={load?._id}
+                      onPress={() =>
+                        navigation.navigate("TransportationList", {
+                          data: load,
+                        })
+                      }
+                    >
+                      <StudentSchoolVanCard {...load} />
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </ImageBackground>
             </View>
           </View>
-        </ScrollView>
+        </View>
       ) : (
+        // </ScrollView>
         <View className=" w-full h-[90%] justify-center self-center items-center">
           <Text className="font-kantunruy-regular text-gray text-sm leading-8">
             {t("មិនមានទិន្នន័យ")}

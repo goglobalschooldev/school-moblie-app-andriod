@@ -6,20 +6,25 @@ import {
   RefreshControl,
   StyleSheet,
   ActivityIndicator,
+  StatusBar,
+  SafeAreaView,
+  FlatList,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Header4 from "../../routes/header/Header4";
-import Root from "../../root";
 import { TouchableOpacity } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import { t } from "react-multi-lang";
-import { useQuery } from "@apollo/client";
 import localization from "moment/locale/km";
 import moment from "moment/moment";
 import { GET_STU_TRAN_ATT } from "../../graphql/get_stuTranAtt";
-import { GraphQLClient } from "graphql-request";
 import { useEffect } from "react";
+import TransportationItem from "./transportationItem";
+import graphQLClient from "../../config/endpoint_2";
+import { COLORS } from "../../color";
+import { Image } from "react-native";
+import { Avatar } from "react-native-elements";
 
 const TransportationList = ({ navigation, route }) => {
   const [isStartDateVisible, setIsStartDateVisible] = useState(false);
@@ -31,11 +36,7 @@ const TransportationList = ({ navigation, route }) => {
   const [loadingTime, setLoadingTime] = useState(true);
   const [stuTranAtt, setStuTranAtt] = useState([]);
 
-  const { data } = route.params;
-  const { studentId } = route.params;
-
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
+  const { data, studentId } = route.params;
 
   useEffect(() => {
     async function fetchData() {
@@ -46,27 +47,19 @@ const TransportationList = ({ navigation, route }) => {
             studentId: data?._id || studentId,
             limit: attLimit,
             page: 1,
-            start:
-              startDate === ""
-                ? ""
-                : moment(startDate)
-                    .locale("en", localization)
-                    .format("YYYY-MM-DD"),
-            end:
-              endDate === ""
-                ? ""
-                : moment(endDate)
-                    .locale("en", localization)
-                    .format("YYYY-MM-DD"),
+            start: startDate === "" ? "" : startDate,
+            end: endDate === "" ? "" : endDate,
             busId: "",
           }
         );
-
+        // console.log(getStuTransportationAtt, "getStuTransportationAtt");
         if (getStuTransportationAtt) {
           setLoadingTime(false);
-          setStuTranAtt(
-            getStuTransportationAtt?.getStudentTransportationAttendancePagination
-          );
+          if (getStuTransportationAtt !== undefined) {
+            setStuTranAtt(
+              getStuTransportationAtt?.getStudentTransportationAttendancePagination
+            );
+          }
         }
       } catch (error) {
         console.log(error.message, "errorGetStuTransportationAtt");
@@ -74,7 +67,7 @@ const TransportationList = ({ navigation, route }) => {
       }
     }
     fetchData();
-  }, []);
+  }, [startDate, endDate]);
 
   const ConfirmStartDate = (date) => {
     setStartDate(new Date(date));
@@ -95,197 +88,231 @@ const TransportationList = ({ navigation, route }) => {
     setIsEndDateVisible(!isEndDateVisible);
   };
 
-  const onRefresh = React.useCallback(async () => {
-    try {
-      setRefreshing(true);
-      // await refetch();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setRefreshing(false);
-    }
+  const handleLoadMore = () => {
     setTimeout(() => {
-      setRefreshing(false);
+      setAttLimit(attLimit + 8);
     }, 2000);
-  }, []);
+  };
 
-  // if (loading) {
-  //   return (
-  //     <View className="flex-1 justify-center">
-  //       <ActivityIndicator size="large" color="#EFB419" />
-  //     </View>
-  //   );
-  // }
+  const StudentImage = useMemo(() => {
+    const studentImage =
+      "https://storage.go-globalschool.com/api" + data?.profileImg;
+    if (
+      studentImage === "https://storage.go-globalschool.com/api" ||
+      null ||
+      data?.profileImg === null
+    ) {
+      return (
+        <Image
+          resizeMode="cover"
+          style={{
+            height: 28,
+            width: 28,
+            borderRadius: 50,
+            position: "absolute",
+          }}
+          source={require("../../assets/Images/student.png")}
+        />
+      );
+    } else {
+      return (
+        <Image
+          resizeMode="cover"
+          style={{
+            height: 30,
+            width: 30,
+            borderRadius: 50,
+            position: "absolute",
+          }}
+          source={{ uri: studentImage + "?time=" + new Date() }}
+        />
+      );
+    }
+  }, [data?.profileImg]);
+
   return (
-    <Root
-      Header={
-        <Header4 navigation={navigation} title={"Transportation Attendance"} />
-      }
-    >
-      <View className="flex-1 bg-background">
-        <View className="h-[6%] w-[97%] bg-background self-center my-2 flex-row justify-around items-center">
-          <TouchableOpacity
-            className="flex h-full w-[43%] flex-row items-center justify-around bg-white rounded-lg self-center"
-            style={{
-              shadowColor: "#747373",
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-              elevation: 6,
-            }}
-            onPress={() => setIsStartDateVisible(!isStartDateVisible)}
-          >
-            <DateTimePickerModal
-              isVisible={isStartDateVisible}
-              mode="date"
-              onConfirm={ConfirmStartDate}
-              onCancel={hideStartDate}
-            />
-            <TextInput
-              className="text-black text-sm "
-              placeholder="DD/MM/YYYY"
-              editable={false}
-              value={
-                startDate === ""
-                  ? ""
-                  : moment(startDate)
-                      .locale("en", localization)
-                      .format("DD/MM/YYYY")
-              }
-            />
-            <MaterialIcons name="date-range" size={24} color="#6E6E6E" />
-          </TouchableOpacity>
-          <Text className="justify-center items-center text-black text-sm font-kantunruy-regular p-1 top-1">
-            ដល់
-          </Text>
-          <TouchableOpacity
-            className="flex flex-row h-full w-[43%] items-center justify-around bg-white rounded-lg"
-            style={{
-              shadowColor: "#747373",
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-
-              elevation: 6,
-            }}
-            onPress={() => setIsEndDateVisible(!isEndDateVisible)}
-          >
-            <DateTimePickerModal
-              isVisible={isEndDateVisible}
-              mode="date"
-              onConfirm={ConfirmEndDate}
-              onCancel={hideEndDate}
-            />
-
-            <TextInput
-              className="text-black text-sm"
-              placeholder="DD/MM/YYYY"
-              editable={false}
-              value={
-                endDate === ""
-                  ? ""
-                  : moment(endDate)
-                      .locale("en", localization)
-                      .format("DD/MM/YYYY")
-              }
-            />
-
-            <MaterialIcons name="date-range" size={24} color="#6E6E6E" />
-          </TouchableOpacity>
-        </View>
-        <View className="flex-1 h-screen w-full bg-white items-center">
-          <View className="flex flex-row h-[7%] w-[95%] bg-main rounded-lg items-center mt-2">
-            <View className="h-full w-[34%] border-r border-[#ffffff6c] justify-center items-center ">
-              <Text className="text-white font-bayon text-sm self-center p-1">
-                {t("កាលបរិច្ឆេទ")}
-              </Text>
-            </View>
-            <View className="justify-center h-full w-[33%] items-center border-r border-[#ffffff6c] self-center ">
-              <Text className="text-white font-bayon text-sm p-1 items-center justify-center self-center">
-                {t("យកមកសាលា")}
-              </Text>
-            </View>
-            <View className=" justify-center h-full w-[33%] items-center ">
-              <Text className="text-white font-bayon text-sm p-1">
-                {t("ជូនទៅផ្ទះ")}
-              </Text>
+    <>
+      <StatusBar
+        barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
+      />
+      {/* Header */}
+      <SafeAreaView>
+        <View className="bg-white w-full">
+          <View className="w-full h-14 bg-white border-b-[#E4E4E4] shadow-sm self-center">
+            <View className="flex-row items-center w-[95%] self-center">
+              <View className="w-[70%] h-14 flex-row items-center">
+                <TouchableOpacity
+                  className="self-center"
+                  onPress={() => navigation.goBack()}
+                >
+                  <MaterialIcons
+                    name="arrow-back"
+                    size={24}
+                    style={{ color: COLORS.MAIN }}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Text className="font-bayon text-main text-[16px] mx-1">
+                    {t("វត្តមានសិស្សជិះឡាន")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View className="w-[30%] h-14 flex-row items-center justify-end">
+                <Avatar
+                  size={30}
+                  rounded
+                  ImageComponent={() => StudentImage}
+                  overlayContainerStyle={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                />
+              </View>
             </View>
           </View>
-
-          <ScrollView
-            contentContainerStyle={styles.scrollView}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={["#FCA845"]}
-              />
+        </View>
+      </SafeAreaView>
+      {/* DatePicker */}
+      <View className="h-12 w-[97%] bg-background self-center my-2 flex-row justify-between items-center">
+        <TouchableOpacity
+          className="flex h-full w-[43%] flex-row items-center justify-around bg-white rounded-lg self-center"
+          style={{
+            shadowColor: "#747373",
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 6,
+          }}
+          onPress={() => setIsStartDateVisible(!isStartDateVisible)}
+        >
+          <DateTimePickerModal
+            isVisible={isStartDateVisible}
+            mode="date"
+            onConfirm={ConfirmStartDate}
+            onCancel={hideStartDate}
+          />
+          <TextInput
+            className="text-black text-sm "
+            placeholder="DD-MM-YYYY"
+            editable={false}
+            value={
+              startDate === ""
+                ? ""
+                : moment(startDate)
+                    .locale("en", localization)
+                    .format("DD-MM-YYYY")
             }
-          >
-            {loadingTime ? (
-              <>
-                <View className="flex-1 justify-center">
-                  <ActivityIndicator size="large" color="#EFB419" />
-                </View>
-              </>
-            ) : (
-              <>
-                <View className="pt-2 pb-2 w-[97%] self-center">
-                  {stuTranAtt?.data?.map((item, index) => (
-                    // console.log(index, "index")
-                    <View
-                      className="flex flex-row h-12 w-[97%] bg-white  items-center border-b border-background self-center"
-                      key={index}
-                    >
-                      <View className="h-full justify-center w-[34%] items-center">
-                        <Text className="text-black font-kantunruy-regular text-xs">
-                          {moment(item?.date)
-                            ?.locale("en", localization)
-                            ?.format("DD MMM YYYY")}
-                        </Text>
-                      </View>
+          />
+          <MaterialIcons name="date-range" size={24} color="#6E6E6E" />
+        </TouchableOpacity>
+        <Text className="justify-center items-center text-black text-sm font-kantunruy-regular p-1 top-1">
+          {t("​ដល់")}
+        </Text>
+        <TouchableOpacity
+          className="flex flex-row h-full w-[43%] items-center justify-around bg-white rounded-lg"
+          style={{
+            shadowColor: "#747373",
+            shadowOffset: {
+              width: 0,
+              height: 3,
+            },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
 
-                      <View className="flex flex-row h-full w-[100%] bg-white   items-center self-center">
-                        <View className="h-12 justify-around w-[33%] items-center flex-col">
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            {item?.checkIn !== "" && item?.checkIn !== null
-                              ? item?.checkIn
-                              : "---:---"}
-                          </Text>
-                        </View>
-                        <View className="h-12 justify-around w-[33%] items-center flex-col">
-                          <Text className="text-black font-kantunruy-regular text-xs">
-                            {item?.checkOut !== "" && item?.checkOut !== null
-                              ? item?.checkOut
-                              : "---:---"}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-                {attLimit === stuTranAtt?.data?.length ? (
-                  <TouchableOpacity
-                    className="items-center p-2 pb-5"
-                    onPress={() => setAttLimit(attLimit + 5)}
-                  >
-                    <Text className="text-base font-gothic text-main">
-                      {t("មើលបន្ថែម")}
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
-              </>
-            )}
-          </ScrollView>
+            elevation: 6,
+          }}
+          onPress={() => setIsEndDateVisible(!isEndDateVisible)}
+        >
+          <DateTimePickerModal
+            isVisible={isEndDateVisible}
+            mode="date"
+            onConfirm={ConfirmEndDate}
+            onCancel={hideEndDate}
+          />
+
+          <TextInput
+            className="text-black text-sm"
+            placeholder="DD-MM-YYYY"
+            editable={false}
+            value={
+              endDate === ""
+                ? ""
+                : moment(endDate)
+                    .locale("en", localization)
+                    .format("DD-MM-YYYY")
+            }
+          />
+
+          <MaterialIcons name="date-range" size={24} color="#6E6E6E" />
+        </TouchableOpacity>
+      </View>
+      {/* Head Table */}
+      <View className="flex flex-row h-[7%] w-[97%] bg-main rounded-lg items-center mt-2 self-center">
+        <View className="h-full w-[34%] border-r border-[#ffffff6c] justify-center items-center ">
+          <Text className="text-white font-bayon text-sm self-center p-1">
+            {t("កាលបរិច្ឆេទ")}
+          </Text>
+        </View>
+        <View className="justify-center h-full w-[33%] items-center border-r border-[#ffffff6c] self-center ">
+          <Text className="text-white font-bayon text-sm p-1 items-center justify-center self-center">
+            {t("យកមកសាលា")}
+          </Text>
+        </View>
+        <View className=" justify-center h-full w-[33%] items-center ">
+          <Text className="text-white font-bayon text-sm p-1">
+            {t("ជូនទៅផ្ទះ")}
+          </Text>
         </View>
       </View>
-    </Root>
+      {/* body */}
+      <View className="flex-1 w-full h-screen bg-white">
+        {loadingTime ? (
+          <>
+            <View className="flex-1 justify-center">
+              <ActivityIndicator size="large" color="#EFB419" />
+            </View>
+          </>
+        ) : (
+          <>
+            {stuTranAtt?.data?.length === 0 ? (
+              <View className="flex h-[70%] w-full bg-white flex-col items-center justify-center">
+                <Text className="text-gray font-kantunruy-regular">
+                  {t("មិនមានទិន្នន័យ")}
+                </Text>
+              </View>
+            ) : (
+              <>
+                <FlatList
+                  data={stuTranAtt?.data?.slice(0, attLimit)}
+                  keyExtractor={(item, index) => index}
+                  renderItem={({ item }) => <TransportationItem {...item} />}
+                  onEndReached={handleLoadMore}
+                  ListFooterComponent={
+                    attLimit === stuTranAtt?.data?.length ? (
+                      <TouchableOpacity
+                        className="items-center"
+                        onPress={() => handleLoadMore}
+                      >
+                        <Text className="text-sm font-kantunruy-regular text-main leading-10">
+                          {t("កំពុងដំណើរការ")}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : null
+                  }
+                  vertical={true}
+                  showsVerticalScrollIndicator={false}
+                  snapToAlignment={"center"}
+                  decelerationRate={"fast"}
+                />
+              </>
+            )}
+          </>
+        )}
+      </View>
+    </>
   );
 };
 

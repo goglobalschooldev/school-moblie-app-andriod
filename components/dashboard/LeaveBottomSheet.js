@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TextInput,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { COLORS } from "../../color";
@@ -15,15 +16,15 @@ import { StyleController } from "../../static/styleProvider";
 import LeaveCard from "../LeaveCard";
 import StudentClass from "../StudentClass";
 import { ENROLLMENT_STUDENTS } from "../../graphql/gql_enrollmentByStudents";
-import { useQuery } from "@apollo/client";
+import { setLogVerbosity, useQuery } from "@apollo/client";
 import SelectDropdown from "react-native-select-dropdown";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from "moment";
 import localization from "moment/locale/km";
 import { getLanguage, useTranslation } from "react-multi-lang";
-import { GraphQLClient } from "graphql-request";
 import { CREATE_LEAVE } from "../../graphql/newLeave";
-import { Dialog } from "react-native-elements";
+import { Platform } from "react-native";
+import graphQLClient from "../../config/endpoint_2";
 
 export default function LeaveBottomSheet({ navigation, dataSubUser }) {
   const { styleState, height, width } = useContext(StyleController);
@@ -71,6 +72,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
   const ConfirmStartDate = (date) => {
     setStartDate(moment(date).locale("en", localization).format("YYYY-MM-DD"));
     setIsStartDateVisible(!isStartDateVisible);
+    setEndDate(moment(date).locale("en", localization).format("YYYY-MM-DD"));
   };
 
   const hideStartDate = () => {
@@ -85,13 +87,6 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
   const hideEndDate = () => {
     setIsEndDateVisible(!isEndDateVisible);
   };
-  // const handleRequest = () => {
-  //   refRBSheet2.current.close();
-  // };
-
-  // const URI = "endpoint-visitor-school.go-globalit.com/graphql";
-  const URI = "192.168.2.30:4300/graphql";
-  const graphQLClient = new GraphQLClient(`http://${URI}`);
 
   useEffect(() => {
     if (
@@ -158,6 +153,13 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
       to: endDate,
     };
 
+    if (endDate < startDate) {
+      Alert.alert(
+        t("សូមពិនិត្យមើលម្ដងទៀត"),
+        t("ថ្ងៃដែលអ្នកជ្រើសរើសមិនត្រឹមត្រូវទេ!")
+      );
+      create = false;
+    }
     if (create) {
       async function fetchData() {
         try {
@@ -340,7 +342,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                             />
                           </View>
                         ) : (
-                          <View className="p-4 ">
+                          <View className="p-4">
                             <Image
                               source={require("../../assets/Images/angle-down-gray.png")}
                               className="h-4 w-4"
@@ -398,11 +400,16 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                         mode="date"
                         onConfirm={ConfirmStartDate}
                         onCancel={hideStartDate}
+                        minimumDate={
+                          Platform.OS === "android" ? new Date() : undefined
+                        }
                       />
                       <TextInput
                         className="text-black text-[13px] text-center rounded-md p-[0.7] px-2 bg-[#3b6efc31]"
                         editable={false}
-                        value={startDate}
+                        value={moment(startDate)
+                          .locale("en", localization)
+                          .format("DD MMM YYYY")}
                       />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -414,11 +421,16 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                         mode="date"
                         onConfirm={ConfirmEndDate}
                         onCancel={hideEndDate}
+                        minimumDate={
+                          Platform.OS === "android" ? new Date() : undefined
+                        }
                       />
                       <TextInput
                         className="text-black text-[13px] text-center rounded-md p-[0.7] px-2 bg-[#3b6efc31]"
                         editable={false}
-                        value={endDate}
+                        value={moment(endDate)
+                          .locale("en", localization)
+                          .format("DD MMM YYYY")}
                       />
                     </TouchableOpacity>
                   </View>
@@ -444,12 +456,6 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                   keyboardType="default"
                   // autoFocus={true}
                 />
-                {/* {reason === "" && requestField && (
-                  <Text className="text-xs text-[#f73f3f]">
-                    Reason is required
-                  </Text>
-                )} */}
-
                 {disable ? (
                   <TouchableOpacity
                     className="bg-main p-3 items-center justify-center rounded-lg my-5"
@@ -460,10 +466,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                     </Text>
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity
-                    className="bg-[#999999b2] p-3 items-center justify-center rounded-lg my-5"
-                    // onPress={() => handleCreateLeave()}
-                  >
+                  <TouchableOpacity className="bg-[#999999b2] p-3 items-center justify-center rounded-lg my-5">
                     <Text className="text-[#ffffff] font-bayon text-base leading-7">
                       {t("ស្នើសុំច្បាប់")}
                     </Text>

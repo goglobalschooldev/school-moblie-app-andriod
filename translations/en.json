@@ -122,6 +122,10 @@
   "សូមសរសេរមូលហេតុ": "Please write reason",
   "ស្នើសុំច្បាប់": "Request leave",
   "សេចក្ដីជូនដំណឹង": "Notifications",
-  "សូមចុចទីនេះដើម្បីមើលការស្នើច្បាប់":"click here to view permission requests",
-  "ការស្នើសុំច្បាប់":"Permission requesting"
+  "សូមចុចទីនេះដើម្បីមើលប្រវត្តិសុំច្បាប់":"Please click here to view the history of permission requests",
+  "ការស្នើសុំច្បាប់":"Permission requesting",
+  "វត្តមានសិស្សជិះឡាន":"Transportation Attendance",
+  "សូមពិនិត្យមើលម្ដងទៀត":"Please check again",
+  "ថ្ងៃដែលអ្នកជ្រើសរើសមិនត្រឹមត្រូវទេ!":"You are choosing the wrong dates!",
+  "កំពុងដំណើរការ":"Loading..."
 }

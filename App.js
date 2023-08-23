@@ -10,6 +10,7 @@ import VersionCheck from "react-native-version-check";
 import * as Notifications from "expo-notifications";
 import { Text } from "react-native";
 import { NativeBaseProvider } from "native-base";
+import { ToastProvider } from "react-native-toast-notifications";
 
 export default function App() {
   // const version = Constants.manifest.version;
@@ -45,13 +46,15 @@ export default function App() {
   return (
     <StyleProvider>
       <NativeBaseProvider>
-        <Provider>
-          <NavigationContainer>
-            <ApolloConfig>
-              <Navigator />
-            </ApolloConfig>
-          </NavigationContainer>
-        </Provider>
+        <ToastProvider>
+          <Provider>
+            <NavigationContainer>
+              <ApolloConfig>
+                <Navigator />
+              </ApolloConfig>
+            </NavigationContainer>
+          </Provider>
+        </ToastProvider>
       </NativeBaseProvider>
     </StyleProvider>
   );
