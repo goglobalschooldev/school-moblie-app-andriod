@@ -6,7 +6,7 @@ import { COLORS } from "../color";
 
 export default function FoodCard(props) {
   const { styleState, height, width } = useContext(StyleController);
-// console.log(props, "props");
+
   return (
     <View
       style={{
@@ -14,13 +14,11 @@ export default function FoodCard(props) {
         flexDirection: "column",
         justifyContent: "space-around",
         paddingTop: 10,
-        // paddingBottom: 5,
       }}
     >
       <View
         style={{
           width: width * 0.95,
-          //   height: height * 0.09,
           alignSelf: "center",
           borderRadius: 15,
           backgroundColor: props?.bgColor,
@@ -53,7 +51,7 @@ export default function FoodCard(props) {
               flexDirection: "column",
               left: 10,
               justifyContent: "space-evenly",
-              width: width * 0.75
+              width: width * 0.75,
             }}
           >
             <Text
@@ -72,22 +70,19 @@ export default function FoodCard(props) {
                 color: props?.color,
               }}
             >
-             បរិមាណ/Quantity: {props?.qty}
+              បរិមាណ/Quantity: {props?.qty}
             </Text>
             {props?.description !== "" ? (
               <Text
-              style={{
-                fontFamily: "Kantumruy-Regular",
-                fontSize: 13,
-                color: props?.color,
-              }}
-            >
-             {props?.description}
-            </Text>
-            ):(
-            null
-            )}
-            
+                style={{
+                  fontFamily: "Kantumruy-Regular",
+                  fontSize: 13,
+                  color: props?.color,
+                }}
+              >
+                {props?.description}
+              </Text>
+            ) : null}
           </View>
         </View>
       </View>

@@ -18,19 +18,7 @@ export default function FeedBackCard({ eysReport }) {
     } else {
       splitRequest += ", " + e;
     }
-    
   });
-
-
-  // if (splitRequest === "សាប៊ូកក់សក់") {
-  //   console.log("ok");
-  // }else if(splitRequest === "សម្លៀកបំពាក់"){
-  //   console.log("ll");
-  // }else if(splitRequest === "កន្ទបទឹកនោម"){
-  //   console.log("pp");
-  // }
-  
-  
 
   return (
     <View
@@ -39,13 +27,11 @@ export default function FeedBackCard({ eysReport }) {
         flexDirection: "column",
         justifyContent: "space-around",
         paddingTop: 10,
-        // paddingBottom: 5,
       }}
     >
       <View
         style={{
           width: width * 0.95,
-          //   height: height * 0.09,
           alignSelf: "center",
           borderRadius: 15,
           backgroundColor: COLORS.BLUE_LIGHT,
@@ -62,7 +48,7 @@ export default function FeedBackCard({ eysReport }) {
         >
           <View>
             <Text style={styles.text}>
-              {t("សូមមាតាបិតាជួយដាក់បន្ថែមឱ្យកូន៖")} {splitRequest} 
+              {t("សូមមាតាបិតាជួយដាក់បន្ថែមឱ្យកូន៖")} {splitRequest}
             </Text>
           </View>
         </View>

@@ -11,3 +11,14 @@ export const ACADEMIC_YEAR = gql`
     }
   }
 `;
+
+export const ALL_ACADEMIC_YEAR = gql`
+  query GetAcademicYear {
+    getAcademicYear {
+      _id
+      academicYear
+      academicYearInKhmer
+      status
+    }
+  }
+`;

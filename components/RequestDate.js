@@ -16,7 +16,6 @@ const RequestDate = ({ startDate, setStartDate, endDate, setEndDate }) => {
   // start dateTime
   const ConfirmStartDate = (date) => {
     setStartDate(moment(date).locale("en", localization).format("YYYY-MM-DD"));
-    // handleChange("from", date);
     setIsStartDateVisible(!isStartDateVisible);
   };
   const hideStartDate = () => {
@@ -26,7 +25,6 @@ const RequestDate = ({ startDate, setStartDate, endDate, setEndDate }) => {
   // end dateTime
   const ConfirmEndDate = (date) => {
     setEndDate(moment(date).locale("en", localization).format("YYYY-MM-DD"));
-    // handleChange("to", date);
     setIsEndDateVisible(!isEndDateVisible);
   };
   const hideEndDate = () => {
@@ -68,7 +66,6 @@ const RequestDate = ({ startDate, setStartDate, endDate, setEndDate }) => {
             value={startDate}
             // onChangeText={handleChange("from")}
           />
-          {/* <MaterialIcons name="date-range" size={22} color="#A9A9A9" /> */}
         </TouchableOpacity>
       </View>
       {/* EndDate */}

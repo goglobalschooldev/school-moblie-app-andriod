@@ -5,9 +5,7 @@ import { StyleController } from "../static/styleProvider";
 import { COLORS } from "../color";
 import moment from "moment";
 import localization from "moment/locale/km";
-import { DataController } from "../context/Provider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setLanguage, getLanguage } from "react-multi-lang";
+import { getLanguage } from "react-multi-lang";
 import { StyleSheet } from "react-native";
 
 export default function EventCards(props) {

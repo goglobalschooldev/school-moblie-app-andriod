@@ -1,18 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { StyleController } from "../static/styleProvider";
+import React from "react";
+import { Text, View } from "react-native";
 import { COLORS } from "../color";
 import { Image } from "react-native";
-import { ENROLLMENT_STUDENTS } from "../graphql/gql_enrollmentByStudents";
-import { useQuery } from "@apollo/client";
 import clsx from "clsx";
 import moment from "moment";
 import localization from "moment/locale/km";
 import { getLanguage } from "react-multi-lang";
 
 export default function NotificationCard(props) {
-  const { styleState, height, width } = useContext(StyleController);
-  // console.log(props, "props");
   return (
     <View
       style={{

@@ -16,7 +16,6 @@ const LunchAttCard = () => {
         flexDirection: "column",
         justifyContent: "space-around",
         paddingTop: 10,
-        // top: 10
       }}
     >
       <View

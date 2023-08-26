@@ -11,15 +11,12 @@ import {
 } from "react-native";
 import { StyleController } from "../static/styleProvider";
 import { COLORS } from "../color";
-import { Divider } from "react-native-paper";
 import { useTranslation } from "react-multi-lang";
-
 
 export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
   const { styleState, height, width } = useContext(StyleController);
   const [openParentsCmt, setOpenParentsCmt] = useState(false);
   const t = useTranslation();
-
 
   const handleCancel = () => {
     onChangeParentsCmt("");
@@ -44,7 +41,6 @@ export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
       <View
         style={{
           width: width * 0.95,
-          //   height: height * 0.09,
           alignSelf: "center",
           borderRadius: 15,
           backgroundColor: COLORS.ORANGE_LIGHT,
@@ -59,7 +55,6 @@ export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
             padding: 5,
             justifyContent: "space-between",
             alignItems: "center",
-            // backgroundColor: "pink",
           }}
         >
           <View style={{ flexDirection: "column" }}>
@@ -101,7 +96,6 @@ export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
                   </View>
 
                   <TextInput
-                    // Inherit any props passed to it; e.g., multiline, numberOfLines below
                     editable
                     multiline
                     numberOfLines={4}
@@ -124,7 +118,6 @@ export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
                       style={{
                         width: width * 0.4,
                         justifyContent: "flex-end",
-                        // backgroundColor: "pink",
                         justifyContent: "center",
                       }}
                     >
@@ -164,9 +157,7 @@ export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
             </View>
           </Modal>
 
-          <TouchableOpacity
-            onPress={() => setOpenParentsCmt(!openParentsCmt)}
-          >
+          <TouchableOpacity onPress={() => setOpenParentsCmt(!openParentsCmt)}>
             <View
               style={{
                 width: width * 0.25,
@@ -189,26 +180,6 @@ export default function parentsRequest({ parentsCmt, onChangeParentsCmt }) {
             </View>
           </TouchableOpacity>
         </View>
-        {/* <Divider
-          style={{
-            borderColor: COLORS.ORANGE_DARK,
-            borderWidth: 0.5,
-            width: width * 0.9,
-            alignSelf: "center",
-            // margin: 8,
-          }}
-        />
-        <View style={{ padding: 10 }}>
-          <Text
-            style={{
-              fontFamily: "Kantumruy-Regular",
-              fontSize: 14,
-              color: COLORS.ORANGE_DARK,
-            }}
-          >
-            {parentsCmt}
-          </Text>
-        </View> */}
       </View>
     </View>
   );

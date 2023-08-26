@@ -26,7 +26,6 @@ export default function AnnoucementZoom({
 }) {
   const { styleState, height, width } = useContext(StyleController);
   const [modalVisible, setModalVisible] = useState(false);
-  //   console.log(load?.data?.picture,"load")
   const [panEnabled, setPanEnabled] = useState(false);
 
   //

@@ -278,7 +278,7 @@ const TransportationList = ({ navigation, route }) => {
         ) : (
           <>
             {stuTranAtt?.data?.length === 0 ? (
-              <View className="flex h-[70%] w-full bg-white flex-col items-center justify-center">
+              <View className="flex h-[100%] w-full bg-white flex-col items-center justify-center">
                 <Text className="text-gray font-kantunruy-regular">
                   {t("មិនមានទិន្នន័យ")}
                 </Text>

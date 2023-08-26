@@ -86,7 +86,7 @@ const Transportation = ({ navigation }) => {
         barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
       />
       <SafeAreaView>
-        <Header title={t("សេវាកម្មដឹកជញ្ជូន")} navigation={navigation} />
+        <Header title={t("សេវាកម្មដឹកជញ្ជូនសិស្ស")} navigation={navigation} />
       </SafeAreaView>
       {parentDataCheck ? (
         // <ScrollView

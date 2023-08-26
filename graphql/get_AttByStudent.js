@@ -6,14 +6,14 @@ export const ATT_BY_STUDENT = gql`
     $from: String
     $to: String
     $limit: Int
-    $sectionShiftId: String
+    $classId: ID
   ) {
     getAttendantsByStudent(
       student_id: $studentId
       from: $from
       to: $to
       limit: $limit
-      section_shift_id: $sectionShiftId
+      classId: $classId
     ) {
       _id
       date

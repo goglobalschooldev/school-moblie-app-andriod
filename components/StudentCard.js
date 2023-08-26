@@ -17,7 +17,6 @@ const StudentCard = (props) => {
     "https://storage.go-globalschool.com/api" + props?.profileImg;
   // console.log(studentImage, "studentImage");
 
-  // console.log(props, "props")
   const StudentName = () => {
     if (getLanguage() === "en") {
       return (

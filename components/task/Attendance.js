@@ -32,6 +32,8 @@ const Attendance = ({ navigation, route }) => {
   const [attLimit, setAttLimit] = useState(10);
   const t = useTranslation();
 
+  console.log(sectionShift, "sectionShift");
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -52,7 +54,7 @@ const Attendance = ({ navigation, route }) => {
                     .locale("en", localization)
                     .format("YYYY-MM-DD"),
             limit: attLimit,
-            sectionShiftId: sectionShift?._id,
+            classId: sectionShift?._id,
           }
         );
         // console.log(GetAttendantsByStudent, "GetAttendantsByStudent");

@@ -39,7 +39,6 @@ export default function AnnouncementDetail({ navigation, route, loading }) {
       console.log(error.message, "Error event");
     },
   });
-  // console.log(Data, "Data");
 
   // if (loading || announcementtLoading) {
   //   return (

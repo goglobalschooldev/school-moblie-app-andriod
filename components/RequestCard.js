@@ -1,11 +1,9 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import moment from "moment";
-import tailwind from "twrnc";
 import localization from "moment/locale/km";
 
 const RequestCard = ({ navigation, item }) => {
-  // console.log(item,"item")
   return (
     <TouchableOpacity
       className="h-fit w-[97%] bg-white rounded-lg flex-row justify-between p-2 items-center my-1"

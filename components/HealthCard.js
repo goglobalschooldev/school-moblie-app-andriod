@@ -4,60 +4,80 @@ import { Entypo } from "@expo/vector-icons";
 import { StyleController } from "../static/styleProvider";
 import { COLORS } from "../color";
 import Checkbox from "expo-checkbox";
-import { MaterialIcons } from '@expo/vector-icons';
-
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function HealthCard({ eysReport }) {
   const { styleState, height, width } = useContext(StyleController);
-  const [isChecked, setChecked] = useState(false);
-
 
   const Checked = () => {
     let checkBox = eysReport[0]?.parentsCheck?.title;
     if (checkBox === true) {
       return (
         <View>
-          <MaterialIcons name="check-box" size={22} style={{color: COLORS.ORANGE_DARK}}/>
+          <MaterialIcons
+            name="check-box"
+            size={22}
+            style={{ color: COLORS.ORANGE_DARK }}
+          />
         </View>
       );
     } else if (checkBox === false) {
-      return(
+      return (
         <View>
-          <MaterialIcons name="check-box-outline-blank" size={22} style={{color: COLORS.ORANGE_DARK}}/>
+          <MaterialIcons
+            name="check-box-outline-blank"
+            size={22}
+            style={{ color: COLORS.ORANGE_DARK }}
+          />
         </View>
-      )   
+      );
     } else {
-      return(
+      return (
         <View>
-          <MaterialIcons name="check-box-outline-blank" size={24} style={{color: COLORS.ORANGE_DARK}}/>
+          <MaterialIcons
+            name="check-box-outline-blank"
+            size={24}
+            style={{ color: COLORS.ORANGE_DARK }}
+          />
         </View>
-      ) 
+      );
     }
   };
 
   const checkSchool = () => {
     let check = eysReport[0]?.atSchool?.title;
-    if(check === true) {
+    if (check === true) {
       return (
         <View>
-          <MaterialIcons name="check-box" size={22} style={{color: COLORS.BLUE_DARK}}/>
+          <MaterialIcons
+            name="check-box"
+            size={22}
+            style={{ color: COLORS.BLUE_DARK }}
+          />
         </View>
       );
-    } else if(check === false) {
-      return(
+    } else if (check === false) {
+      return (
         <View>
-          <MaterialIcons name="check-box-outline-blank" size={22} style={{color: COLORS.BLUE_DARK}}/>
+          <MaterialIcons
+            name="check-box-outline-blank"
+            size={22}
+            style={{ color: COLORS.BLUE_DARK }}
+          />
         </View>
-      )   
+      );
     } else {
-      return(
+      return (
         <View>
-          <MaterialIcons name="check-box-outline-blank" size={24} style={{color: COLORS.BLUE_DARK}}/>
+          <MaterialIcons
+            name="check-box-outline-blank"
+            size={24}
+            style={{ color: COLORS.BLUE_DARK }}
+          />
         </View>
-      ) 
+      );
     }
   };
-
 
   return (
     <View style={{ flexDirection: "column" }}>
@@ -67,18 +87,16 @@ export default function HealthCard({ eysReport }) {
           flexDirection: "column",
           justifyContent: "space-around",
           paddingTop: 10,
-          // paddingBottom: 5,
         }}
       >
         <View
           style={{
             width: width * 0.95,
-            //   height: height * 0.09,
             alignSelf: "center",
             borderRadius: 15,
             backgroundColor: COLORS.BLUE_LIGHT,
             justifyContent: "center",
-            flexDirection: "column"
+            flexDirection: "column",
           }}
         >
           <View
@@ -119,7 +137,6 @@ export default function HealthCard({ eysReport }) {
                 }}
               >
                 នៅសាលា​/At school
-                {/* {props?.title} */}
               </Text>
               <View style={styles.section}>
                 <Text
@@ -135,13 +152,14 @@ export default function HealthCard({ eysReport }) {
               </View>
             </View>
           </View>
-          <View style={{paddingLeft:10,paddingBottom:10}}>
-            <Text 
-             style={{
-              fontFamily: "Kantumruy-Regular",
-              fontSize: 13,
-              color: COLORS.BLUE_DARK,
-            }}>
+          <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
+            <Text
+              style={{
+                fontFamily: "Kantumruy-Regular",
+                fontSize: 13,
+                color: COLORS.BLUE_DARK,
+              }}
+            >
               ផ្សេងៗ/Other: {eysReport[0]?.atSchool?.description}
             </Text>
           </View>
@@ -154,18 +172,16 @@ export default function HealthCard({ eysReport }) {
           flexDirection: "column",
           justifyContent: "space-around",
           paddingTop: 10,
-          // paddingBottom: 5,
         }}
       >
         <View
           style={{
             width: width * 0.95,
-            //   height: height * 0.09,
             alignSelf: "center",
             borderRadius: 15,
             backgroundColor: COLORS.ORANGE_LIGHT,
             justifyContent: "center",
-            flexDirection: "column"
+            flexDirection: "column",
           }}
         >
           <View
@@ -206,35 +222,29 @@ export default function HealthCard({ eysReport }) {
                 }}
               >
                 នៅផ្ទះ​/At home
-                {/* {props?.title} */}
               </Text>
               <View style={styles.section}>
                 <Text
                   style={{
                     fontFamily: "Kantumruy-Regular",
                     fontSize: 13,
-                    color: COLORS.ORANGE_DARK,  
+                    color: COLORS.ORANGE_DARK,
                   }}
                 >
                   ធម្មតា/Normal
                 </Text>
-                {/* <Checkbox
-                  style={styles.checkbox}
-                  value={isChecked}
-                  onValueChange={setChecked}
-                  color={isChecked ? COLORS.ORANGE_DARK : undefined}
-                /> */}
                 <View>{Checked()}</View>
               </View>
             </View>
           </View>
-          <View style={{paddingLeft:10,paddingBottom:10}}>
-            <Text 
-             style={{
-              fontFamily: "Kantumruy-Regular",
-              fontSize: 13,
-              color: COLORS.ORANGE_DARK,
-            }}>
+          <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
+            <Text
+              style={{
+                fontFamily: "Kantumruy-Regular",
+                fontSize: 13,
+                color: COLORS.ORANGE_DARK,
+              }}
+            >
               ផ្សេងៗ/Other: {eysReport[0]?.parentsCheck?.description}
             </Text>
           </View>

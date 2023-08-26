@@ -16,7 +16,7 @@ import { StyleController } from "../../static/styleProvider";
 import LeaveCard from "../LeaveCard";
 import StudentClass from "../StudentClass";
 import { ENROLLMENT_STUDENTS } from "../../graphql/gql_enrollmentByStudents";
-import { setLogVerbosity, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import SelectDropdown from "react-native-select-dropdown";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from "moment";
@@ -46,7 +46,6 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
   const t = useTranslation();
 
   const openSheet2 = (value) => {
-    // console.log(value, "value");
     setStudent(value);
     refRBSheet1.current.close(); // close sheet 1
     refRBSheet2.current.open(); // open sheet 2

@@ -9,8 +9,8 @@ import { getLanguage } from "react-multi-lang";
 
 const ClassCard = (props) => {
   const { styleState, height, width } = useContext(StyleController);
-  const [totalStu, setTotalStu] = useState();
-  const [dataTotal, setDataTotal] = useState("");
+
+  // console.log(props, "props");
 
   // const { data, loading, refetch } = useQuery(TOTAL_STUDENTS, {
   //   onCompleted: ({ getTotalStudentForApp }) => {
@@ -121,7 +121,8 @@ const ClassCard = (props) => {
                   color: props?.color,
                 }}
               >
-                {props?.sectionShiftName + "  "}
+                {props?.className + "  "}
+                {/* {props?.sectionShiftName + "  "} */}
               </Text>
               <Image
                 source={require("../assets/Images/students.png")}
@@ -137,7 +138,8 @@ const ClassCard = (props) => {
                 color: props?.color,
               }}
             >
-              {props?.programme}
+              Programme Name
+              {/* {props?.programme} */}
             </Text>
           </View>
         </View>

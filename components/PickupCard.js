@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { Text, View } from "react-native";
-import { Entypo } from "@expo/vector-icons";
 import { StyleController } from "../static/styleProvider";
 import { COLORS } from "../color";
 import { Image } from "react-native";
@@ -16,7 +15,6 @@ const PickupCard = () => {
         flexDirection: "column",
         justifyContent: "space-around",
         paddingTop: 10,
-        // top: 10
       }}
     >
       <View
