@@ -72,7 +72,7 @@ const StudentSchoolVanCard = (props) => {
       >
         <View
           style={{
-            height: height * 0.2,
+            height: height * 0.21,
             width: width * 0.38,
             justifyContent: "space-evenly",
             borderWidth: 1,
@@ -122,9 +122,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   stuImage: {
-    width: 105,
-    height: 105,
+    width: 100,
+    height: 100,
     borderRadius: 100,
     alignSelf: "center",
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: "#dcdcdc",
   },
 });

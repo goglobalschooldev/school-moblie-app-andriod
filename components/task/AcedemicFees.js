@@ -21,14 +21,15 @@ import moment from "moment";
 import localization from "moment/locale/km";
 import { useTranslation } from "react-multi-lang";
 
-
 export default function AcedemicFees({ navigation, route }) {
   const { styleState, height, width } = useContext(StyleController);
   const { invoiceDBCtxDispatch } = useContext(DataController);
   const { invoiceData } = route?.params;
   const t = useTranslation();
-  const [unitLng, setUnitLng] = useState("")
+  const [unitLng, setUnitLng] = useState("");
+  const stuId = route?.params?.stuId;
 
+  console.log(stuId);
   const [showInvoice, setShowInvoice] = useState([]);
   const {
     data: invoice,
@@ -36,7 +37,7 @@ export default function AcedemicFees({ navigation, route }) {
     refetch,
   } = useQuery(INVOICE_BY_STUDENT, {
     variables: {
-      studentId: invoiceData?.studentId,
+      studentId: stuId,
     },
     onCompleted: ({ getInvoiceBystudentIdWithPagination }) => {
       // console.log(getInvoiceBystudentIdWithPagination,"Test")
@@ -71,7 +72,11 @@ export default function AcedemicFees({ navigation, route }) {
           barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
         />
         <SafeAreaView>
-          <Header2 title={t("ប្រវត្តិបង់ថ្លៃសិក្សា")} navigation={navigation} />
+          <Header2
+            title={t("ប្រវត្តិបង់ថ្លៃសិក្សា")}
+            navigation={navigation}
+            stuData={stuId}
+          />
         </SafeAreaView>
         <View
           style={{ flex: 1, height: height * 1, backgroundColor: COLORS.WHITE }}
@@ -291,7 +296,6 @@ export default function AcedemicFees({ navigation, route }) {
                         </View>
                         <View style={{ flexDirection: "column" }}>
                           {description?.map((load) => {
-
                             return (
                               <View
                                 key={load?._id}

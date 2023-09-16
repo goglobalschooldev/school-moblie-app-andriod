@@ -19,6 +19,7 @@ import Header4 from "../../routes/header/Header4";
 import { ATT_BY_STUDENT } from "../../graphql/get_AttByStudent";
 import AttendanceList from "./AttendanceList";
 import graphQLClient from "../../config/endpoint_2";
+import Header2 from "../../routes/header/Header2";
 
 const Attendance = ({ navigation, route }) => {
   const [isStartDateVisible, setIsStartDateVisible] = useState(false);
@@ -31,16 +32,15 @@ const Attendance = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [attLimit, setAttLimit] = useState(10);
   const t = useTranslation();
-
-  console.log(sectionShift, "sectionShift");
-
+  const stuData = route?.params?.stuId;
+  // console.log(route?.params?.stuId);
   useEffect(() => {
     async function fetchData() {
       try {
         const GetAttendantsByStudent = await graphQLClient.request(
           ATT_BY_STUDENT,
           {
-            studentId: sectionShift?.studentId,
+            studentId: route?.params?.stuId?._id,
             from:
               startDate === ""
                 ? ""
@@ -54,21 +54,21 @@ const Attendance = ({ navigation, route }) => {
                     .locale("en", localization)
                     .format("YYYY-MM-DD"),
             limit: attLimit,
-            classId: sectionShift?._id,
+            classId: sectionShift?.classesId,
           }
         );
         // console.log(GetAttendantsByStudent, "GetAttendantsByStudent");
         if (GetAttendantsByStudent) {
           setLoading(false);
-          // setAttByStudent(GetAttendantsByStudent?.getAttendantsByStudent);
-
           if (GetAttendantsByStudent !== undefined) {
-            setAttByStudent(GetAttendantsByStudent?.getAttendantsByStudent);
+            setAttByStudent(
+              GetAttendantsByStudent?.getAttendantsByClassForMobile
+            );
           }
         }
       } catch (error) {
         console.log(error.message, "errorGetAttendantsByStudent");
-        setLoading(true);
+        // setLoading(true);
       }
     }
     fetchData();
@@ -116,7 +116,7 @@ const Attendance = ({ navigation, route }) => {
     if (getLanguage() === "en") {
       return (
         <Text numberOfLines={1}>
-          {sectionShift?.englishName}
+          {route?.params?.stuId?.englishName}
           {t("វត្តមានរបស់")}
         </Text>
       );
@@ -124,7 +124,9 @@ const Attendance = ({ navigation, route }) => {
       return (
         <Text numberOfLines={1}>
           {t("វត្តមានរបស់")}{" "}
-          {sectionShift?.lastName + " " + sectionShift?.firstName}
+          {route?.params?.stuId?.lastName +
+            " " +
+            route?.params?.stuId?.firstName}
         </Text>
       );
     }
@@ -135,13 +137,13 @@ const Attendance = ({ navigation, route }) => {
     }, 2000);
   };
 
-  if (attByStudent === "") {
-    return (
-      <View style={styles.loadingStyle}>
-        <ActivityIndicator size="large" color="#EFB419" />
-      </View>
-    );
-  }
+  // if (attByStudent === "") {
+  //   return (
+  //     <View style={styles.loadingStyle}>
+  //       <ActivityIndicator size="large" color="#EFB419" />
+  //     </View>
+  //   );
+  // }
 
   return (
     // <SafeAreaView className="flex-1 bg-background">
@@ -462,7 +464,11 @@ const Attendance = ({ navigation, route }) => {
         barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
       />
       <SafeAreaView>
-        <Header4 navigation={navigation} title={StudentHeader()} />
+        <Header4
+          navigation={navigation}
+          title={StudentHeader()}
+          stuData={stuData}
+        />
       </SafeAreaView>
 
       <View className="h-14 w-[97%] bg-background self-center my-2 flex-row justify-between items-center">

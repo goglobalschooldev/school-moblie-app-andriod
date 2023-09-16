@@ -1,10 +1,9 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Text,
   View,
   StyleSheet,
   ActivityIndicator,
-  TouchableOpacity,
   ScrollView,
   StatusBar,
   SafeAreaView,
@@ -14,85 +13,98 @@ import { COLORS } from "../../color";
 import Header2 from "../../routes/header/Header2";
 import { StyleController } from "../../static/styleProvider";
 import ClassModal from "../modal/classModal";
-import { getKhmerNumber } from "../../static/khmerNumber";
-import {
-  ACADEMIC_YEAR,
-  ALL_ACADEMIC_YEAR,
-} from "../../graphql/gql_academicYear";
-import { useQuery } from "@apollo/client/react";
-import { ENROLLMENT_STUDENTS } from "../../graphql/gql_enrollmentByStudents";
 import { useTranslation, getLanguage } from "react-multi-lang";
 import PickupModal from "../modal/pickupModal";
 import * as Location from "expo-location";
 import ModalProminent from "../modal/modalProminent";
 import { DataController } from "../../context/Provider";
 import { ACTION } from "../../context/Reducer";
-import { SECTION_SHIFT_BY_STUDENT } from "../../graphql/get_SectionShiftByStudent";
 import graphQLClient from "../../config/endpoint_2";
 import SelectDropdown from "react-native-select-dropdown";
-import { GET_CLASSES_BY_STU } from "../../graphql/get_ClassesByStudent";
+import { GET_ACADEMICYEARFORSELECT } from "../../graphql/getAcademicYearsForSelect";
+import { GET_CLASSESBYSTUDENTFORMOBILE } from "../../graphql/GetClassesByStudentForMobile";
+import { CHECK_ISSTUDENTINPICKUP } from "../../graphql/CheckIsStudentInPickUp";
 
 const StuClass = ({ navigation, route }) => {
   const { styleState, height, width } = useContext(StyleController);
   const { data } = route.params;
-  const [academicName, setAcademicName] = useState();
-  const [academicYear, setAcademicYear] = useState();
   const [isAllow, setIsAllow] = useState(false);
   const t = useTranslation();
-  const { studentDBCtxDispatch, enrollmentDBCtxDispatch } =
-    useContext(DataController);
+  const { studentDBCtxDispatch } = useContext(DataController);
   const [loading, setLoading] = useState(true);
-  const [sectionShift, setSectionShift] = useState("");
-  const [loadingTime, setLoadingTime] = useState(true);
-  const [academicYearData, setAcademicYearData] = useState();
+  const [academicYearForSelect, setAcademicYearForSelect] = useState([]);
   const [academicSelected, setAcademicSelected] = useState("");
-  const [classesByStu, setClassesByStu] = useState("");
+  const [classesByStu, setClassesByStu] = useState([]);
+  const [activeAcademicYear, setActiveAcademicYear] = useState({});
+  const [checkIsStudentInPickUp, setCheckIsStudentInPickUp] = useState(false);
 
-  // console.log(data, "data");
   useEffect(() => {
     async function fetchData() {
       try {
-        const GetAcademicYear = await graphQLClient.request(ALL_ACADEMIC_YEAR);
-        // console.log(GetAcademicYear, "GetAcademicYear");
-        if (GetAcademicYear) {
-          setLoadingTime(false);
-          if (GetAcademicYear !== undefined) {
-            setAcademicYearData(GetAcademicYear?.getAcademicYear);
-          }
-        }
-      } catch (error) {
-        console.log(error.message, "errorGetStuTransportationAtt");
-        setLoadingTime(true);
-      }
-    }
-    fetchData();
-  }, []);
-  // console.log(data, "data");
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const GetClassesByStu = await graphQLClient.request(
-          GET_CLASSES_BY_STU,
+        const CheckIsStudentInPickUp = await graphQLClient.request(
+          CHECK_ISSTUDENTINPICKUP,
           {
             studentId: data?._id,
-            academicYearId: academicSelected?._id,
           }
         );
-        // console.log(GetClassesByStu, "GetClassesByStu");
-        setClassesByStu(GetClassesByStu?.getClassesByStudentForMobile);
-        // if (GetClassesByStu) {
-        //   setLoadingTime(false);
-        //   if (GetClassesByStu !== undefined) {
-        //     setAcademicYearData(GetClassesByStu?.getAcademicYear);
-        //   }
-        // }
+        if (CheckIsStudentInPickUp) {
+          // console.log(CheckIsStudentInPickUp);
+          setCheckIsStudentInPickUp(
+            CheckIsStudentInPickUp?.checkIsStudentInPickUp
+          );
+        }
       } catch (error) {
-        console.log(error.message, "errorGetStuTransportationAtt");
-        // setLoadingTime(true);
+        console.log(error.message, "Error CheckIsStudentInPickUp");
       }
     }
     fetchData();
   }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const GetAcademicYearsForSelect = await graphQLClient.request(
+          GET_ACADEMICYEARFORSELECT
+        );
+        if (GetAcademicYearsForSelect) {
+          setLoading(false);
+          const activeObj =
+            GetAcademicYearsForSelect?.getAcademicYearsForSelect?.find(
+              (item) => item.status === true
+            );
+          if (activeObj) {
+            setActiveAcademicYear(activeObj);
+          }
+          setAcademicYearForSelect(
+            GetAcademicYearsForSelect?.getAcademicYearsForSelect
+          );
+        }
+      } catch (error) {
+        console.log(error.message, "Error GetAcademicYearsForSelect");
+      }
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const GetClassesByStudentForMobile = await graphQLClient.request(
+          GET_CLASSESBYSTUDENTFORMOBILE,
+          {
+            studentId: data?._id,
+            academicYearId: academicSelected
+              ? academicSelected
+              : activeAcademicYear?._id,
+          }
+        );
+        setClassesByStu(
+          GetClassesByStudentForMobile?.getClassesByStudentForMobile
+        );
+      } catch (error) {}
+    }
+    fetchData();
+  }, [academicSelected, activeAcademicYear]);
 
   useEffect(() => {
     if (data) {
@@ -116,34 +128,6 @@ const StuClass = ({ navigation, route }) => {
       }
     })();
   }, []);
-
-  const StudentName = () => {
-    if (getLanguage() === "en") {
-      return (
-        <Text
-          style={{
-            fontSize: 14,
-            color: COLORS.MAIN,
-            fontFamily: "Bayon-Regular",
-          }}
-        >
-          {data?.englishName} {t("ថ្នាក់រៀន")}
-        </Text>
-      );
-    } else {
-      return (
-        <Text
-          style={{
-            fontSize: 14,
-            color: COLORS.MAIN,
-            fontFamily: "Bayon-Regular",
-          }}
-        >
-          {t("ថ្នាក់រៀន")} {data?.lastName + " " + data?.firstName}
-        </Text>
-      );
-    }
-  };
 
   const PickupStu = () => {
     if (getLanguage() === "en") {
@@ -173,122 +157,7 @@ const StuClass = ({ navigation, route }) => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    async function fetchData() {
-      try {
-        const getSectionShift = await graphQLClient?.request(
-          SECTION_SHIFT_BY_STUDENT,
-          {
-            studentId: data?._id,
-          }
-        );
-        // console.log(getSectionShift, "getSectionShift");
-        if (getSectionShift !== undefined) {
-          setSectionShift(getSectionShift?.getSectionShiftByStudent);
-        }
-      } catch (error) {
-        console.log(error.message, "errorGetSectionShift");
-        setLoading(true);
-      }
-    }
-    fetchData();
-    const interval = setInterval(fetchData, 2000);
-
-    return () => clearInterval(interval);
-  }, [data?._id]);
-  // console.log(sectionShift,"section")
-
-  //old query
-  // const {
-  //   data: enrollmentStudent,
-  //   loading: enrollmentLoading,
-  //   errors,
-  //   refetch: enrollmentRefetch,
-  // } = useQuery(ENROLLMENT_STUDENTS, {
-  //   variables: {
-  //     studentId: data?._id,
-  //   },
-  //   onCompleted: ({ getEvents }) => {
-  //     // console.log(getEvents, "test");
-  //   },
-  //   onError: (error) => {
-  //     console.log(error.message, "error stuClass");
-  //   },
-  // });
-  // let enrollStudent = enrollmentStudent?.getEnrollmentByStudents;
-
-  // useEffect(() => {
-  //   if (enrollmentStudent) {
-  //     enrollmentRefetch();
-  //     enrollmentDBCtxDispatch({
-  //       type: ACTION.ENROLLMENT_STUDENTS,
-  //       payload: enrollmentStudent?.getEnrollmentByStudents,
-  //     });
-  //   }
-  // }, [enrollmentStudent]);
-
-  // ========== check shift of student ===================
-  // const [arrayShiftData, setArrayShiftData] = useState([]);
-  // useEffect(() => {
-  //   if (enrollmentStudent?.getEnrollmentByStudents) {
-  //     let shiftData = [];
-  //     enrollmentStudent?.getEnrollmentByStudents?.forEach((elem) => {
-  //       let newRow = {
-  //         shiftId: elem?.shiftId,
-  //         shiftName: (elem?.shiftName).split("")[0],
-  //       };
-  //       shiftData.push(newRow);
-  //     });
-  //     setArrayShiftData(shiftData);
-  //   }
-  // }, [enrollStudent]);
-
-  // console.log(arrayShiftData)
-
-  //
-  const {
-    data: academicData,
-    loading: academicLoading,
-    refetch: academicRefetch,
-  } = useQuery(ACADEMIC_YEAR);
-  useEffect(() => {
-    if (academicData) {
-      academicRefetch();
-      try {
-        let digits =
-          academicData?.getActiveAcademicYear[0]?.academicYear?.split("-");
-        let index1 = getKhmerNumber(digits[0]);
-        let index2 = getKhmerNumber(digits[1]);
-        let yearName = index1 + "~" + index2;
-        setAcademicName(yearName);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }, [academicData]);
-
-  useEffect(() => {
-    if (academicName === "២០២២~២០២៣") {
-      setAcademicYear(`${t("២០២២~២០២៣")}`);
-    } else if (academicName === "២០២៣~២០២៤") {
-      setAcademicYear(`${t("២០២៣~២០២៤")}`);
-    } else if (academicName === "២០២៤~២០២៥") {
-      setAcademicYear(`${t("២០២៤~២០២៥")}`);
-    } else if (academicName === "២០២៥~២០២៦") {
-      setAcademicYear(`${t("២០២៥~២០២៦")}`);
-    } else if (academicName === "២០២៦~២០២៧") {
-      setAcademicYear(`${t("២០២៦~២០២៧")}`);
-    } else if (academicName === "២០២៧~២០២៨") {
-      setAcademicYear(`${t("២០២៧~២០២៨")}`);
-    } else {
-      setAcademicYear(academicName);
-    }
-  });
-
-  if (academicLoading || loading) {
+  if (loading) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
@@ -303,7 +172,7 @@ const StuClass = ({ navigation, route }) => {
     );
   }
 
-  if (!academicLoading) {
+  if (activeAcademicYear) {
     return (
       <>
         <StatusBar
@@ -311,54 +180,45 @@ const StuClass = ({ navigation, route }) => {
         />
         <SafeAreaView className="bg-white">
           <Header2
-            title={t("ឆ្នាំសិក្សា") + " " + academicYear}
+            title={t("ទំព័រដើម")}
             navigation={navigation}
+            stuData={data}
           />
         </SafeAreaView>
-        <View className="flex-row bg-white h-fit px-2 py-2 justify-between">
-          {/* <View className="w-[40%] justify-center">
-            <Text className="font-kantunruy-regular text-sm text-main leading-7">
-              ឆ្នាំសិក្សា
-            </Text>
-          </View> */}
+        <View className="flex-row h-fit px-2  justify-between bg-white">
           <View className="w-[100%]">
             <SelectDropdown
-              data={academicYearData}
+              data={academicYearForSelect}
               onSelect={(selectedItem, index) => {
-                console.log(selectedItem, "selectedItem");
-                setAcademicSelected(selectedItem);
+                setAcademicSelected(selectedItem?._id);
               }}
               buttonStyle={styles.dropdown3BtnStyle}
-              // dropdownIconPosition="right"
-              renderDropdownIcon={(status) => {
+              renderCustomizedButtonChild={(selectedItem, index) => {
                 return (
-                  <>
-                    <View className="p-4 ">
+                  <View className="flex-1 flex-row justify-start items-center rounded-lg">
+                    <Text className="text-[16px] font-bayon text-[#3C6EFB] pr-2">
+                      ឆ្នាំសិក្សា៖
+                    </Text>
+                    <Text className="text-[#444444]">
+                      {selectedItem ? (
+                        <Text className="text-[13px] font-kantunruy-regular text-[#3C6EFB]">
+                          {getLanguage() === "en"
+                            ? selectedItem?.academicYearTitle
+                            : selectedItem?.academicYearTitle}
+                        </Text>
+                      ) : (
+                        <Text className="text-[13px] font-kantunruy-regular text-[#3C6EFB]">
+                          {activeAcademicYear?.academicYearTitle}
+                        </Text>
+                      )}
+                    </Text>
+                    <View className="pl-2">
                       <Image
-                        source={require("../../assets/Images/angle-down-gray.png")}
+                        source={require("../../assets/Images/unfold.png")}
                         className="h-4 w-4"
                         transform={[{ scaleY: -1 }]}
                       />
                     </View>
-                  </>
-                );
-              }}
-              renderCustomizedButtonChild={(selectedItem, index) => {
-                return (
-                  <View className="flex-1 flex-row justify-end items-center px-2 rounded-lg">
-                    <Text className="flex-1 text-sm w-full py-2 text-[#444444]">
-                      {selectedItem ? (
-                        <Text className="text-[13px] font-kantunruy-regular text-black">
-                          {getLanguage() === "en"
-                            ? selectedItem?.academicYear
-                            : selectedItem?.academicYearInKhmer}
-                        </Text>
-                      ) : (
-                        <Text className="text-[13px] font-kantunruy-regular text-[#A9A9A9]">
-                          ជ្រើសរើសឆ្នាំសិក្សា
-                        </Text>
-                      )}
-                    </Text>
                   </View>
                 );
               }}
@@ -367,10 +227,10 @@ const StuClass = ({ navigation, route }) => {
               renderCustomizedRowChild={(item, index) => {
                 return (
                   <View className="flex-1 flex-row justify-start items-center px-2">
-                    <Text className="text-black text-start text-[13px] font-kantunruy-regular leading-6">
+                    <Text className="text-[#3C6EFB] text-start text-[13px] font-kantunruy-regular leading-6">
                       {getLanguage() === "en"
-                        ? item?.academicYear
-                        : item?.academicYearInKhmer}
+                        ? item?.academicYearTitle
+                        : item?.academicYearTitle}
                     </Text>
                   </View>
                 );
@@ -381,126 +241,55 @@ const StuClass = ({ navigation, route }) => {
         <View className="flex-1 w-full h-screen bg-white">
           <ScrollView showsVerticalScrollIndicator={false}>
             <View className="w-[95%] h-fit self-center pt-2">
-              <View
-                style={{
-                  flex: 1,
-                  position: "relative",
-                  alignSelf: "center",
-                }}
-              >
-                <View style={{ height: 25, justifyContent: "center" }}>
+              <View>
+                <ClassModal
+                  navigation={navigation}
+                  data={classesByStu}
+                  stuId={data}
+                  academicId={
+                    academicSelected
+                      ? academicSelected
+                      : activeAcademicYear?._id
+                  }
+                />
+              </View>
+              {checkIsStudentInPickUp ? (
+                <View>
                   <View
                     style={{
-                      height: 1,
-                      width: width * 0.95,
-                      backgroundColor: COLORS.MAIN,
+                      flex: 1,
+                      alignSelf: "center",
+                      top: 15,
                     }}
-                  />
-                </View>
-                <View style={{ alignItems: "baseline", position: "absolute" }}>
-                  <View style={{ backgroundColor: "white", paddingRight: 8 }}>
-                    {StudentName()}
-                  </View>
-                </View>
-              </View>
-              <View>
-                <ClassModal navigation={navigation} data={classesByStu} />
-                {/* <ClassSheet data={enrollStudent}/> */}
-              </View>
-              {sectionShift?.map((item, index) => {
-                if (
-                  item?.classGroupCode === "ECE" ||
-                  item?.classGroupNameEn === "Early Childhood Education"
-                ) {
-                  return (
-                    <View key={index}>
+                  >
+                    <View style={{ height: 25, justifyContent: "center" }}>
                       <View
                         style={{
-                          flex: 1,
-                          // position: "relative",
-                          alignSelf: "center",
-                          top: 15,
+                          height: 1,
+                          width: width * 0.95,
+                          backgroundColor: COLORS.MAIN,
                         }}
-                      >
-                        <View style={{ height: 25, justifyContent: "center" }}>
-                          <View
-                            style={{
-                              height: 1,
-                              width: width * 0.95,
-                              backgroundColor: COLORS.MAIN,
-                            }}
-                          />
-                        </View>
-                        <View
-                          style={{
-                            alignItems: "baseline",
-                            position: "absolute",
-                          }}
-                        >
-                          <View
-                            style={{
-                              backgroundColor: "white",
-                              paddingRight: 8,
-                            }}
-                          >
-                            {PickupStu()}
-                          </View>
-                        </View>
-                      </View>
-                      <PickupModal data={data} />
+                      />
                     </View>
-                  );
-                }
-              })}
-
-              {/* <View
-                style={{
-                  flex: 1,
-                  position: "relative",
-                  alignSelf: "center",
-                  marginTop: 15,
-                }}
-              >
-                <View style={{ height: 25, justifyContent: "center" }}>
-                  <View
-                    style={{
-                      height: 1,
-                      width: width * 0.95,
-                      backgroundColor: COLORS.MAIN,
-                    }}
-                  />
-                </View>
-                <View style={{ alignItems: "baseline", position: "absolute" }}>
-                  <View style={{ backgroundColor: "white", paddingRight: 8 }}>
-                    <Text
+                    <View
                       style={{
-                        fontSize: 14,
-                        color: COLORS.MAIN,
-                        fontFamily: "Bayon-Regular",
+                        alignItems: "baseline",
+                        position: "absolute",
                       }}
                     >
-                      {t("ស្នើសុំច្បាប់")}
-                    </Text>
+                      <View
+                        style={{
+                          backgroundColor: "white",
+                          paddingRight: 8,
+                        }}
+                      >
+                        {PickupStu()}
+                      </View>
+                    </View>
                   </View>
+                  <PickupModal data={data} />
                 </View>
-              </View>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("RecordAttendance", {
-                    data: enrollStudent,
-                    otherParam: arrayShiftData,
-                  })
-                }
-              >
-                <AttCard />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("LeaveScreen", { data: enrollStudent })
-                }
-              >
-                <LeaveCard />
-              </TouchableOpacity> */}
+              ) : null}
             </View>
           </ScrollView>
         </View>
@@ -520,13 +309,10 @@ const styles = StyleSheet.create({
   },
   dropdown3BtnStyle: {
     width: "100%",
-    height: 47,
+    height: 40,
     backgroundColor: "white",
     paddingHorizontal: 0,
     alignItems: "center",
-    borderColor: "#cccccc",
-    borderWidth: 1,
-    borderRadius: 5,
   },
   dropdown3DropdownStyle: { backgroundColor: "white", borderRadius: 10 },
   dropdown3RowStyle: {

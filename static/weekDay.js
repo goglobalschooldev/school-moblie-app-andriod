@@ -7,8 +7,8 @@ export const BtnDay = (props) => {
   return (
     <TouchableOpacity
       style={{
-        width: width * 0.145,
-        height: height * 0.07,
+        width: width * 0.115,
+        height: height * 0.055,
         justifyContent: "center",
         borderRadius: 8,
         margin: 5,
@@ -18,19 +18,18 @@ export const BtnDay = (props) => {
     >
       <View
         style={{
-          width: 45,
-          height: 45,
+          width: 35,
+          height: 35,
           backgroundColor: "white",
           alignSelf: "center",
           borderRadius: 80,
           justifyContent: "center",
-
         }}
       >
         <Text
           style={{
             alignSelf: "center",
-            fontSize: 14,
+            fontSize: 11,
             fontFamily: "Kantumruy-Regular",
           }}
         >

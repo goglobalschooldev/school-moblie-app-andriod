@@ -10,7 +10,7 @@ export default function FeedBackCard({ eysReport }) {
   const [parentRequest, setParentRequest] = useState();
   const t = useTranslation();
 
-  let request = eysReport[0]?.parentsRequest;
+  let request = eysReport?.parentsRequest;
   let splitRequest = "";
   request?.map((e, index) => {
     if (index === 0) {

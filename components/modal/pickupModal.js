@@ -9,21 +9,24 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
-  Image,
-  ActivityIndicator,
 } from "react-native";
-import { Divider } from "react-native-paper";
 import { COLORS } from "../../color";
 import PickupCard from "../PickupCard";
 import SuccessModal from "./successModal";
 import * as Location from "expo-location";
 import { getDistance } from "geolib";
+import PickupLoadingCard from "../PickupLoadingCard";
+import { TRANKING_STUDENTINPICKUP } from "../../graphql/TrackingStudentInPickUp";
+import graphQLClient from "../../config/endpoint_2";
+import PickingUpCard from "../PickingUpCard";
 
 const PickupModal = ({ data }) => {
   const t = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
   const [localtionData, setlocationData] = useState();
-
+  const [trackingStatusPickup, setTrackingStatusPickup] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
+  const [intervalId, setIntervalId] = useState(null);
   useEffect(() => {
     (async () => {
       try {
@@ -54,16 +57,124 @@ const PickupModal = ({ data }) => {
   const handleCancel = () => {
     setModalVisible(!modalVisible);
   };
+  const handleIsVisible = () => {
+    setIsVisible(!isVisible);
+  };
+  // console.log(modalVisible);
+  const startPolling = () => {
+    async function fetchData() {
+      try {
+        const TrackingStudentInPickUp = await graphQLClient.request(
+          TRANKING_STUDENTINPICKUP,
+          {
+            studentId: data?._id,
+          }
+        );
+        // console.log(TrackingStudentInPickUp?.trackingStudentInPickUp, "hello");
+        if (TrackingStudentInPickUp) {
+          setTrackingStatusPickup(
+            TrackingStudentInPickUp?.trackingStudentInPickUp
+          );
+        }
+        if (TrackingStudentInPickUp?.trackingStudentInPickUp === "picked") {
+          setIsVisible(true);
+        }
+      } catch (error) {
+        console.log(error.message, "Error TrackingStudentInPickUp");
+      }
+    }
+
+    const id = setInterval(() => {
+      // fetchData();
+    }, 3000); // Polling interval in milliseconds
+    setIntervalId(id);
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
+  };
+
+  const stopPolling = () => {
+    clearInterval(intervalId);
+    // console.log(intervalId);
+  };
 
   if (distance <= 0) {
     return (
       <View style={styles.loadingStyle}>
-        <ActivityIndicator size="large" color="#EFB419" />
+        <PickupLoadingCard />
       </View>
     );
   } else {
     return (
       <View style={styles.centeredView}>
+        {/* <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isVisible}
+          onRequestClose={() => {
+            // Alert.alert("Modal has been closed.");
+            setIsVisible(!isVisible);
+          }}
+        >
+          <TouchableOpacity onPress={() => setIsVisible(!isVisible)}>
+            <View style={styles.bgModal} />
+          </TouchableOpacity>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View
+                style={{
+                  width: "100%",
+                  height: "75%",
+                  justifyContent: "center",
+                  // backgroundColor: "pink"
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Kantumruy-Regular",
+                    fontSize: 14,
+                    color: COLORS.MAIN,
+                    alignSelf: "center",
+                    padding: 10,
+                    // backgroundColor: "red",
+                    // paddingVertical:15
+                  }}
+                >
+                  Succeed!!!!!!!!!!!!
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={{
+                  width: "100%",
+                  height: "25%",
+                  position: "absolute",
+                  bottom: 0,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // backgroundColor: "pink",
+                  borderTopWidth: 1,
+                  borderTopColor: COLORS.SUB,
+                }}
+                onPress={(i) => {
+                  handleIsVisible(i), stopPolling();
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Kantumruy-Regular",
+                    fontSize: 14,
+                    color: COLORS.MAIN,
+                  }}
+                >
+                  {t("យល់ព្រម")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal> */}
         <Modal
           animationType="fade"
           transparent={true}
@@ -73,7 +184,11 @@ const PickupModal = ({ data }) => {
             setModalVisible(!modalVisible);
           }}
         >
-          <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+          <TouchableOpacity
+            onPress={() => {
+              setModalVisible(!modalVisible), stopPolling();
+            }}
+          >
             <View style={styles.bgModal} />
           </TouchableOpacity>
           {
@@ -154,6 +269,7 @@ const PickupModal = ({ data }) => {
                       }}
                     >
                       <SuccessModal
+                        startPolling={startPolling}
                         setModalVisible={setModalVisible}
                         modalVisible={modalVisible}
                         data={data}
@@ -222,12 +338,17 @@ const PickupModal = ({ data }) => {
             // : null
           }
         </Modal>
+
+        {/* {trackingStatusPickup === "picking" ? (
+          <PickingUpCard />
+        ) : ( */}
         <Pressable
           // style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(true)}
         >
           <PickupCard />
         </Pressable>
+        {/* )} */}
       </View>
     );
   }
@@ -271,6 +392,7 @@ const styles = StyleSheet.create({
   loadingStyle: {
     flex: 1,
     justifyContent: "center",
+    marginTop: 22,
   },
 });
 

@@ -7,12 +7,11 @@ import { StyleController } from "../../static/styleProvider";
 import { DataController } from "../../context/Provider";
 import LanguageModal from "../../components/modal/languageModal";
 
-export default function Header4({ navigation, title }) {
+export default function Header4({ navigation, title, stuData }) {
   const { styleState, height, width } = useContext(StyleController);
   const { studentDBCtx } = useContext(DataController);
   //
-  let ProfileImage = studentDBCtx?.profileImg;
-
+  let ProfileImage = stuData?.profileImg;
   const StudentImage = useMemo(() => {
     const studentImage =
       "https://storage.go-globalschool.com/api" + ProfileImage;
@@ -36,7 +35,7 @@ export default function Header4({ navigation, title }) {
     } else {
       return (
         <Image
-          resizeMode="cover"
+          resizeMode="contain"
           style={{
             height: 30,
             width: 30,
@@ -86,12 +85,15 @@ export default function Header4({ navigation, title }) {
             }}
           >
             <Avatar
-              size={30}
+              size={23}
               rounded
               ImageComponent={() => StudentImage}
               overlayContainerStyle={{
                 justifyContent: "center",
+                borderColor: COLORS.ORANGE,
+                borderWidth: 1,
                 alignItems: "center",
+                resizeMode: "cover",
               }}
             />
           </View>

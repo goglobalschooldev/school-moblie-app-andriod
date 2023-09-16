@@ -115,7 +115,6 @@ const Transportation = ({ navigation }) => {
               backgroundColor: COLORS.WHITE,
               flexDirection: "column",
               justifyContent: "center",
-              paddingTop: 5,
             }}
           >
             <View

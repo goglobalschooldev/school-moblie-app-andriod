@@ -18,6 +18,8 @@ import { MOBILE_USER } from "../../graphql/gql_MobileUser";
 import { useQuery } from "@apollo/client";
 import LanguageModal from "../../components/modal/languageModal";
 import { FontAwesome } from "@expo/vector-icons";
+import { useTranslation } from "react-multi-lang";
+import { Popover, Box, Button } from "native-base";
 
 export default function Header({ title, navigation }) {
   const { styleState, height, width } = useContext(StyleController);
@@ -26,6 +28,7 @@ export default function Header({ title, navigation }) {
   //
   let ProfileImage = accountDBCtx?.user?.profileImage;
   // console.log(ProfileImage,"ProfileImage")
+  const t = useTranslation();
 
   const UserImage = useMemo(() => {
     const userImage =
@@ -50,7 +53,7 @@ export default function Header({ title, navigation }) {
     } else {
       return (
         <Image
-          resizeMode="cover"
+          resizeMode="contain"
           style={{
             height: 30,
             width: 30,
@@ -67,23 +70,42 @@ export default function Header({ title, navigation }) {
     <View style={{ width: width, backgroundColor: COLORS.WHITE }}>
       <View style={styles.header}>
         <View style={styles.insideBar}>
-          <View
-            style={{
-              width: width * 0.65,
-              height: 50,
-              flexDirection: "row",
-              alignItems: "center",
+          <Popover
+            trigger={(triggerProps) => {
+              return (
+                <TouchableOpacity
+                  {...triggerProps}
+                  style={{
+                    width: width * 0.65,
+                    height: 50,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      alignSelf: "center",
+                    }}
+                  >
+                    {/* <Image
+                      source={require("../../assets/Images/left-align.png")}
+                      style={{ alignSelf: "center", width: 18, height: 18 }}
+                    /> */}
+                    <MaterialIcons name="sort" size={26} color="#476CF1" />
+                  </View>
+                  <Text style={styles.textBar}>{title}</Text>
+                </TouchableOpacity>
+              );
             }}
           >
-            <View style={{ alignSelf: "center" }}>
-              <MaterialIcons
-                name="sort"
-                size={28}
-                style={{ color: COLORS.MAIN }}
-              />
-            </View>
-            <Text style={styles.textBar}>{title}</Text>
-          </View>
+            <Popover.Content accessibilityLabel="Delete Customerd" w="56">
+              <Popover.Arrow />
+              <Popover.CloseButton />
+              <Popover.Header>
+                <Text style={styles.textBar}>Hello, This is Header</Text>
+              </Popover.Header>
+            </Popover.Content>
+          </Popover>
           <View
             style={{
               width: width * 0.35,
@@ -91,22 +113,24 @@ export default function Header({ title, navigation }) {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-end",
-              // backgroundColor: "red",
               paddingRight: 20,
             }}
           >
-            <TouchableOpacity
-              style={{ paddingHorizontal: 15 }}
-              onPress={() => navigation.navigate("NotificationScreen")}
-            >
-              <Image
-                source={require("../../assets/Images/bell.png")}
-                style={{ width: width * 0.055, height: height * 0.025 }}
-              />
-            </TouchableOpacity>
+            {title === t("ទំព័រដើម") ? (
+              <TouchableOpacity
+                style={{ paddingHorizontal: 20 }}
+                onPress={() => navigation.navigate("NotificationScreen")}
+              >
+                <Image
+                  source={require("../../assets/Images/bell.png")}
+                  style={{ width: width * 0.055, height: height * 0.027 }}
+                />
+              </TouchableOpacity>
+            ) : null}
+
             <View
               style={{
-                right: 5,
+                paddingRight: title !== t("គណនី") ? 20 : 0,
                 alignSelf: "flex-end",
                 justifyContent: "center",
                 alignItems: "center",
@@ -115,17 +139,20 @@ export default function Header({ title, navigation }) {
             >
               <LanguageModal />
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            {title !== t("គណនី") ? (
               <Avatar
-                size={30}
+                size={23}
                 rounded
                 ImageComponent={() => UserImage}
                 overlayContainerStyle={{
                   justifyContent: "center",
                   alignItems: "center",
+                  borderColor: COLORS.ORANGE,
+                  borderWidth: 1,
+                  resizeMode: "cover",
                 }}
               />
-            </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       </View>
@@ -150,9 +177,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   textBar: {
-    fontSize: 16,
+    fontSize: 15,
     color: COLORS.MAIN,
-    paddingLeft: 3,
+    paddingLeft: 10,
+    textAlignVertical: "bottom",
     fontFamily: "Bayon-Regular",
   },
 });

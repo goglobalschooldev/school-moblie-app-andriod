@@ -31,7 +31,7 @@ module.exports = {
       gray: "#6E6E6E",
       pink: "#D73275",
       background: "#F1F0F5",
-      main: "#3C6EFB",
+      main: "#476CF1",
     },
   },
   plugins: [],

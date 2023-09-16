@@ -159,11 +159,13 @@ export const SubjectSchedule = (props) => {
               <View
                 style={{
                   justifyContent: "center",
-                  width: 50,
-                  height: 50,
+                  width: 44,
+                  height: 44,
                   backgroundColor: COLORS.WHITE,
                   borderRadius: 50,
                   alignSelf: "center",
+                  borderWidth: 1,
+                  borderColor: "#dcdcdc",
                 }}
               >
                 <PreviewTeacherImg
@@ -183,16 +185,16 @@ export const SubjectSchedule = (props) => {
               <View
                 style={{
                   flexDirection: "column",
-                  left: 10,
+                  left: 15,
                   width: width * 0.6,
-                  height: height * 0.09,
+                  height: height * 0.06,
                   justifyContent: "space-evenly",
                 }}
               >
                 <Text
                   style={{
                     fontFamily: "Bayon-Regular",
-                    fontSize: 14,
+                    fontSize: 12,
                     color: props?.color,
                   }}
                   numberOfLines={1}
@@ -202,7 +204,7 @@ export const SubjectSchedule = (props) => {
                 <Text
                   style={{
                     fontFamily: "Kantumruy-Regular",
-                    fontSize: 14,
+                    fontSize: 12,
                     color: props?.color,
                   }}
                   numberOfLines={1}

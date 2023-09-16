@@ -16,10 +16,13 @@ import { Entypo } from "@expo/vector-icons";
 import { COLORS } from "../../color";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-multi-lang";
+import { CHECL_IS_CLASS_FOR_EYS } from "../../graphql/CheckIsClassEYSMobile";
+import graphQLClient from "../../config/endpoint_2";
 
-export default function ClassModal({ navigation, data }) {
+export default function ClassModal({ navigation, data, stuId, academicId }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectData, setSelectData] = useState({});
+  const [EYScheck, setEYScheck] = useState(false);
   var num = 1;
   const openModalStu = (e, data) => {
     setModalVisible(e);
@@ -27,46 +30,64 @@ export default function ClassModal({ navigation, data }) {
   };
   const t = useTranslation();
 
-  // console.log(data, "data");
+  // console.log(stuId, "selectData");
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const CheckisclassforEYS = await graphQLClient.request(
+          CHECL_IS_CLASS_FOR_EYS,
+          {
+            classesId:
+              selectData?._id === undefined ? "11111aaaaaaa" : selectData?._id,
+          }
+        );
+        if (CheckisclassforEYS) {
+          // console.log(CheckisclassforEYS, "CheckisclassforEYS");
+          setEYScheck(CheckisclassforEYS?.checkIsClassEYSMobile);
+        }
+      } catch (error) {
+        console.log(error.message, "Error CheckisclassforEYS");
+      }
+    }
+    fetchData();
+  }, [modalVisible]);
 
   const ChildhoodReport = () => {
-    if (
-      selectData?.classGroupCode === "ECE" ||
-      selectData?.classGroupNameEn === "Early Childhood Education"
-    ) {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            setModalVisible(false);
-            navigation?.navigate("ChildReport", {
-              invoiceData: selectData,
-            });
-          }}
-        >
-          <View style={{ flexDirection: "row", paddingVertical: 10 }}>
-            <View style={{ justifyContent: "center" }}>
-              <MaterialCommunityIcons
-                name="calendar-check-outline"
-                size={22}
-                color="#3C6EFB"
-              />
-            </View>
-            <View style={{ justifyContent: "center" }}>
-              <Text
-                style={{
-                  fontFamily: "Bayon-Regular",
-                  fontSize: 16,
-                  color: COLORS.MAIN,
-                  left: 12,
-                }}
-              >
-                {t("របាយការណ៍កុមារដ្ឋាន")}
-              </Text>
-            </View>
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          setModalVisible(false);
+          setEYScheck(false);
+
+          navigation?.navigate("ChildReport", {
+            invoiceData: selectData,
+            stuId: stuId,
+          });
+        }}
+      >
+        <View style={{ flexDirection: "row", paddingVertical: 10 }}>
+          <View style={{ justifyContent: "center" }}>
+            <MaterialCommunityIcons
+              name="calendar-check-outline"
+              size={22}
+              color="#3C6EFB"
+            />
           </View>
-        </TouchableOpacity>
-      );
-    }
+          <View style={{ justifyContent: "center" }}>
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 16,
+                color: COLORS.MAIN,
+                left: 12,
+              }}
+            >
+              {t("របាយការណ៍កុមារដ្ឋាន")}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -77,10 +98,15 @@ export default function ClassModal({ navigation, data }) {
         visible={modalVisible}
         onRequestClose={() => {
           Alert.alert("Modal has been closed.");
+          setEYScheck(false);
           setModalVisible(!modalVisible);
         }}
       >
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        <TouchableOpacity
+          onPress={() => {
+            setModalVisible(!modalVisible), setEYScheck(!EYScheck);
+          }}
+        >
           <View style={styles.bgModal} />
         </TouchableOpacity>
         <View style={styles.modalView}>
@@ -91,7 +117,6 @@ export default function ClassModal({ navigation, data }) {
               flexDirection: "row",
               justifyContent: "space-between",
               paddingTop: 10,
-              // backgroundColor:"pink"
             }}
           >
             <View style={{ justifyContent: "center" }}>
@@ -107,7 +132,9 @@ export default function ClassModal({ navigation, data }) {
             </View>
             <TouchableOpacity
               style={{ justifyContent: "center" }}
-              onPress={() => setModalVisible(!modalVisible)}
+              onPress={() => {
+                setModalVisible(!modalVisible), setEYScheck(false);
+              }}
             >
               <Entypo name="cross" size={28} style={{ color: COLORS.SUB }} />
             </TouchableOpacity>
@@ -121,7 +148,12 @@ export default function ClassModal({ navigation, data }) {
             <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
-                navigation?.navigate("Schedule", { schedule: selectData });
+                setEYScheck(false);
+                navigation?.navigate("Schedule", {
+                  schedule: selectData,
+                  academic: academicId,
+                  stuId: stuId,
+                });
               }}
             >
               <View style={{ flexDirection: "row", paddingVertical: 10 }}>
@@ -148,8 +180,10 @@ export default function ClassModal({ navigation, data }) {
             <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
+                setEYScheck(false);
                 navigation?.navigate("Attendance", {
                   sectionShift: selectData,
+                  stuId: stuId,
                 });
               }}
             >
@@ -177,8 +211,11 @@ export default function ClassModal({ navigation, data }) {
             <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
+                setEYScheck(false);
+
                 navigation?.navigate("AcedemicFees", {
                   invoiceData: selectData,
+                  stuId: stuId,
                 });
               }}
             >
@@ -203,7 +240,7 @@ export default function ClassModal({ navigation, data }) {
                 </View>
               </View>
             </TouchableOpacity>
-            {ChildhoodReport()}
+            {EYScheck === true ? ChildhoodReport() : null}
           </View>
         </View>
       </Modal>

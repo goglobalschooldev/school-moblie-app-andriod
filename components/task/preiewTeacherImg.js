@@ -38,6 +38,7 @@ export default function PreviewTeacherImg({ teacherImage, teacherLeader }) {
       //   style={{ alignSelf: "center", margin: 5 }}
       // />
       <Image
+        resizeMode="cover"
         source={
           teacherImage === "https://storage.go-globalschool.com/apinull" ||
           null ||
@@ -47,10 +48,12 @@ export default function PreviewTeacherImg({ teacherImage, teacherLeader }) {
             : { uri: teacherImage + "?time=" + new Date(), cache: "reload" }
         }
         style={{
-          width: 50,
-          height: 50,
+          width: 44,
+          height: 44,
           borderRadius: 50,
           alignSelf: "center",
+          borderWidth: 1,
+          borderColor: "#dcdcdc",
         }}
       />
     );

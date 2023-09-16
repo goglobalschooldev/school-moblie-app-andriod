@@ -1,70 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { StyleController } from "../static/styleProvider";
 import { COLORS } from "../color";
-import { useQuery } from "@apollo/client";
-import { TOTAL_STUDENTS } from "../graphql/getTotalStudentForApp";
-import { getLanguage } from "react-multi-lang";
 
 const ClassCard = (props) => {
   const { styleState, height, width } = useContext(StyleController);
-
-  // console.log(props, "props");
-
-  // const { data, loading, refetch } = useQuery(TOTAL_STUDENTS, {
-  //   onCompleted: ({ getTotalStudentForApp }) => {
-  //     setTotalStu(getTotalStudentForApp);
-  //     // console.log(getTotalStudentForApp, "getTotalStudentForApp")
-  //   },
-  //   onError: (error) => {
-  //     console.log(error.message, "error stuClass");
-  //   },
-  // });
-
-  // let filterData = totalStu?.filter((e) => {
-  //   return (
-  //     e?.classId === props?.classId && e?.gradeId === props?.gradeId
-  //     // && e?.studentId === props?.studentId
-  //   );
-  // });
-
-  // useEffect(() => {
-  //   // refetch()
-  //   if (filterData?.length > 0) {
-  //     setDataTotal(filterData[0]?.total);
-  //   }
-  // }, [filterData]);
-
-  const Students = () => {
-    if (getLanguage() === "en") {
-      return (
-        <Text
-          style={{
-            fontFamily: "Bayon-Regular",
-            fontSize: 14,
-            color: props?.color,
-          }}
-        >
-          {" "}
-          {props?.totalStudent + " " + "pax"}
-        </Text>
-      );
-    } else {
-      return (
-        <Text
-          style={{
-            fontFamily: "Bayon-Regular",
-            fontSize: 14,
-            color: props?.color,
-          }}
-        >
-          {" "}
-          {props?.totalStudent + " " + "នាក់"}
-        </Text>
-      );
-    }
-  };
 
   return (
     <View
@@ -91,8 +32,8 @@ const ClassCard = (props) => {
           <View
             style={{
               justifyContent: "center",
-              width: 50,
-              height: 50,
+              width: 44,
+              height: 44,
               backgroundColor: COLORS.WHITE,
               borderRadius: 50,
             }}
@@ -117,29 +58,22 @@ const ClassCard = (props) => {
               <Text
                 style={{
                   fontFamily: "Bayon-Regular",
-                  fontSize: 14,
+                  fontSize: 12,
                   color: props?.color,
                 }}
               >
-                {props?.className + "  "}
-                {/* {props?.sectionShiftName + "  "} */}
+                {props?.classesName + "  "}
               </Text>
-              <Image
-                source={require("../assets/Images/students.png")}
-                style={{ width: 15, height: 15 }}
-              />
-              {Students()}
             </View>
 
             <Text
               style={{
                 fontFamily: "Kantumruy-Regular",
-                fontSize: 14,
+                fontSize: 12,
                 color: props?.color,
               }}
             >
-              Programme Name
-              {/* {props?.programme} */}
+              {props?.programmeName}
             </Text>
           </View>
         </View>

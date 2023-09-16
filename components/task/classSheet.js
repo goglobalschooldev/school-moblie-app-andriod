@@ -14,47 +14,47 @@ export default function ClassSheet({ navigation, data }) {
   // setSelectData(data)
 
   const ChildhoodReport = () => {
-    if (selectData?.classGroupNameEn === "ECE") {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            // refRBSheet.current.close();
-            navigation?.navigate("ChildReport", {
-              invoiceData: selectData,
-            });
-          }}
-        >
-          <View style={{ flexDirection: "row", paddingVertical: 10 }}>
-            <View style={{ justifyContent: "center" }}>
-              <MaterialCommunityIcons
-                name="calendar-check-outline"
-                size={22}
-                color="#3C6EFB"
-              />
-            </View>
-            <View style={{ justifyContent: "center" }}>
-              <Text
-                style={{
-                  fontFamily: "Bayon-Regular",
-                  fontSize: 16,
-                  color: COLORS.MAIN,
-                  left: 12,
-                }}
-              >
-                របាយការណ៍កុមារដ្ឋាន
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      );
-    }
+    // if (selectData?.classGroupNameEn === "ECE") {
+    //   return (
+    //     <TouchableOpacity
+    //       onPress={() => {
+    //         // refRBSheet.current.close();
+    //         navigation?.navigate("ChildReport", {
+    //           invoiceData: selectData,
+    //         });
+    //       }}
+    //     >
+    //       <View style={{ flexDirection: "row", paddingVertical: 10 }}>
+    //         <View style={{ justifyContent: "center" }}>
+    //           <MaterialCommunityIcons
+    //             name="calendar-check-outline"
+    //             size={22}
+    //             color="#3C6EFB"
+    //           />
+    //         </View>
+    //         <View style={{ justifyContent: "center" }}>
+    //           <Text
+    //             style={{
+    //               fontFamily: "Bayon-Regular",
+    //               fontSize: 16,
+    //               color: COLORS.MAIN,
+    //               left: 12,
+    //             }}
+    //           >
+    //             របាយការណ៍កុមារដ្ឋាន
+    //           </Text>
+    //         </View>
+    //       </View>
+    //     </TouchableOpacity>
+    //   );
+    // }
   };
   return (
     <>
       {data?.map((load, index) => {
         return (
           <TouchableOpacity
-            key={load?.enrollmentId}
+            key={load?._id}
             onPress={() => refRBSheet.current.open()}
           >
             <ClassCard

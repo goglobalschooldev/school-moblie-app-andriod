@@ -26,7 +26,7 @@ export default function EventCards(props) {
           }}
         >
           {moment(props?.eventDate).locale("km", localization).format("DD") +
-            " " +
+            ", " +
             km.localeData().months(moment(props?.endEventDate)) +
             " " +
             moment(props?.endEventDate)
@@ -44,7 +44,7 @@ export default function EventCards(props) {
           }}
         >
           {moment(props?.eventDate).locale("en", localization).format("DD") +
-            " " +
+            ", " +
             en.localeData().months(moment(props?.endEventDate)) +
             " " +
             moment(props?.endEventDate)
@@ -66,11 +66,11 @@ export default function EventCards(props) {
           }}
         >
           {moment(props?.eventDate).locale("km", localization).format("DD") +
-            "~" +
+            " ~ " +
             moment(props?.endEventDate)
               .locale("km", localization)
               .format("DD") +
-            " " +
+            ", " +
             km.localeData().months(moment(props?.endEventDate)) +
             " " +
             moment(props?.endEventDate)
@@ -88,11 +88,11 @@ export default function EventCards(props) {
           }}
         >
           {moment(props?.eventDate).locale("en", localization).format("DD") +
-            "~" +
+            " ~ " +
             moment(props?.endEventDate)
               .locale("en", localization)
               .format("DD") +
-            " " +
+            ", " +
             en.localeData().months(moment(props?.endEventDate)) +
             " " +
             moment(props?.endEventDate)
@@ -161,8 +161,8 @@ export default function EventCards(props) {
             <View
               style={{
                 justifyContent: "center",
-                width: 50,
-                height: 50,
+                width: 44,
+                height: 44,
                 backgroundColor: COLORS.WHITE,
                 borderRadius: 50,
                 alignSelf: "center",
@@ -217,8 +217,8 @@ export default function EventCards(props) {
             <View
               style={{
                 justifyContent: "center",
-                width: 50,
-                height: 50,
+                width: 44,
+                height: 44,
                 backgroundColor: COLORS.WHITE,
                 borderRadius: 50,
                 alignSelf: "center",

@@ -39,15 +39,15 @@ const ViewLeaveCard = () => {
           <View
             style={{
               justifyContent: "center",
-              width: 50,
-              height: 50,
+              width: 44,
+              height: 44,
               backgroundColor: COLORS.WHITE,
               borderRadius: 50,
             }}
           >
             <Image
               source={require("../assets/Images/search.png")}
-              style={{ alignSelf: "center", width: 30, height: 30 }}
+              style={{ alignSelf: "center", width: 22, height: 22 }}
             />
           </View>
           <View

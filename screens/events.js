@@ -14,17 +14,16 @@ import { COLORS } from "../color";
 import EventCards from "../components/EventCards";
 import Header from "../routes/header/Header";
 import { StyleController } from "../static/styleProvider";
-import { Divider } from "react-native-paper";
 import { useQuery } from "@apollo/client";
 import { QUERY_EVENTS } from "../graphql/gql_events";
 import { Entypo } from "@expo/vector-icons";
 import moment from "moment";
-import { QUERY_STUDENTS } from "../graphql/gql_students";
 import { DataController } from "../context/Provider";
-import { getKhmerNumber } from "../static/khmerNumber";
 import { ACADEMIC_YEAR } from "../graphql/gql_academicYear";
 import { useTranslation } from "react-multi-lang";
 import { PartComponent } from "../static/part-component";
+import graphQLClient from "../config/endpoint_2";
+import { getLanguage } from "react-multi-lang";
 
 //
 const wait = (timeout) => {
@@ -43,17 +42,29 @@ const Events = ({ navigation }) => {
   var num = 1;
   //Active Academic
   const { data: academic } = useQuery(ACADEMIC_YEAR);
-  let activeAcademic = academic?.getActiveAcademicYear[0];
+  // let activeAcademic = academic?.getActiveAcademicYear[0];
   // console.log(activeAcademic, "activeAcademic");
-
+  const [activeAcademic, setActiveAcademic] = useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const getActiveAcademicYear = await graphQLClient.request(
+          ACADEMIC_YEAR
+        );
+        setActiveAcademic(getActiveAcademicYear?.getActiveAcademicYear);
+        // console.log(getActiveAcademicYear, "getActiveAcademicYear");
+      } catch (error) {
+        console.log(error?.message, "error getActiveAcademicYear");
+      }
+    }
+    fetchData();
+  }, []);
   //
   const { data, loading, refetch } = useQuery(QUERY_EVENTS, {
     variables: {
       academicYearId: activeAcademic?._id,
     },
-    onCompleted: ({ getEvents }) => {
-      // console.log(getEvents, "test");
-    },
+    onCompleted: ({ getEvents }) => {},
     onError: (error) => {
       console.log(error.message, "error");
     },
@@ -72,71 +83,13 @@ const Events = ({ navigation }) => {
     refetch();
   }, [data?.getEvents]);
 
-  let ParentId = accountDBCtx?.user?.parentId;
-  const {
-    data: userDB,
-    loading: stuLoading,
-    error,
-  } = useQuery(QUERY_STUDENTS, {
-    variables: {
-      parentId: ParentId?._id,
-    },
-    onCompleted: ({ getStudentsByParents }) => {
-      // console.log(getStudentsByParents, "test");
-    },
-    onError: (error) => {
-      console.log(error.message, "Error");
-    },
-  });
-
-  //
-  const {
-    data: academicData,
-    loading: academicLoading,
-    refetch: academicRefetch,
-  } = useQuery(ACADEMIC_YEAR);
-  useEffect(() => {
-    if (academicData) {
-      academicRefetch();
-      try {
-        let digits =
-          academicData?.getActiveAcademicYear[0]?.academicYear?.split("-");
-        let index1 = getKhmerNumber(digits[0]);
-        let index2 = getKhmerNumber(digits[1]);
-        let yearName = index1 + "~" + index2;
-        setAcademicName(yearName);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }, [academicData]);
-
-  //
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false) && academicRefetch());
   }, []);
 
-  useEffect(() => {
-    if (academicName === "២០២២~២០២៣") {
-      setAcademicYear(`${t("២០២២~២០២៣")}`);
-    } else if (academicName === "២០២៣~២០២៤") {
-      setAcademicYear(`${t("២០២៣~២០២៤")}`);
-    } else if (academicName === "២០២៤~២០២៥") {
-      setAcademicYear(`${t("២០២៤~២០២៥")}`);
-    } else if (academicName === "២០២៥~២០២៦") {
-      setAcademicYear(`${t("២០២៥~២០២៦")}`);
-    } else if (academicName === "២០២៦~២០២៧") {
-      setAcademicYear(`${t("២០២៦~២០២៧")}`);
-    } else if (academicName === "២០២៧~២០២៨") {
-      setAcademicYear(`${t("២០២៧~២០២៨")}`);
-    } else {
-      setAcademicYear(academicName);
-    }
-  });
-
   // console.log(dataArray, "dataArray");
-  if (loading || stuLoading || refreshing) {
+  if (loading || refreshing) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
@@ -205,7 +158,15 @@ const Events = ({ navigation }) => {
                     fontSize: 20,
                   }}
                 >
-                  {t("ឆ្នាំសិក្សា") + " " + academicYear}
+                  {t("ឆ្នាំសិក្សា") +
+                    " " +
+                    (getLanguage() === "en"
+                      ? activeAcademic?.academicYearName === null
+                        ? ""
+                        : activeAcademic?.academicYearName
+                      : activeAcademic?.academicYearKhName === null
+                      ? ""
+                      : activeAcademic?.academicYearKhName)}
                 </Text>
               </View>
             </View>

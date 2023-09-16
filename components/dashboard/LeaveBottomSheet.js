@@ -26,7 +26,11 @@ import { CREATE_LEAVE } from "../../graphql/newLeave";
 import { Platform } from "react-native";
 import graphQLClient from "../../config/endpoint_2";
 
-export default function LeaveBottomSheet({ navigation, dataSubUser }) {
+export default function LeaveBottomSheet({
+  navigation,
+  dataSubUser,
+  academicYear,
+}) {
   const { styleState, height, width } = useContext(StyleController);
   const [student, setStudent] = useState();
   const [shift, setShift] = useState();
@@ -67,7 +71,8 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
       console.log(error.message, "error stuClass");
     },
   });
-  // console.log(shift, "shift");
+
+  // console.log(academicYear, "academicYear");
   const ConfirmStartDate = (date) => {
     setStartDate(moment(date).locale("en", localization).format("YYYY-MM-DD"));
     setIsStartDateVisible(!isStartDateVisible);
@@ -181,7 +186,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
     }
   };
 
-  if (loading || dataSubUser === undefined) {
+  if (loading) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
@@ -254,6 +259,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                       color={
                         index % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK
                       }
+                      academicYear={academicYear}
                     />
                   </TouchableOpacity>
                 ))}
@@ -290,7 +296,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
           },
         }}
         animationType="fade"
-        height={height * 0.6}
+        height={height * 0.55}
       >
         <View
           style={{
@@ -387,7 +393,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
                 </Text>
                 <View
                   className="w-full rounded-lg flex-row justify-between"
-                  style={{ borderColor: "#cccccc", borderWidth: 1 }}
+                  style={{ borderColor: "#476CF1", borderWidth: 1 }}
                 >
                   <View className="flex-row">
                     <TouchableOpacity
@@ -446,7 +452,7 @@ export default function LeaveBottomSheet({ navigation, dataSubUser }) {
 
                 <TextInput
                   className="text-black text-[13px] font-kantunruy-regular pt-1 pl-1 w-[100%] p-2 h-fit rounded-lg"
-                  style={{ borderColor: "#cccccc", borderWidth: 1 }}
+                  style={{ borderColor: "#476CF1", borderWidth: 1 }}
                   placeholder={t("សូមសរសេរមូលហេតុ")}
                   editable
                   multiline={true}
@@ -494,7 +500,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 0,
     alignItems: "center",
-    borderColor: "#cccccc",
+    borderColor: "#476CF1",
     borderWidth: 1,
     borderRadius: 10,
   },

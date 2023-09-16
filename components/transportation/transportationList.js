@@ -25,6 +25,7 @@ import graphQLClient from "../../config/endpoint_2";
 import { COLORS } from "../../color";
 import { Image } from "react-native";
 import { Avatar } from "react-native-elements";
+import { getLanguage } from "react-multi-lang";
 
 const TransportationList = ({ navigation, route }) => {
   const [isStartDateVisible, setIsStartDateVisible] = useState(false);
@@ -117,7 +118,7 @@ const TransportationList = ({ navigation, route }) => {
     } else {
       return (
         <Image
-          resizeMode="cover"
+          resizeMode="contain"
           style={{
             height: 30,
             width: 30,
@@ -138,9 +139,12 @@ const TransportationList = ({ navigation, route }) => {
       {/* Header */}
       <SafeAreaView>
         <View className="bg-white w-full">
-          <View className="w-full h-14 bg-white border-b-[#E4E4E4] shadow-sm self-center">
+          <View
+            className="w-full bg-white border-b-[#E4E4E4] shadow-sm self-center"
+            style={{ height: 50, justifyContent: "center" }}
+          >
             <View className="flex-row items-center w-[95%] self-center">
-              <View className="w-[70%] h-14 flex-row items-center">
+              <View className="w-[70%] flex-row items-center">
                 <TouchableOpacity
                   className="self-center"
                   onPress={() => navigation.goBack()}
@@ -157,14 +161,38 @@ const TransportationList = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View className="w-[30%] h-14 flex-row items-center justify-end">
+              <View className="w-[30%] flex-row items-center justify-end">
+                <View
+                  style={{
+                    right: 10,
+                    alignSelf: "flex-end",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    alignSelf: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: COLORS.MAIN,
+                      fontFamily: "Bayon-Regular",
+                      fontSize: 16,
+                    }}
+                  >
+                    {getLanguage() === "en"
+                      ? data?.englishName
+                      : data?.lastName + " " + data?.firstName}
+                  </Text>
+                </View>
                 <Avatar
-                  size={30}
+                  size={23}
                   rounded
                   ImageComponent={() => StudentImage}
                   overlayContainerStyle={{
                     justifyContent: "center",
                     alignItems: "center",
+                    borderColor: COLORS.ORANGE,
+                    borderWidth: 1,
+                    resizeMode: "cover",
                   }}
                 />
               </View>

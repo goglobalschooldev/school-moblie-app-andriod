@@ -10,7 +10,7 @@ export default function HealthCard({ eysReport }) {
   const { styleState, height, width } = useContext(StyleController);
 
   const Checked = () => {
-    let checkBox = eysReport[0]?.parentsCheck?.title;
+    let checkBox = eysReport?.parentsCheck?.title;
     if (checkBox === true) {
       return (
         <View>
@@ -45,7 +45,7 @@ export default function HealthCard({ eysReport }) {
   };
 
   const checkSchool = () => {
-    let check = eysReport[0]?.atSchool?.title;
+    let check = eysReport?.atSchool?.title;
     if (check === true) {
       return (
         <View>
@@ -109,7 +109,6 @@ export default function HealthCard({ eysReport }) {
                 height: 50,
                 backgroundColor: COLORS.WHITE,
                 borderRadius: 50,
-
                 alignSelf: "center",
               }}
             >
@@ -160,7 +159,7 @@ export default function HealthCard({ eysReport }) {
                 color: COLORS.BLUE_DARK,
               }}
             >
-              ផ្សេងៗ/Other: {eysReport[0]?.atSchool?.description}
+              ផ្សេងៗ/Other: {eysReport?.atSchool?.description}
             </Text>
           </View>
         </View>
@@ -245,7 +244,7 @@ export default function HealthCard({ eysReport }) {
                 color: COLORS.ORANGE_DARK,
               }}
             >
-              ផ្សេងៗ/Other: {eysReport[0]?.parentsCheck?.description}
+              ផ្សេងៗ/Other: {eysReport?.parentsCheck?.description}
             </Text>
           </View>
         </View>

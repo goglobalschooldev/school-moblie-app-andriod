@@ -33,15 +33,15 @@ const PickupCard = () => {
           <View
             style={{
               justifyContent: "center",
-              width: 50,
-              height: 50,
+              width: 44,
+              height: 44,
               backgroundColor: COLORS.WHITE,
               borderRadius: 50,
             }}
           >
             <Image
               source={require("../assets/Images/father-daughter-and-mother.png")}
-              style={{ alignSelf: "center", width: 30, height: 30 }}
+              style={{ alignSelf: "center", width: 25, height: 25 }}
             />
           </View>
           <View
@@ -54,7 +54,7 @@ const PickupCard = () => {
             <Text
               style={{
                 fontFamily: "Bayon-Regular",
-                fontSize: 14,
+                fontSize: 12,
                 color: COLORS.ORANGE_DARK,
               }}
             >

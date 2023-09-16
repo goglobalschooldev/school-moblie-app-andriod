@@ -9,26 +9,21 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import Root from "../../root";
 import Header2 from "../../routes/header/Header2";
 import { StyleController } from "../../static/styleProvider";
 import CalendarStrip from "react-native-calendar-strip";
 import localization from "moment/locale/km";
 import { COLORS } from "../../color";
-import { useMutation, useQuery } from "@apollo/client";
-import { EYS_REPORT } from "../../graphql/gql_EYSReport";
 import FoodCard from "../FoodCard";
 import ActivitiesCard from "../ActivitiesCard";
 import HealthCard from "../HealthCard";
 import FeedBackCard from "../FeedbackCard";
-import ParentsRequest from "../ParentsRequest";
-import { UPDATE_EYS } from "../../graphql/gql_UpdateEYS";
-import { TouchableOpacity } from "react-native";
 import NurseCmt from "./NurseCmt";
 import ParentsCmt from "./ParentsCmt";
-import InputHealth from "./InputHealth";
 import { PartComponent } from "../../static/part-component";
 import { useTranslation } from "react-multi-lang";
+import graphQLClient from "../../config/endpoint_2";
+import { GET_EYSREPORTBYSTUDENT } from "../../graphql/GetEYSReportByStu";
 
 export default function ChildReport({ navigation, route }) {
   const { styleState, height, width } = useContext(StyleController);
@@ -38,87 +33,56 @@ export default function ChildReport({ navigation, route }) {
     moment(new Date()).locale("en", localization)
   );
   const onDateSelected = (e) => {
-    // setDate(moment(e).locale("en", localization).format("YYYY-MM-DD"));
-    setDate(moment(e).locale("en", localization));
+    setDate(moment(e).locale("en", localization).format("YYYY-MM-DD"));
+    // setDate(moment(e).locale("en", localization));
   };
   const { invoiceData } = route?.params;
+  const [loading, setLoading] = useState(true);
   const [parentsCmt, onChangeParentsCmt] = useState("");
   const [healthInput, onChangeHealthInput] = useState("");
-  const [report, setReport] = useState();
-  const [isChecked, setChecked] = useState(false);
   const t = useTranslation();
-
-  //
-  const {
-    data: EysData,
-    loading,
-    refetch,
-    error,
-  } = useQuery(EYS_REPORT, {
-    variables: {
-      stuId: invoiceData?.studentId,
-      date: date.format("YYYY-MM-DD"),
-    },
-    onCompleted: ({ getEYSReportPagination }) => {
-      console.log(getEYSReportPagination, "getEYSReportPagination");
-      setEysReport(getEYSReportPagination?.data);
-    },
-    onError: (error) => {
-      console.log(error.message, "EYS Error");
-    },
-  });
+  const stuId = route?.params?.stuId;
+  // console.log(stuId);
+  // console.log(JSON.stringify(date).substring(1).substring(0, 10));
   useEffect(() => {
-    refetch();
-  }, [eysReport]);
-  // console.log(eysReport, "eysReport");
+    async function fetchData() {
+      try {
+        const GetEYSReportForStudent = await graphQLClient.request(
+          GET_EYSREPORTBYSTUDENT,
+          {
+            stuId: stuId,
+            date: JSON.stringify(date).replace('"', "").substring(0, 10),
+          }
+        );
+        if (GetEYSReportForStudent) {
+          setLoading(false);
+          // console.log(GetEYSReportForStudent?.getEYSReportByStu);
+          setEysReport(GetEYSReportForStudent?.getEYSReportByStu);
+        }
+      } catch (error) {
+        // console.log(error.message, "Error GetEYSReportForStudent");
+        setLoading(false);
+      }
+    }
+    const interval = setInterval(() => {
+      // Your function logic here
+      fetchData();
+      // console.log("Function executed every 3 seconds");
+    }, 3000);
 
-  var Activities = eysReport[0]?.activities;
-  var Food = eysReport[0]?.food;
+    return () => {
+      clearInterval(interval);
+    };
+  }, [date]);
 
-  const filterFood = Food?.filter((e) => e?.qty !== 0);
-  const filterActivities = Activities?.filter((i) => i?.qty !== 0);
-
-  //
-  const id = eysReport[0]?._id;
-
-  const dateUpToDate = moment(eysReport[0]?.date)
+  const dateUpToDate = moment(eysReport?.date)
     .locale("en", localization)
     .format("YYYY-MM-DD");
 
-  const studentId = eysReport[0]?.stuId?._id;
-  // console.log(studentId, "studentId");
-
-  const [updateEYSReport, { updateLoding }] = useMutation(UPDATE_EYS, {
-    onError: (e) => {
-      console.log(e.message, "error");
-    },
-  });
-
-  const handleUpdate = async () => {
-    await updateEYSReport({
-      variables: {
-        updateEYSReport: {
-          _id: id,
-          date: dateUpToDate,
-          stuId: studentId,
-          parentsCheck: {
-            description: healthInput,
-            title: isChecked,
-          },
-          parentsComment: parentsCmt,
-        },
-      },
-      update(_, result) {
-        refetch();
-        console.log(result?.updateEYSReport, "result eysUpdate");
-      },
-    });
-  };
   useEffect(() => {
     onChangeParentsCmt(parentsCmt);
     onChangeHealthInput(healthInput);
   }, [parentsCmt, healthInput]);
-  // console.log(eysReport, "eysReport");
 
   if (loading) {
     return (
@@ -133,7 +97,11 @@ export default function ChildReport({ navigation, route }) {
           barStyle={Platform.OS === "ios" ? "dark-content" : "default"}
         />
         <SafeAreaView>
-          <Header2 title={t("របាយការណ៍កុមារដ្ឋាន")} navigation={navigation} />
+          <Header2
+            title={t("របាយការណ៍កុមារដ្ឋាន")}
+            navigation={navigation}
+            stuData={stuId}
+          />
         </SafeAreaView>
         <View style={styles.container}>
           <CalendarStrip
@@ -147,7 +115,6 @@ export default function ChildReport({ navigation, route }) {
               fontFamily: "Kantumruy-Regular",
               alignSelf: "center",
             }}
-            // calendarHeaderStyle={{ fontFamily: styleState.bayonKh, }}
             headerText={moment(date)
               .locale("en", localization)
               .format("dddd, Do MMMM YYYY")}
@@ -158,7 +125,6 @@ export default function ChildReport({ navigation, route }) {
               fontFamily: "Kantumruy-Regular",
             }}
             iconContainer={{ flex: 0.1 }}
-            // innerStyle={[{ flex: 1, width: width }]}
             selectedDate={date}
             highlightDateNameStyle={{
               color: "white",
@@ -189,18 +155,17 @@ export default function ChildReport({ navigation, route }) {
             shouldAllowFontScaling={true}
           />
 
-          {filterFood?.length > 0 || filterActivities?.length > 0 ? (
+          {eysReport?.food?.length > 0 || eysReport?.activities?.length > 0 ? (
             <View
               style={{
                 flex: 1,
                 width: width,
                 height: height,
-                // backgroundColor: "pink",
               }}
             >
               <ScrollView>
                 <PartComponent title={"ផ្នែកអាហារ/ Food"} />
-                {filterFood?.map((item, index) => {
+                {eysReport?.food?.map((item, index) => {
                   return (
                     <View key={index}>
                       <FoodCard
@@ -219,7 +184,7 @@ export default function ChildReport({ navigation, route }) {
                 })}
 
                 <PartComponent title={"ផ្នែកសកម្មភាព/ Activities"} />
-                {filterActivities?.map((items, index) => {
+                {eysReport?.activities?.map((items, index) => {
                   return (
                     <View key={index}>
                       <ActivitiesCard
@@ -239,48 +204,10 @@ export default function ChildReport({ navigation, route }) {
 
                 <PartComponent title={"ផ្នែកសុខភាព/ Health"} />
                 <HealthCard eysReport={eysReport} />
-
                 <PartComponent title={"មតិយោបល់/ Feedback"} />
                 <NurseCmt eysReport={eysReport} />
                 <ParentsCmt eysReport={eysReport} />
                 <FeedBackCard eysReport={eysReport} />
-
-                <PartComponent
-                  title={"ផ្នែកបញ្ចូលព័ត៌មាន/ Input information"}
-                />
-                <InputHealth
-                  healthInput={healthInput}
-                  onChangeHealthInput={onChangeHealthInput}
-                  isChecked={isChecked}
-                  setChecked={setChecked}
-                />
-                <ParentsRequest
-                  parentsCmt={parentsCmt}
-                  onChangeParentsCmt={onChangeParentsCmt}
-                />
-                <TouchableOpacity onPress={() => handleUpdate()}>
-                  <View
-                    style={{
-                      width: width * 0.95,
-                      height: height * 0.05,
-                      backgroundColor: COLORS.MAIN,
-                      alignSelf: "center",
-                      justifyContent: "center",
-                      borderRadius: 14,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: "Bayon-Regular",
-                        fontSize: 14,
-                        color: COLORS.WHITE,
-                        alignSelf: "center",
-                      }}
-                    >
-                      {t("រក្សាទុក")}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
               </ScrollView>
             </View>
           ) : (
@@ -328,7 +255,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 100,
     justifyContent: "center",
-    // backgroundColor:'pink'
   },
   textEmpty: {
     alignSelf: "center",

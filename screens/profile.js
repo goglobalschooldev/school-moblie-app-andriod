@@ -174,7 +174,7 @@ export default function Profile({ navigation }) {
     );
   }
   return (
-    <Root Header={<HeaderSetting title={t("គណនី")} navigation={navigation} />}>
+    <Root Header={<Header title={t("គណនី")} navigation={navigation} />}>
       <ScrollView
         contentContainerStyle={styles.scrollView}
         refreshControl={

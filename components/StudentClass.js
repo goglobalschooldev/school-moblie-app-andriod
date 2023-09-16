@@ -6,12 +6,38 @@ import { Image } from "react-native";
 import { ENROLLMENT_STUDENTS } from "../graphql/gql_enrollmentByStudents";
 import { useQuery } from "@apollo/client";
 import { getLanguage } from "react-multi-lang";
+import { GET_CLASSESBYSTUDENTFORMOBILE } from "../graphql/GetClassesByStudentForMobile";
+import graphQLClient from "../config/endpoint_2";
 
 export default function StudentClass(props) {
   const { styleState, height, width } = useContext(StyleController);
   const studentImage =
     "https://storage.go-globalschool.com/api" + props?.profileImg;
   // console.log(props, "props");
+  // console.log(props);
+
+  const [classes, setClasses] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const getClassesbystudentformobile = await graphQLClient.request(
+          GET_CLASSESBYSTUDENTFORMOBILE,
+          {
+            studentId: props?._id,
+            academicYearId: props?.academicYear?._id,
+          }
+        );
+        // console.log(
+        //   getClassesbystudentformobile,
+        //   "getClassesbystudentformobile"
+        // );
+        setClasses(getClassesbystudentformobile?.getClassesByStudentForMobile);
+      } catch (error) {
+        console.log(error.message, "getClassesbystudentformobile");
+      }
+    }
+    fetchData();
+  }, []);
 
   const {
     data: enrollmentStudent,
@@ -30,8 +56,8 @@ export default function StudentClass(props) {
     },
   });
 
-  let myClass = enrollmentStudent?.getEnrollmentByStudents?.map((item) => {
-    return item?.gradeName + " " + item?.className;
+  let myClass = classes?.map((item) => {
+    return item?.classesName;
   });
   let newClass = myClass?.join(", ");
 
@@ -61,12 +87,12 @@ export default function StudentClass(props) {
             alignSelf: "center",
           }}
         >
-          <View className="w-[20%]">
+          <View className="w-[15%]">
             {!studentImage ? (
               <Image
                 source={require("../assets/Images/student.png")}
                 className="h-14 w-14 rounded-full"
-                style={{ borderColor: props.color, borderWidth: 0.5 }}
+                style={{ borderColor: "#dcdcdc", borderWidth: 0.5 }}
               />
             ) : (
               <Image
@@ -78,22 +104,22 @@ export default function StudentClass(props) {
                         uri: studentImage,
                       }
                 }
-                className="h-14 w-14 rounded-full"
-                style={{ borderColor: props.color, borderWidth: 0.5 }}
+                className="h-10 w-10 rounded-full"
+                style={{ borderColor: "#dcdcdc", borderWidth: 1 }}
               />
             )}
           </View>
-          <View className="flex flex-col w-[80%] justify-around">
+          <View className="flex flex-col w-[85%] justify-around">
             {getLanguage() === "en" ? (
               <Text
-                className="font-kantunruy-regular text-[13px] leading-6"
+                className="font-bayon text-[13px] leading-6"
                 style={{ color: props?.color }}
               >
                 {props?.englishName}
               </Text>
             ) : (
               <Text
-                className="font-kantunruy-regular text-[13px] leading-6"
+                className="font-bayon text-[13px] leading-6"
                 style={{ color: props?.color }}
               >
                 {props?.lastName + " " + props?.firstName}

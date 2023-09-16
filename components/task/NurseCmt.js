@@ -54,7 +54,6 @@ export default function NurseCmt({ eysReport }) {
               flexDirection: "column",
               left: 10,
               justifyContent: "space-evenly",
-     
             }}
           >
             <Text
@@ -64,7 +63,7 @@ export default function NurseCmt({ eysReport }) {
                 color: COLORS.BLUE_DARK,
               }}
             >
-              មតិពេទ្យ/Nurse's Comment: {eysReport[0]?.nurseComment}
+              មតិពេទ្យ/Nurse's Comment: {eysReport?.nurseComment}
             </Text>
           </View>
         </View>

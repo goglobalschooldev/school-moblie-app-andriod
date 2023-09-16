@@ -1,14 +1,16 @@
 import { gql } from "@apollo/client";
 
-export const GET_CLASSES_BY_STU = gql`
+export const GET_CLASSESBYSTUDENTFORMOBILE = gql`
   query GetClassesByStudentForMobile($studentId: ID!, $academicYearId: ID!) {
     getClassesByStudentForMobile(
-      student_id: $studentId
+      studentId: $studentId
       academicYearId: $academicYearId
     ) {
       _id
-      className
-      totalStudent
+      classesId
+      classesName
+      programmeId
+      programmeName
     }
   }
 `;

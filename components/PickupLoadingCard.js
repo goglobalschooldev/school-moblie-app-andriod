@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
 import { Text, View } from "react-native";
-import { Entypo } from "@expo/vector-icons";
 import { StyleController } from "../static/styleProvider";
 import { COLORS } from "../color";
-import { Image } from "react-native";
+import { Image, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-multi-lang";
 
-const LeaveCard = () => {
+const PickupLoadingCard = () => {
   const { styleState, height, width } = useContext(StyleController);
   const t = useTranslation();
   return (
@@ -16,7 +15,6 @@ const LeaveCard = () => {
         flexDirection: "column",
         justifyContent: "space-around",
         paddingTop: 10,
-        // top: 10
       }}
     >
       <View
@@ -35,16 +33,14 @@ const LeaveCard = () => {
           <View
             style={{
               justifyContent: "center",
-              width: 44,
-              height: 44,
+              alignItems: "center",
+              width: 50,
+              height: 50,
               backgroundColor: COLORS.WHITE,
               borderRadius: 50,
             }}
           >
-            <Image
-              source={require("../assets/Images/written-paper-orange.png")}
-              style={{ alignSelf: "center", width: 22, height: 22 }}
-            />
+            <ActivityIndicator size={30} color="#EFB419" />
           </View>
           <View
             style={{
@@ -60,7 +56,7 @@ const LeaveCard = () => {
                 color: COLORS.ORANGE_DARK,
               }}
             >
-              {t("សូមចុចទីនេះដើម្បីសុំច្បាប់")}
+              {t("កំពុងស្វែងរកទីតាំងរបស់លោកអ្នក")}
             </Text>
           </View>
         </View>
@@ -69,4 +65,4 @@ const LeaveCard = () => {
   );
 };
 
-export default LeaveCard;
+export default PickupLoadingCard;

@@ -6,7 +6,6 @@ import { COLORS } from "../../color";
 
 export default function ParentsCmt({ eysReport }) {
   const { styleState, height, width } = useContext(StyleController);
-  // console.log(eysReport[0]?.parentsComment, "props");
   return (
     <View
       style={{
@@ -14,13 +13,11 @@ export default function ParentsCmt({ eysReport }) {
         flexDirection: "column",
         justifyContent: "space-around",
         paddingTop: 10,
-        // paddingBottom: 5,
       }}
     >
       <View
         style={{
           width: width * 0.95,
-          //   height: height * 0.09,
           alignSelf: "center",
           borderRadius: 15,
           backgroundColor: COLORS.ORANGE_LIGHT,
@@ -54,7 +51,6 @@ export default function ParentsCmt({ eysReport }) {
               flexDirection: "column",
               left: 10,
               justifyContent: "space-evenly",
-     
             }}
           >
             <Text
@@ -64,7 +60,7 @@ export default function ParentsCmt({ eysReport }) {
                 color: COLORS.ORANGE_DARK,
               }}
             >
-              មតិមាតាបិតា/Parent's Comment: {eysReport[0]?.parentsComment}
+              មតិមាតាបិតា/Parent's Comment: {eysReport?.parentsComment}
             </Text>
           </View>
         </View>

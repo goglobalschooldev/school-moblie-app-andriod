@@ -5,17 +5,17 @@ import { COLORS } from "../../color";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleController } from "../../static/styleProvider";
 import { DataController } from "../../context/Provider";
-import LanguageModal from "../../components/modal/languageModal";
+import { getLanguage } from "react-multi-lang";
 
-export default function Header2({ navigation, title }) {
+export default function Header2({ navigation, title, stuData }) {
   const { styleState, height, width } = useContext(StyleController);
   const { accountDBCtx, mobileDBCtx } = useContext(DataController);
   //
-  let ProfileImage = accountDBCtx?.user?.profileImage;
+  // console.log(stuData, "stuData");
 
+  let ProfileImage = stuData?.profileImg;
   const UserImage = useMemo(() => {
-    const userImage =
-      "https://storage.go-globalschool.com/api" + (mobileDBCtx || ProfileImage);
+    const userImage = "https://storage.go-globalschool.com/api" + ProfileImage;
     if (
       userImage === "https://storage.go-globalschool.com/api" ||
       null ||
@@ -36,7 +36,7 @@ export default function Header2({ navigation, title }) {
     } else {
       return (
         <Image
-          resizeMode="cover"
+          resizeMode="contain"
           style={{
             height: 30,
             width: 30,
@@ -47,7 +47,7 @@ export default function Header2({ navigation, title }) {
         />
       );
     }
-  }, [mobileDBCtx, ProfileImage]);
+  }, [ProfileImage]);
 
   return (
     <View style={{ width: width, backgroundColor: COLORS.WHITE }}>
@@ -82,31 +82,48 @@ export default function Header2({ navigation, title }) {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-end",
-              flexDirection:"row"
+              flexDirection: "row",
             }}
           >
             <View
               style={{
-                right: 5,
+                right: 10,
                 alignSelf: "flex-end",
                 justifyContent: "center",
                 alignItems: "center",
                 alignSelf: "center",
               }}
             >
-              <LanguageModal />
+              <Text
+                style={{
+                  color: COLORS.MAIN,
+                  fontFamily: "Bayon-Regular",
+                  fontSize: 16,
+                }}
+              >
+                {getLanguage() === "en"
+                  ? stuData?.englishName
+                  : stuData === undefined
+                  ? ""
+                  : stuData?.lastName + " " + stuData?.firstName}
+              </Text>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            {/* <TouchableOpacity onPress={() => navigation.navigate("Profile")}> */}
+            {stuData === undefined ? null : (
               <Avatar
-                size={30}
+                size={23}
                 rounded
                 ImageComponent={() => UserImage}
                 overlayContainerStyle={{
                   justifyContent: "center",
                   alignItems: "center",
+                  borderColor: COLORS.ORANGE,
+                  borderWidth: 1,
+                  resizeMode: "cover",
                 }}
               />
-            </TouchableOpacity>
+            )}
+            {/* </TouchableOpacity> */}
           </View>
         </View>
       </View>
