@@ -50,13 +50,13 @@ export default function ChildReport({ navigation, route }) {
         const GetEYSReportForStudent = await graphQLClient.request(
           GET_EYSREPORTBYSTUDENT,
           {
-            stuId: stuId,
+            stuId: stuId?._id,
             date: JSON.stringify(date).replace('"', "").substring(0, 10),
           }
         );
         if (GetEYSReportForStudent) {
           setLoading(false);
-          // console.log(GetEYSReportForStudent?.getEYSReportByStu);
+          console.log(GetEYSReportForStudent?.getEYSReportByStu);
           setEysReport(GetEYSReportForStudent?.getEYSReportByStu);
         }
       } catch (error) {

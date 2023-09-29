@@ -34,7 +34,7 @@ const Transportation = ({ navigation }) => {
   const [parentDataCheck, setParentDataCheck] = useState(false);
   const [loadingTime, setLoadingTime] = useState(true);
 
-  let ParentId = accountDBCtx?.user?.parentId;
+  let ParentId = accountDBCtx;
 
   useEffect(() => {
     async function fetchData() {
@@ -42,7 +42,7 @@ const Transportation = ({ navigation }) => {
         const getStuTransportation = await graphQLClient.request(
           GET_STUDENT_TRANSPORTATION,
           {
-            id: ParentId?._id,
+            id: ParentId?.uid,
           }
         );
         // console.log(getStuTransportation, "getStuTransportation");

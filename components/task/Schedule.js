@@ -19,83 +19,39 @@ import { ACTION } from "../../context/Reducer";
 import { BtnDay } from "../../static/weekDay";
 import { SubjectSchedule } from "./sub-schedule";
 import { useTranslation } from "react-multi-lang";
+import graphQLClient from "../../config/endpoint_2";
+import { Get_Schedule_For_Mobile } from "../../graphql/Get_ScheduleForMobile";
 
 export default function Schedule({ navigation, route }) {
   const { styleState, height, width } = useContext(StyleController);
-  const { sectionDBCtxDispatch } = useContext(DataController);
   const [selectDay, setSelectDay] = useState("Monday");
   const [sectionData, setSectionData] = useState([]);
-  const [scheduleSort, setScheduleSort] = useState();
-  const [scheduleData, setScheduleData] = useState();
   const t = useTranslation();
 
   const { schedule } = route?.params;
   const stuData = route?.params?.stuId;
   let ClassId = schedule?.classesId;
-  let AcademicYearId = route?.params?.academic;
-  let ProgramId = schedule?.programmeId;
-
-  //
-  // console.log(stuData, "stuData");
-  const {
-    data: sectionDB,
-    loading,
-    refetch,
-    error,
-  } = useQuery(STU_SECTION, {
-    variables: {
-      classId: ClassId,
-      academicYearId: AcademicYearId,
-      programId: ProgramId,
-    },
-    onCompleted: ({ getSectionShiftByClassId }) => {
-      // console.log(getSectionShiftByClassId, "test");
-    },
-    onError: (error) => {
-      console.log(error.message, "Error");
-    },
-  });
-  // console.log(sectionDB,"sectionDB")
 
   useEffect(() => {
-    if (sectionDB) {
-      refetch();
-      sectionDBCtxDispatch({
-        type: ACTION.STU_SECTION,
-        payload: sectionDB?.getSectionShiftByClassId,
-      });
-      setSectionData(sectionDB?.getSectionShiftByClassId);
+    async function fetchData() {
+      try {
+        const GetScheduleForMobile = await graphQLClient.request(
+          Get_Schedule_For_Mobile,
+          {
+            classeId: ClassId,
+            day: selectDay.toLowerCase(),
+          }
+        );
+        if (GetScheduleForMobile) {
+          // console.log(GetScheduleForMobile, "GetScheduleForMobile");
+          setSectionData(GetScheduleForMobile?.getScheduleForMobile);
+        }
+      } catch (error) {
+        console.log(error.message, "Error GetScheduleForMobile");
+      }
     }
-  }, [sectionDB, ClassId, AcademicYearId, ProgramId]);
-
-  useEffect(() => {
-    let stuSections = sectionData?.sections;
-    if (sectionData?.sections) {
-      let sortedArray = [...stuSections]?.sort(
-        (a, b) => a.startTime - b.endTime
-      );
-      setScheduleSort(sortedArray);
-    }
-    refetch();
-  }, [sectionData?.sections]);
-
-  const scheduleByDay = scheduleSort?.filter(
-    (e) => e?.dayOfWeek === selectDay || e?.breakTime === true
-  );
-
-  const uniqueIds = [];
-
-  const uniqueSchedule = scheduleByDay?.filter((element) => {
-    const isDuplicate = uniqueIds?.includes(element?.startTime);
-
-    if (!isDuplicate) {
-      uniqueIds?.push(element?.startTime);
-
-      return true;
-    }
-
-    return false;
-  });
+    fetchData();
+  }, [selectDay]);
 
   return (
     <>
@@ -136,9 +92,12 @@ export default function Schedule({ navigation, route }) {
           >
             <View
               style={{
+                flex: 1,
+                width: width,
                 flexDirection: "row",
                 justifyContent: "space-around",
                 alignItems: "center",
+                // backgroundColor: "red",
               }}
             >
               <View style={{ flexDirection: "column" }}>
@@ -260,19 +219,23 @@ export default function Schedule({ navigation, route }) {
         </View>
 
         <ScrollView>
-          {uniqueSchedule?.length > 0 ? (
-            uniqueSchedule?.map((item, index) => {
+          {sectionData?.length > 0 ? (
+            sectionData?.map((item, index) => {
               return (
                 <View key={item?._id}>
-                  <SubjectSchedule
-                    {...item}
-                    bgColor={
-                      index % 4 === 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
-                    }
-                    color={
-                      index % 4 === 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK
-                    }
-                  />
+                  {item?.day?.subjectId !== null ? (
+                    <SubjectSchedule
+                      {...item}
+                      bgColor={
+                        index % 4 === 0
+                          ? COLORS.BLUE_LIGHT
+                          : COLORS.ORANGE_LIGHT
+                      }
+                      color={
+                        index % 4 === 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK
+                      }
+                    />
+                  ) : null}
                 </View>
               );
             })

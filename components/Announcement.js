@@ -16,7 +16,13 @@ export default function AnnouncementCard(props) {
         }}
         resizeMode="contain"
         width={width * 0.95}
-        style={{ alignSelf: "center", borderRadius: 15, margin: 5 }}
+        style={{
+          alignSelf: "center",
+          borderRadius: 15,
+          margin: 5,
+          borderColor: "gray",
+          borderWidth: 0.2,
+        }}
       />
     );
     // }

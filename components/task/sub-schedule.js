@@ -3,82 +3,41 @@ import { Text, View } from "react-native";
 import { StyleController } from "../../static/styleProvider";
 import { Entypo } from "@expo/vector-icons";
 import { COLORS } from "../../color";
-import { getKhmerNumber } from "../../static/khmerNumber";
+import { getKhmerNum } from "../../static/khmerNumber";
 import { padLeadingZeros } from "../../static/padLeadingZeros";
 import { Divider } from "react-native-paper";
 import { getEngNumber } from "../../static/engNumber";
 import { getLanguage } from "react-multi-lang";
 import { Image } from "react-native";
 import PreviewTeacherImg from "./preiewTeacherImg";
-
+import moment from "moment";
 export const SubjectSchedule = (props) => {
   const { styleState, height, width } = useContext(StyleController);
   const [teacherName, setTeacherName] = useState();
 
-  // console.log(props,"props");
-  const teacherImage =
-    "https://storage.go-globalschool.com/api" +
-    props?.leadTeacherId?.profileImg;
+  // console.log(props, "props");
+  const teacherImage = props?.day?.teacherProfileImg;
 
-  const teacherLeader = props?.leadTeacherId;
+  const teacherLeader = props?.day;
 
-  var startHour = (props?.startTime + "").split(".")[0];
-  var startMin = (props?.startTime + "").split(".")[1];
-
-  var endHour = (props?.endTime + "").split(".")[0];
-  var endMin = (props?.endTime + "").split(".")[1];
-
-  // console.log(startMin,"startMin")
-
-  const timeSchedule = `${startHour}:${
-    startMin > 0
-      ? padLeadingZeros(
-          startMin?.includes("0") || startMin > 9 ? startMin : startMin + "0",
-          2
-        )
-      : "00"
-  } - ${endHour}:${
-    endMin > 0
-      ? padLeadingZeros(
-          endMin?.includes("0") || endMin > 9 ? endMin : endMin + "0",
-          2
-        )
-      : "00"
-  }`;
+  const timeSchedule = `${moment(props?.startTime)
+    .locale("en-gb")
+    .format("hh:mm")} - ${moment(props?.endTime)
+    .locale("en-gb")
+    .format("hh:mm")}}`;
 
   let startTime = timeSchedule.split(" - ");
-  let startTimeFirst = getKhmerNumber(startTime[0].split(":")[0]);
-  let startTimelast = getKhmerNumber(startTime[0].split(":")[1]);
-  let endTimeFirst = getKhmerNumber(startTime[1].split(":")[0]);
-  let endTimelast = getKhmerNumber(startTime[1].split(":")[1]);
+
+  let startTimeFirst = getKhmerNum(startTime[0].split(":")[0]);
+  let startTimelast = getKhmerNum(startTime[0].split(":")[1]);
+  let endTimeFirst = getKhmerNum(startTime[1].split(":")[0]);
+  let endTimelast = getKhmerNum(startTime[1].split(":")[1]);
 
   let startTimeEng = timeSchedule.split(" - ");
   let startTimeFirstEng = getEngNumber(startTimeEng[0].split(":")[0]);
   let startTimelastEng = getEngNumber(startTimeEng[0].split(":")[1]);
   let endTimeFirstEng = getEngNumber(startTimeEng[1].split(":")[0]);
   let endTimelastEng = getEngNumber(startTimeEng[1].split(":")[1]);
-  // console.log(props?.leadTeacherId,"teacher")
-
-  useEffect(() => {
-    if (
-      (props?.leadTeacherId?.lastName &&
-        props?.leadTeacherId?.firstName &&
-        props?.leadTeacherId) !== undefined ||
-      null
-    ) {
-      {
-        getLanguage() === "kh"
-          ? setTeacherName(
-              props?.leadTeacherId?.lastName +
-                " " +
-                props?.leadTeacherId?.firstName
-            )
-          : setTeacherName(props?.leadTeacherId?.englishName);
-      }
-    } else {
-      setTeacherName("");
-    }
-  }, []);
 
   if (props?.breakTime === false) {
     return (
@@ -172,15 +131,6 @@ export const SubjectSchedule = (props) => {
                   teacherImage={teacherImage}
                   teacherLeader={teacherLeader}
                 />
-                {/* <Image
-                  source={{ uri: teacherImage }}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 50,
-                    alignSelf: "center",
-                  }}
-                /> */}
               </View>
               <View
                 style={{
@@ -199,7 +149,7 @@ export const SubjectSchedule = (props) => {
                   }}
                   numberOfLines={1}
                 >
-                  {props?.subjectId?.subjectName}
+                  {props?.day?.subjectName}
                 </Text>
                 <Text
                   style={{
@@ -209,17 +159,20 @@ export const SubjectSchedule = (props) => {
                   }}
                   numberOfLines={1}
                 >
-                  {getLanguage() === "en"
-                    ? props?.leadTeacherId?.englishName !== undefined
-                      ? props?.leadTeacherId?.englishName
+                  {
+                    getLanguage() === "en"
+                      ? props?.day?.teacherName !== undefined
+                        ? props?.day?.teacherName
+                        : ""
+                      : props?.day?.teacherName !== undefined
+                      ? props?.day?.teacherName
                       : ""
-                    : (props?.leadTeacherId?.lastName !== undefined
-                        ? props?.leadTeacherId?.lastName
-                        : "") +
-                      " " +
-                      (props?.leadTeacherId?.firstName !== undefined
-                        ? props?.leadTeacherId?.firstName
-                        : "")}
+                    // +
+                    // " " +
+                    // (props?.day?.teacherName !== undefined
+                    //   ? props?.day?.teacherName
+                    //   : "")
+                  }
                 </Text>
               </View>
             </View>

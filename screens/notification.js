@@ -181,7 +181,7 @@ const NotificationScreen = ({ navigation }) => {
                           >
                             <Image
                               source={require("../assets/Images/bell-mark-as-read.png")}
-                              className="h-7 w-7 rounded-full items-center mx-2"
+                              className="h-6 w-6 rounded-full items-center mx-5"
                             />
                           </TouchableOpacity>
                         );
@@ -211,7 +211,7 @@ const NotificationScreen = ({ navigation }) => {
       <View className="flex-1 w-full h-screen bg-white">
         {notiData?.length === 0 ? (
           <View className="flex-1 h-[100%] w-full bg-white flex-col items-center justify-center">
-            <Text className="text-gray font-kantunruy-regular">
+            <Text className="text-main font-kantunruy-regular">
               {t("មិនមានទិន្នន័យ")}
             </Text>
           </View>

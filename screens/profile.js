@@ -177,13 +177,13 @@ export default function Profile({ navigation }) {
     <Root Header={<Header title={t("គណនី")} navigation={navigation} />}>
       <ScrollView
         contentContainerStyle={styles.scrollView}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            progressBackgroundColor="white"
-          />
-        }
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={refreshing}
+        //     onRefresh={onRefresh}
+        //     progressBackgroundColor="white"
+        //   />
+        // }
       >
         <View style={styles.container}>
           <View style={styles.header}>

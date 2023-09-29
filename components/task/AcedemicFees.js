@@ -29,7 +29,7 @@ export default function AcedemicFees({ navigation, route }) {
   const [unitLng, setUnitLng] = useState("");
   const stuId = route?.params?.stuId;
 
-  console.log(stuId);
+  // console.log(stuId);
   const [showInvoice, setShowInvoice] = useState([]);
   const {
     data: invoice,
@@ -37,10 +37,13 @@ export default function AcedemicFees({ navigation, route }) {
     refetch,
   } = useQuery(INVOICE_BY_STUDENT, {
     variables: {
-      studentId: stuId,
+      studentId: stuId?._id,
     },
     onCompleted: ({ getInvoiceBystudentIdWithPagination }) => {
-      // console.log(getInvoiceBystudentIdWithPagination,"Test")
+      console.log(
+        getInvoiceBystudentIdWithPagination,
+        "getInvoiceBystudentIdWithPagination"
+      );
     },
     onError: (error) => {
       console.log(error.message, "error");
@@ -106,21 +109,21 @@ export default function AcedemicFees({ navigation, route }) {
                   const getDescription = () => {
                     // let des = moment(data?.startDate).format('YYYY')
                     // let des = `${t("unit.1Year")}`;
-                    let des = "1 Year";
+                    let des = `${t("1 Year")}`;
 
                     if (item?.month) {
-                      return "1 Month";
+                      return `${t("1 Month")}`;
                     }
-
                     if (item?.quarter) {
-                      return "1 Quarter";
+                      return `${t("1 Quarter")}`;
                     }
 
                     if (item?.academicTermId) {
-                      return "1 Semester";
+                      return `${t("1 Semester")}`;
                     }
                     return des;
                   };
+
                   if (
                     item?.netAmount &&
                     item?.grossAmount &&
@@ -202,6 +205,7 @@ export default function AcedemicFees({ navigation, route }) {
                               </Text>
                             </View>
                           </View>
+
                           <View style={{ flexDirection: "row" }}>
                             {description?.map((load) => {
                               // console.log(description,"load");
@@ -238,8 +242,11 @@ export default function AcedemicFees({ navigation, route }) {
                                     }}
                                   >
                                     <Text style={styles.subtitle}>
-                                      {load?.countMonth}{" "}
-                                      {load?.incomeHead?.unit}
+                                      {t(
+                                        load?.countMonth +
+                                          " " +
+                                          load?.incomeHead?.unit
+                                      )}
                                       {/* {load?.incomeHead?.unit === "Month" ? (`${t("unit.month")}`): (`${t("unit.year")}`)} */}
                                     </Text>
                                   </View>
@@ -262,8 +269,7 @@ export default function AcedemicFees({ navigation, route }) {
                         </View>
                       </View>
                     );
-                  }
-                  {
+                  } else {
                     return (
                       <View style={styles.descriptionStyle} key={item?._id}>
                         <View
@@ -294,60 +300,152 @@ export default function AcedemicFees({ navigation, route }) {
                             </View>
                           </View>
                         </View>
-                        <View style={{ flexDirection: "column" }}>
-                          {description?.map((load) => {
-                            return (
+                        {description.length !== 0 ? (
+                          <View style={{ flexDirection: "column" }}>
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                borderColor: "#FEC888",
+                                borderBottomWidth: 1,
+                                borderRadius: 5,
+                              }}
+                            >
                               <View
-                                key={load?._id}
                                 style={{
-                                  flexDirection: "row",
-                                  borderColor: "#FEC888",
-                                  borderBottomWidth: 1,
-                                  borderRadius: 5,
+                                  width: width * 0.4,
+                                  // alignItems: "center",
+                                  padding: 2,
+                                  alignSelf: "flex-start",
+                                  // backgroundColor: "red",
                                 }}
                               >
-                                <View
-                                  style={{
-                                    width: width * 0.4,
-                                    // alignItems: "center",
-                                    padding: 2,
-                                    alignSelf: "flex-start",
-                                    // backgroundColor: "red",
-                                  }}
-                                >
-                                  <Text style={styles.subtitle}>
-                                    {load?.incomeHead?.incomeHead}
-                                  </Text>
-                                </View>
-
-                                <View
-                                  style={{
-                                    width: width * 0.18,
-                                    alignItems: "center",
-                                    alignSelf: "center",
-                                    // backgroundColor: "yellow",
-                                  }}
-                                >
-                                  <Text style={styles.subtitle}>
-                                    {load?.countMonth} {load?.incomeHead?.unit}
-                                  </Text>
-                                </View>
-                                <View
-                                  style={{
-                                    width: width * 0.17,
-                                    alignItems: "center",
-                                    // backgroundColor: "green",
-                                    alignSelf: "center",
-                                  }}
-                                >
-                                  <Text style={styles.subtitleDollar}>
-                                    ${load?.total}
-                                  </Text>
-                                </View>
+                                <Text style={styles.subtitle}>
+                                  ថ្លៃសិក្សា/Tuition Fee
+                                </Text>
                               </View>
-                            );
-                          })}
-                        </View>
+                              <View
+                                style={{
+                                  width: width * 0.18,
+                                  alignItems: "center",
+                                  alignSelf: "center",
+                                }}
+                              >
+                                <Text style={styles.subtitle}>
+                                  {getDescription()}
+                                </Text>
+                              </View>
+                              <View
+                                style={{
+                                  width: width * 0.17,
+                                  alignItems: "center",
+                                  alignSelf: "center",
+                                }}
+                              >
+                                <Text style={styles.subtitleDollar}>
+                                  ${item?.netAmount}
+                                </Text>
+                              </View>
+                            </View>
+                            {description?.map((load) => {
+                              return (
+                                <View
+                                  key={load?._id}
+                                  style={{
+                                    flexDirection: "row",
+                                    borderColor: "#FEC888",
+                                    borderBottomWidth: 1,
+                                    borderRadius: 5,
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      width: width * 0.4,
+                                      padding: 2,
+                                      alignSelf: "flex-start",
+                                    }}
+                                  >
+                                    <Text style={styles.subtitle}>
+                                      {load?.incomeHead?.incomeHead}
+                                    </Text>
+                                  </View>
+
+                                  <View
+                                    style={{
+                                      width: width * 0.18,
+                                      alignItems: "center",
+                                      alignSelf: "center",
+                                      // backgroundColor: "green",
+                                    }}
+                                  >
+                                    <Text style={styles.subtitle}>
+                                      {t(
+                                        load?.countMonth +
+                                          load?.incomeHead?.unit
+                                      )}
+                                    </Text>
+                                  </View>
+                                  <View
+                                    style={{
+                                      width: width * 0.17,
+                                      alignItems: "center",
+                                      // backgroundColor: "green",
+                                      alignSelf: "center",
+                                    }}
+                                  >
+                                    <Text style={styles.subtitleDollar}>
+                                      ${load?.total}
+                                    </Text>
+                                  </View>
+                                </View>
+                              );
+                            })}
+                          </View>
+                        ) : (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              borderColor: "#FEC888",
+                              borderBottomWidth: 1,
+                              borderRadius: 5,
+                            }}
+                          >
+                            <View
+                              style={{
+                                width: width * 0.4,
+                                // alignItems: "center",
+                                padding: 2,
+                                alignSelf: "flex-start",
+                                // backgroundColor: "red",
+                              }}
+                            >
+                              <Text style={styles.subtitle}>
+                                ថ្លៃសិក្សា/Tuition Fee
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: width * 0.18,
+                                alignItems: "center",
+                                alignSelf: "center",
+                              }}
+                            >
+                              <Text style={styles.subtitle}>
+                                {getDescription()}
+                              </Text>
+                            </View>
+                            <View
+                              style={{
+                                width: width * 0.17,
+                                alignItems: "center",
+                                alignSelf: "center",
+                              }}
+                            >
+                              <Text style={styles.subtitleDollar}>
+                                ${item?.netAmount}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
                       </View>
                     );
                   }
@@ -406,7 +504,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FEF5EA",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     alignSelf: "center",
     borderRadius: 5,
     marginVertical: 5,

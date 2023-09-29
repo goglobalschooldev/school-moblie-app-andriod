@@ -9,6 +9,7 @@ import {
   StyleSheet,
   RefreshControl,
   SectionList,
+  ImageBackground,
 } from "react-native";
 import { COLORS } from "../color";
 import EventCards from "../components/EventCards";
@@ -62,7 +63,9 @@ const Events = ({ navigation }) => {
   //
   const { data, loading, refetch } = useQuery(QUERY_EVENTS, {
     variables: {
-      academicYearId: activeAcademic?._id,
+      academicYearId:
+        // activeAcademic?._id
+        "62f079626cf8a36847d31d2d",
     },
     onCompleted: ({ getEvents }) => {},
     onError: (error) => {
@@ -112,94 +115,126 @@ const Events = ({ navigation }) => {
           backgroundColor: COLORS.WHITE,
         }}
       >
-        <View
+        <ImageBackground
+          source={require("../assets/Images/Dashboard.png")}
+          resizeMode="contain"
           style={{
-            flexDirection: "column",
-            height: height * 0.17,
-            width: width * 0.95,
-            alignSelf: "center",
-            top: 10,
+            flex: 1,
+            justifyContent: "flex-start",
           }}
         >
+          {/* {dataArray === null ? ( */}
           <View
             style={{
+              flexDirection: "column",
+              height: height * 0.17,
               width: width * 0.95,
-              height: height * 0.09,
               alignSelf: "center",
-              borderRadius: 15,
-              backgroundColor: COLORS.BLUE_LIGHT,
-              justifyContent: "center",
+              top: 10,
             }}
           >
-            <View style={{ flexDirection: "row", left: 10 }}>
-              <View
-                style={{
-                  justifyContent: "center",
-                  width: 50,
-                  height: 50,
-                  backgroundColor: COLORS.WHITE,
-                  borderRadius: 50,
-                }}
-              >
-                <Entypo
-                  name="graduation-cap"
-                  size={32}
+            <View
+              style={{
+                width: width * 0.95,
+                height: height * 0.09,
+                alignSelf: "center",
+                borderRadius: 15,
+                backgroundColor: COLORS.BLUE_LIGHT,
+                justifyContent: "center",
+              }}
+            >
+              <View style={{ flexDirection: "row", left: 10 }}>
+                <View
                   style={{
-                    alignSelf: "center",
-                    color: COLORS.MAIN,
-                  }}
-                />
-              </View>
-              <View style={{ justifyContent: "center", left: 10 }}>
-                <Text
-                  style={{
-                    fontFamily: "Bayon-Regular",
-                    color: COLORS.MAIN,
-                    fontSize: 20,
+                    justifyContent: "center",
+                    width: 50,
+                    height: 50,
+                    backgroundColor: COLORS.WHITE,
+                    borderRadius: 50,
                   }}
                 >
-                  {t("ឆ្នាំសិក្សា") +
-                    " " +
-                    (getLanguage() === "en"
-                      ? activeAcademic?.academicYearName === null
-                        ? ""
-                        : activeAcademic?.academicYearName
-                      : activeAcademic?.academicYearKhName === null
-                      ? ""
-                      : activeAcademic?.academicYearKhName)}
-                </Text>
+                  <Entypo
+                    name="graduation-cap"
+                    size={32}
+                    style={{
+                      alignSelf: "center",
+                      color: COLORS.MAIN,
+                    }}
+                  />
+                </View>
+                <View style={{ justifyContent: "center", left: 10 }}>
+                  <Text
+                    style={{
+                      fontFamily: "Bayon-Regular",
+                      color: COLORS.MAIN,
+                      fontSize: 20,
+                    }}
+                  >
+                    {t("ឆ្នាំសិក្សា") +
+                      " " +
+                      (getLanguage() === "en"
+                        ? activeAcademic?.academicYearName === null
+                          ? "2022~2023"
+                          : activeAcademic?.academicYearName
+                        : activeAcademic?.academicYearKhName === null
+                        ? "២០២២~២០២៣"
+                        : activeAcademic?.academicYearKhName)}
+                  </Text>
+                </View>
               </View>
             </View>
+            <View style={{ top: 10 }}>
+              <PartComponent title={t("ខែ តុលា ឆ្នាំ ២០២២")} />
+            </View>
           </View>
-          <View style={{ top: 10 }}>
-            <PartComponent title={t("ខែ តុលា ឆ្នាំ ២០២២")} />
-          </View>
-        </View>
-        <ScrollView
-          contentContainerStyle={styles.scrollView}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              progressBackgroundColor="white"
-            />
-          }
-        >
-          {dataArray?.map((item) => {
-            num++;
-            return (
-              <View key={item?._id}>
-                <EventCards
-                  {...item}
-                  bgColor={
-                    num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
-                  }
-                  color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
-                />
-              </View>
-            );
-          })}
-        </ScrollView>
+          {/* 
+           ) : (
+             <View
+              style={{
+                width: width,
+                height: height * 0.7,
+                justifyContent: "center",
+                alignItems: "center",
+               }}
+             >
+               <Text
+                 style={{
+                   fontFamily: "Kantumruy-Regular",
+                   fontSize: 16,
+                   color: COLORS.MAIN,
+                 }}
+               >
+                 {t("មិនមានទិន្នន័យ")}
+               </Text>
+             </View>
+           )} 
+          */}
+          <ScrollView
+            contentContainerStyle={styles.scrollView}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                progressBackgroundColor="white"
+              />
+            }
+          >
+            {dataArray?.map((item) => {
+              num++;
+              return (
+                <View key={item?._id}>
+                  <EventCards
+                    {...item}
+                    bgColor={
+                      num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
+                    }
+                    color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
+                  />
+                </View>
+              );
+            })}
+          </ScrollView>
+        </ImageBackground>
       </View>
     </>
   );

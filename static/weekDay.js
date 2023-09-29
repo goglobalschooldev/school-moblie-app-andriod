@@ -10,16 +10,16 @@ export const BtnDay = (props) => {
         width: width * 0.115,
         height: height * 0.055,
         justifyContent: "center",
-        borderRadius: 8,
-        margin: 5,
+        borderRadius: 4,
+        margin: 3,
         ...props.style,
       }}
       onPress={props?.onPress}
     >
       <View
         style={{
-          width: 35,
-          height: 35,
+          width: 31,
+          height: 31,
           backgroundColor: "white",
           alignSelf: "center",
           borderRadius: 80,
@@ -29,7 +29,7 @@ export const BtnDay = (props) => {
         <Text
           style={{
             alignSelf: "center",
-            fontSize: 11,
+            fontSize: 9,
             fontFamily: "Kantumruy-Regular",
           }}
         >

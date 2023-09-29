@@ -7,6 +7,7 @@ import { useTranslation } from "react-multi-lang";
 
 export default function AttendanceList(props) {
   const t = useTranslation();
+  // console.log(props);
   return (
     <View
       style={{
@@ -14,22 +15,14 @@ export default function AttendanceList(props) {
       }}
     >
       <View className="flex flex-row h-fit w-[97%] bg-white items-center border-b border-background self-center">
-        <View className="py-3 justify-center w-[21%] items-center">
+        <View className="py-3 justify-center w-[31%] items-center">
           <Text className="text-black font-kantunruy-regular text-xs leading-6">
             {moment(props?.data)
               .locale("en", localization)
               .format("DD MMM YYYY")}
           </Text>
         </View>
-        <View className=" justify-center self-center w-[30%] items-center px-1">
-          <Text
-            className="text-black font-kantunruy-regular text-xs leading-6"
-            // numberOfLines={1}
-          >
-            {props?.classroom}
-          </Text>
-        </View>
-        <View className="py-3 justify-center w-[16%] items-center">
+        <View className="py-3 justify-center w-[21%] items-center">
           {props?.check_in === null ||
           props?.check_in === "" ||
           props?.check_in === undefined ? (
@@ -42,7 +35,7 @@ export default function AttendanceList(props) {
             </Text>
           )}
         </View>
-        <View className="py-3 justify-center w-[16%] items-center">
+        <View className="py-3 justify-center w-[21%] items-center">
           {props?.check_out === null ||
           props?.check_out === "" ||
           props?.check_out === undefined ? (
@@ -55,28 +48,28 @@ export default function AttendanceList(props) {
             </Text>
           )}
         </View>
-        <View className="py-3 justify-center w-[17%] items-center">
+        <View className="py-3 justify-center w-[27%] items-center">
           <Text
             className={clsx(
               "font-kantunruy-regular text-xs leading-6",
-              props?.status === "LATE"
+              props?.attendance === "LATE"
                 ? "text-[#00AE50]"
-                : props?.status === "PRESENT"
+                : props?.attendance === "PRESENT"
                 ? "text-[#0000FD]"
-                : props?.status === "ABSENT"
+                : props?.attendance === "ABSENT"
                 ? "text-[#FD0002]"
-                : props?.status === "PERMISSION"
+                : props?.attendance === "PERMISSION"
                 ? "text-[#FEBE00]"
                 : "text-black"
             )}
           >
-            {props?.status === "LATE"
+            {props?.attendance === "LATE"
               ? t("យឺត")
-              : props?.status === "PRESENT"
+              : props?.attendance === "PRESENT"
               ? t("វត្តមាន")
-              : props?.status === "ABSENT"
+              : props?.attendance === "ABSENT"
               ? t("អវត្តមាន")
-              : props?.status === "PERMISSION"
+              : props?.attendance === "PERMISSION"
               ? t("សុំច្បាប់")
               : null}
           </Text>

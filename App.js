@@ -22,15 +22,14 @@ export default function App() {
   // };
 
   // useMemo(() => {
-  //   if (version < "1.0.19") {
+  //   if (version < "1.0.30") {
   //     Alert.alert(
   //       "Update App",
   //       "Please update new version to continue using app",
   //       [
   //         {
   //           text: "cancel",
-  //           onPress: () => console.log('Cancel Pressed'),
-
+  //           onPress: () => console.log("Cancel Pressed"),
   //         },
   //         {
   //           text: "Update Now",

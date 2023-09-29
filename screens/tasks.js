@@ -37,8 +37,7 @@ const wait = (timeout) => {
 
 const Tasks = ({ navigation }) => {
   const { styleState, height, width } = useContext(StyleController);
-  const { accountDBCtx, studentsDBCtxDispatch, sectionDBCtx } =
-    useContext(DataController);
+  const { accountDBCtx, studentsDBCtxDispatch } = useContext(DataController);
   const [academicName, setAcademicName] = useState();
   const [academicYear, setAcademicYear] = useState();
   const [refreshing, setRefreshing] = useState(false);

@@ -43,7 +43,8 @@ export default function PreviewTeacherImg({ teacherImage, teacherLeader }) {
           teacherImage === "https://storage.go-globalschool.com/apinull" ||
           null ||
           undefined ||
-          teacherLeader === null
+          teacherLeader === null ||
+          teacherImage === ""
             ? require("../../assets/Images/teacher.png")
             : { uri: teacherImage + "?time=" + new Date(), cache: "reload" }
         }

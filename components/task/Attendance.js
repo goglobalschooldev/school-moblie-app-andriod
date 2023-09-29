@@ -550,23 +550,18 @@ const Attendance = ({ navigation, route }) => {
       </View>
 
       <View className="flex flex-row h-12 w-[97%] bg-main rounded-lg items-center mt-2 justify-center self-center">
-        <View className=" w-[21%] border-r border-[#ffffff6c] justify-center items-center">
+        <View className=" w-[31%] border-r border-[#ffffff6c] justify-center items-center">
           <Text className="text-white font-bayon text-sm self-center leading-7">
             {t("កាលបរិច្ឆេទ")}
           </Text>
         </View>
-        <View className="justify-center w-[30%] items-center border-r border-[#ffffff6c] self-center">
-          <Text className="text-white font-bayon text-sm leading-7 items-center justify-center self-center">
-            {t("ថ្នាក់រៀន")}
-          </Text>
-        </View>
-        <View className=" justify-center w-[16%] items-center border-r border-[#ffffff6c]">
+        <View className=" justify-center w-[21%] items-center border-r border-[#ffffff6c]">
           <Text className="text-white font-bayon text-sm leading-7">ចូល</Text>
         </View>
-        <View className=" justify-center w-[16%] items-center border-r border-[#ffffff6c]">
+        <View className=" justify-center w-[21%] items-center border-r border-[#ffffff6c]">
           <Text className="text-white font-bayon text-sm leading-7">ចេញ</Text>
         </View>
-        <View className=" justify-center w-[17%] items-center">
+        <View className=" justify-center w-[27%] items-center">
           <Text className="text-white font-bayon text-sm leading-7">
             {t("ស្ថានភាព")}
           </Text>

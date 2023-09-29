@@ -1,16 +1,39 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, View } from "react-native";
 import DashboardStack from "../routes/stack/dashboardStack";
-import TaskStack from "../routes/stack/taskStack";
 import EventsStack from "../routes/stack/eventStack";
 import ProfileStack from "../routes/stack/profileStack";
 import TransportationStack from "./stack/transportationStack";
+import Constants from "expo-constants";
+import { Badge } from "react-native-elements";
+import VersionCheck from "react-native-version-check";
+import { useState } from "react";
 
 const Tab = createBottomTabNavigator();
 const TabNavigation = ({ navigation }) => {
   React.useEffect(() => {}, [navigation]);
+  const version = Constants.manifest.version;
+  const [latestVersion, setLastestVersion] = useState("");
 
+  const checkLatestVersion = async () => {
+    try {
+      const options = {
+        packageName: "com.goglobalschool.schoolmobile", // Replace with your app's package name
+        ignoreErrors: true, // Optional: Set to false to throw an error if the latest version cannot be fetched
+      };
+
+      const latestVersion = await VersionCheck.getLatestVersion(options);
+      console.log("Latest version:", latestVersion);
+      setLastestVersion(latestVersion);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    checkLatestVersion();
+  }, []);
   return (
     <Tab.Navigator
       initialRouteName="DashboardStack"
@@ -148,15 +171,47 @@ const TabNavigation = ({ navigation }) => {
               }}
             >
               {focused ? (
-                <Image
-                  source={require("../assets/Images/portrait.png")}
-                  style={{ width: 24, height: 24 }}
-                />
+                <>
+                  <Image
+                    source={require("../assets/Images/portrait.png")}
+                    style={{ width: 24, height: 24 }}
+                  />
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: 15,
+                      opacity: version >= latestVersion ? 0 : 1,
+                    }}
+                  >
+                    <Badge
+                      value="!"
+                      status="error"
+                      textStyle={{ fontSize: 10 }}
+                    />
+                  </View>
+                </>
               ) : (
-                <Image
-                  source={require("../assets/Images/portrait-silver.png")}
-                  style={{ width: 23, height: 23 }}
-                />
+                <>
+                  <Image
+                    source={require("../assets/Images/portrait-silver.png")}
+                    style={{ width: 23, height: 23 }}
+                  />
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -10,
+                      left: 15,
+                      opacity: version >= latestVersion ? 0 : 1,
+                    }}
+                  >
+                    <Badge
+                      value="!"
+                      status="error"
+                      textStyle={{ fontSize: 10 }}
+                    />
+                  </View>
+                </>
               )}
             </View>
           ),

@@ -21,39 +21,43 @@ export default function FeedBackCard({ eysReport }) {
   });
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "column",
-        justifyContent: "space-around",
-        paddingTop: 10,
-      }}
-    >
-      <View
-        style={{
-          width: width * 0.95,
-          alignSelf: "center",
-          borderRadius: 15,
-          backgroundColor: COLORS.BLUE_LIGHT,
-          justifyContent: "center",
-        }}
-      >
+    <>
+      {request.length !== 0 ? (
         <View
           style={{
+            flex: 1,
             flexDirection: "column",
-            width: width * 0.92,
-            alignSelf: "center",
-            padding: 5,
+            justifyContent: "space-around",
+            paddingTop: 10,
           }}
         >
-          <View>
-            <Text style={styles.text}>
-              {t("សូមមាតាបិតាជួយដាក់បន្ថែមឱ្យកូន៖")} {splitRequest}
-            </Text>
+          <View
+            style={{
+              width: width * 0.95,
+              alignSelf: "center",
+              borderRadius: 15,
+              backgroundColor: COLORS.BLUE_LIGHT,
+              justifyContent: "center",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "column",
+                width: width * 0.92,
+                alignSelf: "center",
+                padding: 5,
+              }}
+            >
+              <View>
+                <Text style={styles.text}>
+                  {t("សូមមាតាបិតាជួយដាក់បន្ថែមឱ្យកូន៖")} {splitRequest}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
-    </View>
+      ) : null}
+    </>
   );
 }
 const styles = StyleSheet.create({

@@ -156,7 +156,7 @@ const StuClass = ({ navigation, route }) => {
       );
     }
   };
-
+  // console.log(classesByStu.length === 0, classesByStu);
   if (loading) {
     return (
       <View style={styles.loadingStyle}>
@@ -253,7 +253,7 @@ const StuClass = ({ navigation, route }) => {
                   }
                 />
               </View>
-              {checkIsStudentInPickUp ? (
+              {checkIsStudentInPickUp && classesByStu.length !== 0 ? (
                 <View>
                   <View
                     style={{
@@ -288,6 +288,13 @@ const StuClass = ({ navigation, route }) => {
                     </View>
                   </View>
                   <PickupModal data={data} />
+                </View>
+              ) : null}
+              {classesByStu.length === 0 ? (
+                <View className="flex h-52 justify-center items-center">
+                  <Text className="font-kantunruy-regular">
+                    {t("មិនមានទិន្នន័យ")}
+                  </Text>
                 </View>
               ) : null}
             </View>

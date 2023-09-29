@@ -29,18 +29,23 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import { ADD_MOBILE_USER_TOKEN } from "../graphql/add_mobileUserToken";
 import graphQLClient from "../config/endpoint_2";
+import auth from "../Auth/auth";
 
 export default function LoginScreen(props) {
   const { styleState, width, height } = useContext(StyleController);
   const [openEye, setOpenEye] = useState(true);
+  const [openEye1, setOpenEye1] = useState(true);
+  const [openEye2, setOpenEye2] = useState(true);
   const { accountDBCtxDispatch, loginedDispatch, user, accountDBCtx } =
     useContext(DataController);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newpassword1, setNewpassword1] = useState("");
+  const [newpassword2, setNewpassword2] = useState("");
   const [notiToken, setNotiToken] = useState("");
   const [isChecked, setChecked] = useState(false);
+  const [forgetPassword, setForgetPassword] = useState(false);
   const t = useTranslation();
-
   //getItem
   const getLocalStorage = async () => {
     let tokenNoti = await AsyncStorage.getItem("@tokenNoti");
@@ -162,7 +167,47 @@ export default function LoginScreen(props) {
       console.log(error.message, "erroraddUsertoken");
     }
   };
-
+  const HandleChangePassword = async () => {
+    if (email === "" && newpassword1 === "") {
+      Alert.alert(
+        t("មិនមានទិន្នន័យ"),
+        t("សូមបញ្ចូលអ៉ីម៉ែល និងលេខសម្ងាត់របស់អ្នក")
+      );
+    } else if (email === "") {
+      Alert.alert(t("មិនមានទិន្នន័យ"), t("សូមបញ្ចូលអ៉ីម៉ែលរបស់អ្នក"));
+    } else if (newpassword1 === "") {
+      Alert.alert(t("មិនមានទិន្នន័យ"), t("សូមបញ្ចូលលេខសម្ងាត់របស់អ្នក"));
+    } else if (newpassword2 === "") {
+      Alert.alert(t("មិនមានទិន្នន័យ"), t("សូមបញ្ចូលលេខសម្ងាត់របស់អ្នក"));
+    } else if (newpassword2 !== newpassword1) {
+      Alert.alert(
+        t("មិនមានទិន្នន័យ"),
+        t("សូមបញ្ចូលលេខសម្ងាត់របស់អ្នកអោយដូចគ្នា")
+      );
+    } else {
+      await auth.forgortPassword(email, newpassword2).then((result) => {
+        console.log(result, "result");
+        setPassword(newpassword2);
+        if (result?.status) {
+          Alert.alert(result?.message, "succeed", [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+            {
+              text: t("ចូលប្រើកម្មវិធី"),
+              onPress: () => {
+                setForgetPassword(false);
+              },
+            },
+          ]);
+        } else {
+          Alert.alert(t("សូមព្យាយាមម្ដងទៀត"), result?.message);
+        }
+      });
+    }
+  };
   const HandleLogin = async () => {
     if (email === "" && password === "") {
       Alert.alert(
@@ -174,55 +219,35 @@ export default function LoginScreen(props) {
     } else if (password === "") {
       Alert.alert(t("មិនមានទិន្នន័យ"), t("សូមបញ្ចូលលេខសម្ងាត់របស់អ្នក"));
     } else {
-      await login({
-        variables: {
-          email: email,
-          password: password,
-        },
-        update(_, result) {
-          // console.log(result?.data?.login, "result?.data?.login");
-          if (result?.data?.login?.user) {
-            registerForPushNotificationsAsync().then(async (token) => {
-              // console.log(token, "token");
-              if (token) {
-                await AsyncStorage.setItem("@tokenNoti", token);
-              }
-              setMobileUserToken(result?.data?.login?.user?.parentId?._id);
-              // try {
-              //   const addUsertoken = await graphQLClient.request(
-              //     ADD_MOBILE_USER_TOKEN,
-              //     {
-              //       user: result?.data?.login?.user?.parentId?._id,
-              //       token: token,
-              //       osType: "android",
-              //     }
-              //   );
-              //   console.log(addUsertoken, "addUsertoken");
-              //   return addUsertoken;
-              // } catch (error) {
-              //   console.log(error.message, "erroraddUsertoken");
-              // }
-            });
+      await auth.login(email, password).then((result) => {
+        // console.log(result, "result");
+        if (result?.status) {
+          registerForPushNotificationsAsync().then(async (token) => {
+            // console.log(token, "token");
+            if (token) {
+              await AsyncStorage.setItem("@tokenNoti", token);
+            }
+            setMobileUserToken(result?.uid);
+          });
 
-            accountDBCtxDispatch({
-              type: ACTION.LOGIN_USER,
-              payload: result?.data?.login,
-            });
-            setLocalStorage(result?.data?.login);
-            AsyncStorage.setItem("@user", JSON.stringify(user));
-            AsyncStorage.setItem("@appState", JSON.stringify(true));
-            setLocalDataUser({ email, password, isChecked });
-            loginedDispatch({
-              type: ACTION.LOGIN_USER,
-              payload: true,
-            });
-          } else {
-            Alert.alert(
-              t("សូមព្យាយាមម្ដងទៀត"),
-              t("គណនីរបស់លោកអ្នកមិនត្រឹមត្រូវទេ")
-            );
-          }
-        },
+          accountDBCtxDispatch({
+            type: ACTION.LOGIN_USER,
+            payload: result,
+          });
+          setLocalStorage(result);
+          AsyncStorage.setItem("@user", JSON.stringify(user));
+          AsyncStorage.setItem("@appState", JSON.stringify(true));
+          setLocalDataUser({ email, password, isChecked });
+          loginedDispatch({
+            type: ACTION.LOGIN_USER,
+            payload: true,
+          });
+        } else {
+          Alert.alert(
+            t("សូមព្យាយាមម្ដងទៀត"),
+            t("គណនីរបស់លោកអ្នកមិនត្រឹមត្រូវទេ")
+          );
+        }
       });
     }
   };
@@ -311,68 +336,189 @@ export default function LoginScreen(props) {
                   />
                 </View>
 
-                <View
-                  style={{
-                    width: width * 0.85,
-                    alignSelf: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: "Kantumruy-Regular",
-                      fontSize: 14,
-                      color: COLORS.MAIN,
-                    }}
-                  >
-                    {t("ពាក្យសម្ងាត់")}
-                  </Text>
-
-                  <View style={styles.input}>
-                    <TextInput
-                      value={password}
-                      onChangeText={(e) => setPassword(e)}
-                      placeholder={t("បញ្ជូលពាក្យសម្ងាត់របស់អ្នក")}
-                      style={styles.passInput}
-                      secureTextEntry={openEye}
-                      keyboardType="default"
-                    />
-
-                    {openEye ? (
-                      <TouchableOpacity onPress={() => setOpenEye(!openEye)}>
-                        <Ionicons
-                          name="eye-off-outline"
-                          size={24}
-                          style={{ color: COLORS.SUB, padding: 5 }}
-                        />
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity onPress={() => setOpenEye(!openEye)}>
-                        <Ionicons
-                          name="eye"
-                          size={24}
-                          style={{ color: COLORS.SUB, padding: 5 }}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.conBtn}>
-                  <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => HandleLogin()}
-                  >
-                    <View>
+                {forgetPassword ? (
+                  <>
+                    <View
+                      style={{
+                        width: width * 0.85,
+                        alignSelf: "center",
+                      }}
+                    >
                       <Text
                         style={{
-                          color: "#FFFF",
-                          fontFamily: "Bayon-Regular",
-                          fontSize: 16,
+                          fontFamily: "Kantumruy-Regular",
+                          fontSize: 14,
+                          color: COLORS.MAIN,
                         }}
                       >
-                        {t("ចូលប្រើកម្មវិធី")}
+                        {t("ពាក្យសម្ងាត់ថ្មី")}
                       </Text>
+                      <View style={styles.input}>
+                        <TextInput
+                          value={newpassword1}
+                          onChangeText={(e) => setNewpassword1(e)}
+                          placeholder={t("បញ្ជូលពាក្យសម្ងាត់របស់អ្នក")}
+                          style={styles.passInput}
+                          secureTextEntry={openEye1}
+                          keyboardType="default"
+                        />
+
+                        {openEye1 ? (
+                          <TouchableOpacity
+                            onPress={() => setOpenEye1(!openEye1)}
+                          >
+                            <Ionicons
+                              name="eye-off-outline"
+                              size={24}
+                              style={{ color: COLORS.SUB, padding: 5 }}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => setOpenEye1(!openEye1)}
+                          >
+                            <Ionicons
+                              name="eye"
+                              size={24}
+                              style={{ color: COLORS.SUB, padding: 5 }}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
                     </View>
-                  </TouchableOpacity>
+
+                    <View
+                      style={{
+                        width: width * 0.85,
+                        alignSelf: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: "Kantumruy-Regular",
+                          fontSize: 14,
+                          color: COLORS.MAIN,
+                        }}
+                      >
+                        {t("ពាក្យសម្ងាត់ថ្មី")}
+                      </Text>
+                      <View style={styles.input}>
+                        <TextInput
+                          value={newpassword2}
+                          onChangeText={(e) => setNewpassword2(e)}
+                          placeholder={t("បញ្ជូលពាក្យសម្ងាត់របស់អ្នក")}
+                          style={styles.passInput}
+                          secureTextEntry={openEye2}
+                          keyboardType="default"
+                        />
+
+                        {openEye2 ? (
+                          <TouchableOpacity
+                            onPress={() => setOpenEye2(!openEye2)}
+                          >
+                            <Ionicons
+                              name="eye-off-outline"
+                              size={24}
+                              style={{ color: COLORS.SUB, padding: 5 }}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => setOpenEye2(!openEye2)}
+                          >
+                            <Ionicons
+                              name="eye"
+                              size={24}
+                              style={{ color: COLORS.SUB, padding: 5 }}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+                  </>
+                ) : (
+                  <View
+                    style={{
+                      width: width * 0.85,
+                      alignSelf: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Kantumruy-Regular",
+                        fontSize: 14,
+                        color: COLORS.MAIN,
+                      }}
+                    >
+                      {t("ពាក្យសម្ងាត់")}
+                    </Text>
+                    <View style={styles.input}>
+                      <TextInput
+                        value={password}
+                        onChangeText={(e) => setPassword(e)}
+                        placeholder={t("បញ្ជូលពាក្យសម្ងាត់របស់អ្នក")}
+                        style={styles.passInput}
+                        secureTextEntry={openEye}
+                        keyboardType="default"
+                      />
+
+                      {openEye ? (
+                        <TouchableOpacity onPress={() => setOpenEye(!openEye)}>
+                          <Ionicons
+                            name="eye-off-outline"
+                            size={24}
+                            style={{ color: COLORS.SUB, padding: 5 }}
+                          />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity onPress={() => setOpenEye(!openEye)}>
+                          <Ionicons
+                            name="eye"
+                            size={24}
+                            style={{ color: COLORS.SUB, padding: 5 }}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+                )}
+
+                <View style={styles.conBtn}>
+                  {forgetPassword ? (
+                    <TouchableOpacity
+                      style={styles.btn}
+                      onPress={() => HandleChangePassword()}
+                    >
+                      <View>
+                        <Text
+                          style={{
+                            color: "#FFFF",
+                            fontFamily: "Bayon-Regular",
+                            fontSize: 16,
+                          }}
+                        >
+                          {t("ប្តូរពាក្យសម្ងាត់ថ្មី")}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.btn}
+                      onPress={() => HandleLogin()}
+                    >
+                      <View>
+                        <Text
+                          style={{
+                            color: "#FFFF",
+                            fontFamily: "Bayon-Regular",
+                            fontSize: 16,
+                          }}
+                        >
+                          {t("ចូលប្រើកម្មវិធី")}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
                   {/* <View
                     style={{
                       paddingVertical: 10,
@@ -442,8 +588,13 @@ export default function LoginScreen(props) {
                         {t("ចងចាំពាក្យសម្ងាត់")}
                       </Text>
                     </View>
-                    <TouchableOpacity className="flex-row w-[50%] my-2 items-end justify-end ">
-                      <Text className="mx-2 text-sm font-bayon leading-7 text-[#3C6EFB]">
+                    <TouchableOpacity className="flex-row w-[50%] my-2 items-end justify-end">
+                      <Text
+                        className="mx-2 text-sm font-bayon leading-7 text-[#3C6EFB]"
+                        onPress={() => {
+                          setForgetPassword(!forgetPassword);
+                        }}
+                      >
                         {t("ភ្លេចពាក្យសម្ងាត់?")}
                       </Text>
                     </TouchableOpacity>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,14 +10,12 @@ import {
   ActivityIndicator,
   StyleSheet,
   SafeAreaView,
-  RefreshControl,
 } from "react-native";
 import { COLORS } from "../color";
 import EventCards from "../components/EventCards";
 import StudentCard from "../components/StudentCard";
 import { StyleController } from "../static/styleProvider";
 import Header from "../routes/header/Header";
-import { Ionicons } from "@expo/vector-icons";
 import { DataController } from "../context/Provider";
 import { useQuery } from "@apollo/client";
 import { ACTION } from "../context/Reducer";
@@ -27,12 +25,11 @@ import moment from "moment";
 import { ACADEMIC_YEAR } from "../graphql/gql_academicYear";
 import { useTranslation } from "react-multi-lang";
 import * as Notifications from "expo-notifications";
-import LeaveBottomSheet from "../components/dashboard/LeaveBottomSheet";
-import ViewLeaveCard from "../components/ViewLeaveCard";
-
+import { QUERY_ANNOUNCEMENT } from "../graphql/gql_announcement";
 //graphql
 import { GET_STUDENT } from "../graphql/get_studentByParent";
 import graphQLClient from "../config/endpoint_2";
+import AnnouncementCard from "../components/Announcement";
 //
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -46,11 +43,36 @@ export default function Dashboard({ navigation }) {
     useContext(DataController);
   const t = useTranslation();
   const [notiTest, setNotiTest] = useState("");
-
   var num = 1;
   let currentDate = moment().locale("en").format("YYYY-MM-DD");
   const notificationListener = useRef();
   const responseListener = useRef();
+
+  const {
+    data: Announcement,
+    loading: announcementLoading,
+    refetch: refetchAnnoucement,
+  } = useQuery(QUERY_ANNOUNCEMENT, {
+    notifyOnNetworkStatusChange: true,
+  });
+  let AnnouncementData = useMemo(() => {
+    if (!Announcement?.getAnnouncement) {
+      return [];
+    }
+    return Announcement?.getAnnouncement;
+  }, [Announcement?.getAnnouncement]);
+  // console.log(AnnouncementData, "AnnouncementData");
+
+  useEffect(() => {
+    const announcementInterval = setInterval(() => {
+      refetchAnnoucement();
+    }, 10000);
+
+    return () => {
+      clearInterval(announcementInterval);
+    };
+    // refetchAnnoucement();
+  }, [Announcement?.getAnnouncement]);
 
   //noti
   useEffect(() => {
@@ -103,7 +125,9 @@ export default function Dashboard({ navigation }) {
     refetch: eventRefetch,
   } = useQuery(QUERY_EVENTS, {
     variables: {
-      academicYearId: activeAcademic?._id,
+      academicYearId:
+        // activeAcademic?._id
+        "62f079626cf8a36847d31d2d",
     },
     pollInterval: 2000,
     onCompleted: ({ getEvents }) => {},
@@ -134,7 +158,6 @@ export default function Dashboard({ navigation }) {
 
   let sliceEvent = dataArray?.slice(0, 3);
   // console.log(sliceEvent, "sliceEvent");
-
   //LocalStorage
   const setLocalStorage = async () => {
     let loginUser = await AsyncStorage.getItem("@login");
@@ -151,14 +174,15 @@ export default function Dashboard({ navigation }) {
   }, [navigation]);
 
   //Query Student
-  let ParentId = accountDBCtx?.user?.parentId;
+  let ParentId = accountDBCtx?.uid;
+  // console.log(accountDBCtx?.uid)
 
   const [Students, setStudents] = useState([]);
   useEffect(() => {
     async function fetchData() {
       try {
         const GetStudentsForMobile = await graphQLClient.request(GET_STUDENT, {
-          parentsId: ParentId?._id,
+          parentsId: ParentId,
         });
         setStudents(GetStudentsForMobile?.getStudentByParentsMobile);
         // console.log(GetStudentsForMobile);
@@ -167,7 +191,7 @@ export default function Dashboard({ navigation }) {
       }
     }
     fetchData();
-  }, [ParentId?._id]);
+  }, [ParentId]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -194,7 +218,6 @@ export default function Dashboard({ navigation }) {
 
       <View
         style={{
-          flex: 1,
           width: width,
           height: height,
           backgroundColor: COLORS.WHITE,
@@ -204,18 +227,18 @@ export default function Dashboard({ navigation }) {
         {/*  */}
         <View
           style={{
-            width: width * 1,
+            width: width,
+            alignSelf: "center",
+            height: height * 0.29,
             backgroundColor: COLORS.WHITE,
-            borderBottomWidth: 0.5,
-            borderBottomColor: "#E4E4E4",
+            flexDirection: "column",
+            justifyContent: "center",
           }}
         >
           <View
             style={{
               width: width * 0.95,
               alignSelf: "center",
-              justifyContent: "center",
-              // flexDirection: "row"
             }}
           >
             <Text
@@ -230,13 +253,11 @@ export default function Dashboard({ navigation }) {
           </View>
           <View
             style={{
+              flex: 1,
               width: width,
               alignSelf: "center",
-              height: height * 0.24,
-              backgroundColor: COLORS.WHITE,
-              flexDirection: "column",
-              justifyContent: "center",
-              // paddingTop: 5,
+              borderBottomWidth: 1,
+              borderBottomColor: "#E4E4E4",
             }}
           >
             <View
@@ -283,33 +304,36 @@ export default function Dashboard({ navigation }) {
           // }
           showsVerticalScrollIndicator={false}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              width: width * 0.95,
-              alignSelf: "center",
-              paddingTop: 8,
-            }}
-          >
-            <Image
-              source={require("../assets/Images/bell.png")}
+          {sliceEvent !== null ? (
+            <View
               style={{
-                width: 18,
-                height: 18,
-                marginTop: 4,
-              }}
-            />
-            <Text
-              style={{
-                fontFamily: "Bayon-Regular",
-                fontSize: 16,
-                color: COLORS.MAIN,
-                left: 3,
+                flexDirection: "row",
+                width: width * 0.95,
+                alignSelf: "center",
+                paddingTop: 8,
               }}
             >
-              {t("ព្រឹត្តិការណ៍នាពេលខាងមុខ")}
-            </Text>
-          </View>
+              <Image
+                source={require("../assets/Images/bell.png")}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginTop: 4,
+                }}
+              />
+
+              <Text
+                style={{
+                  fontFamily: "Bayon-Regular",
+                  fontSize: 16,
+                  color: COLORS.MAIN,
+                  left: 3,
+                }}
+              >
+                {t("ព្រឹត្តិការណ៍នាពេលខាងមុខ")}
+              </Text>
+            </View>
+          ) : null}
           {sliceEvent?.map((item) => {
             num++;
             return (
@@ -362,6 +386,41 @@ export default function Dashboard({ navigation }) {
           >
             <ViewLeaveCard />
           </TouchableOpacity> */}
+
+          <View
+            style={{
+              flexDirection: "row",
+              width: width * 0.95,
+              alignSelf: "center",
+              paddingTop: 2,
+              paddingBottom: 2,
+            }}
+          >
+            <Image
+              source={require("../assets/Images/announcement.png")}
+              style={{ width: 20, height: 20, alignSelf: "center" }}
+            />
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 14,
+                color: "#EA2877",
+                left: 3,
+              }}
+            >
+              {t("ដំណឹងថ្មីៗ")}
+            </Text>
+          </View>
+          {AnnouncementData?.map((items) => (
+            <TouchableOpacity
+              key={items?._id}
+              onPress={() =>
+                navigation.navigate("AnnouncementDetail", { data: items })
+              }
+            >
+              <AnnouncementCard {...items} loading={announcementLoading} />
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
     </>
