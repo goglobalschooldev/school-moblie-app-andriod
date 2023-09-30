@@ -19,6 +19,7 @@ import { useMutation } from "@apollo/client/react";
 import { useTranslation } from "react-multi-lang";
 import { REMOVE_MOBILE_USER_TOKEN } from "../../graphql/remove_mobileUserToken";
 import graphQLClient from "../../config/endpoint_2";
+import auth from "../../Auth/auth";
 
 export default function ModalSignOut() {
   const { userDispatch, loginedDispatch, accountDBCtx } =
@@ -90,7 +91,7 @@ export default function ModalSignOut() {
           REMOVE_MOBILE_USER_TOKEN,
           {
             osType: "android",
-            user: accountDBCtx?.user?.parentId?._id,
+            user: accountDBCtx?.uid,
           }
         );
         console.log(removeUsertoken, "removeUsertoken");
@@ -99,6 +100,11 @@ export default function ModalSignOut() {
       }
     }
     await fetchData();
+
+    const getLogout = await auth.logout();
+    if (getLogout?.status) {
+      console.log(getLogout?.message);
+    }
   };
 
   return (

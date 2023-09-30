@@ -24,7 +24,7 @@ const TabNavigation = ({ navigation }) => {
       };
 
       const latestVersion = await VersionCheck.getLatestVersion(options);
-      console.log("Latest version:", latestVersion);
+      // console.log("Latest version:", latestVersion);
       setLastestVersion(latestVersion);
     } catch (error) {
       console.error(error);

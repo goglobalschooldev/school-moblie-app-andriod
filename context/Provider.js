@@ -24,10 +24,10 @@ export default function Provider({ children }) {
     const fetchData = async () => {
       let data = await AsyncStorage.getItem("@user");
       // console.log(data, "data");
-      loginedDispatch({
-        type: ACTION.LOGIN_USER,
-        payload: data !== null ? true : false,
-      });
+      // loginedDispatch({
+      //   type: ACTION.LOGIN_USER,
+      //   payload: data !== null ? true : false,
+      // });
       userDispatch({
         type: ACTION.LOGIN_USER,
         payload: data !== null ? JSON.parse(data) : {},

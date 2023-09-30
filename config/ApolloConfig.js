@@ -250,13 +250,13 @@ const ApolloConfig = ({ children }) => {
     }),
   });
 
-  if (token === "" || token === undefined || token === null) {
-    return (
-      <ApolloProvider client={client}>
-        <LoginScreen token={expoPushToken} />
-      </ApolloProvider>
-    );
-  }
+  // if (token === "" || token === undefined || token === null) {
+  //   return (
+  //     <ApolloProvider client={client}>
+  //       <LoginScreen token={expoPushToken} />
+  //     </ApolloProvider>
+  //   );
+  // }
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };

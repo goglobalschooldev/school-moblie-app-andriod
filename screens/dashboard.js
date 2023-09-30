@@ -30,6 +30,8 @@ import { QUERY_ANNOUNCEMENT } from "../graphql/gql_announcement";
 import { GET_STUDENT } from "../graphql/get_studentByParent";
 import graphQLClient from "../config/endpoint_2";
 import AnnouncementCard from "../components/Announcement";
+import { GER_ACADEMICCALENDAR } from "../graphql/Get_AcademicCalendarPagination";
+import { GER_USERINFO } from "../graphql/Get_MobileUserLogin";
 //
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -117,7 +119,61 @@ export default function Dashboard({ navigation }) {
     }
     fetchData();
   }, []);
+
+  //useInfo
+  const [useinfo, setUserinfo] = useState(null);
+  let token = accountDBCtx?.token;
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const getUser = await graphQLClient.request(GER_USERINFO, {
+          headers: {
+            authorization: token,
+          },
+        });
+        if (getUser) {
+          console.log(getUser, "getUser");
+        }
+      } catch (error) {
+        // console.log(error?.message, "error getUser");
+      }
+    }
+    fetchData();
+  }, []);
+
   //Query Events
+  const [academicCalendar, setAcademicCalendar] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const GetAcademicCalendarPagination = await graphQLClient.request(
+          GER_ACADEMICCALENDAR,
+          {
+            limit: 100,
+            lg: "KH",
+            page: 1,
+            keyword: "",
+          }
+        );
+        if (GetAcademicCalendarPagination) {
+          // console.log(
+          //   GetAcademicCalendarPagination?.getAcademicCalendarPagination?.data,
+          //   "GetAcademicCalendarPagination"
+          // );
+          setAcademicCalendar(
+            GetAcademicCalendarPagination?.getAcademicCalendarPagination
+          );
+        }
+      } catch (error) {
+        // console.log(error?.message, "error getActiveAcademicYear");
+      }
+    }
+    fetchData();
+  }, []);
+  // Academic Calendar
+
   const {
     data: Data,
     loading: eventLoading,
@@ -132,7 +188,7 @@ export default function Dashboard({ navigation }) {
     pollInterval: 2000,
     onCompleted: ({ getEvents }) => {},
     onError: async (error) => {
-      console.log(error.message, "Error event");
+      // console.log(error.message, "Error event");
     },
   });
 
@@ -175,9 +231,10 @@ export default function Dashboard({ navigation }) {
 
   //Query Student
   let ParentId = accountDBCtx?.uid;
-  // console.log(accountDBCtx?.uid)
+  // console.log(accountDBCtx, "login");
 
   const [Students, setStudents] = useState([]);
+
   useEffect(() => {
     async function fetchData() {
       try {

@@ -35,7 +35,7 @@ const Transportation = ({ navigation }) => {
   const [loadingTime, setLoadingTime] = useState(true);
 
   let ParentId = accountDBCtx;
-
+  console.log(ParentId);
   useEffect(() => {
     async function fetchData() {
       try {
@@ -56,7 +56,7 @@ const Transportation = ({ navigation }) => {
           }
         }
       } catch (error) {
-        console.log(error.message, "errorGetStuTransportation");
+        // console.log(error.message, "errorGetStuTransportation");
         setLoadingTime(true);
         setParentDataCheck(false);
       }
@@ -72,13 +72,13 @@ const Transportation = ({ navigation }) => {
     wait(2000).then(() => setRefreshing(false) && refetch());
   }, []);
 
-  if (loadingTime) {
-    return (
-      <View style={styles.loadingStyle}>
-        <ActivityIndicator size="large" color="#EFB419" />
-      </View>
-    );
-  }
+  // if (loadingTime) {
+  //   return (
+  //     <View style={styles.loadingStyle}>
+  //       <ActivityIndicator size="large" color="#EFB419" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <>

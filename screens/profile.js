@@ -48,7 +48,8 @@ export default function Profile({ navigation }) {
   }, []);
 
   //user from mutaion login
-  let Account = accountDBCtx?.user?.parentId;
+  let Account = accountDBCtx;
+  console.log(accountDBCtx, "Account");
 
   const ParentName = () => {
     if (getLanguage() === "kh") {
@@ -71,7 +72,7 @@ export default function Profile({ navigation }) {
   //
 
   //get Image from guery by mutation login Id
-  let ProfileImage = accountDBCtx?.user;
+  let ProfileImage = accountDBCtx;
 
   const {
     data: imageUser,
@@ -79,7 +80,7 @@ export default function Profile({ navigation }) {
     refetch: mobileRefetch,
   } = useQuery(MOBILE_USER, {
     variables: {
-      mobileUserId: ProfileImage?._id,
+      mobileUserId: ProfileImage?.uid,
     },
     onCompleted: ({ getMobileUserById }) => {
       // console.log(getMobileUserById, "test");
@@ -283,14 +284,14 @@ export default function Profile({ navigation }) {
                     fontFamily: "Kantumruy-Regular",
                   }}
                 >
-                  {"ភូមិ" +
+                  {/* {"ភូមិ" +
                     Account?.village +
                     " សង្កាត់" +
                     Account?.commune +
                     " ស្រុក" +
                     Account?.district +
                     " ខេត្ត" +
-                    Account?.province}
+                    Account?.province} */}
                 </Text>
               </View>
             </View>
