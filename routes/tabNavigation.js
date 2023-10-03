@@ -9,6 +9,9 @@ import Constants from "expo-constants";
 import { Badge } from "react-native-elements";
 import VersionCheck from "react-native-version-check";
 import { useState } from "react";
+import Aboutschool from "../screens/aboutschool";
+import Curriculum from "../screens/curriculum";
+import Schoolfee from "../screens/schoolfee";
 
 const Tab = createBottomTabNavigator();
 const TabNavigation = ({ navigation }) => {
@@ -104,7 +107,7 @@ const TabNavigation = ({ navigation }) => {
           ),
         }}
       /> */}
-      <Tab.Screen
+      {/* <Tab.Screen
         name="TransportationStack"
         component={TransportationStack}
         options={{
@@ -130,7 +133,88 @@ const TabNavigation = ({ navigation }) => {
             </View>
           ),
         }}
-      />
+      /> */}
+      {/* <Tab.Screen
+        name="Aboutschool"
+        component={Aboutschool}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/about2.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/about1.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      /> */}
+      {/* <Tab.Screen
+        name="Curriculum"
+        component={Curriculum}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/book-of-black-cover-closed1.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/book-of-black-cover-closed2.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      /> */}
+      {/* <Tab.Screen
+        name="Schoolfee"
+        component={Schoolfee}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/coin1.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/coin2.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      /> */}
       <Tab.Screen
         name="EventsStack"
         component={EventsStack}

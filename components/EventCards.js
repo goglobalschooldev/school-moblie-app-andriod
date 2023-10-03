@@ -12,8 +12,8 @@ export default function EventCards(props) {
   const { styleState, height, width } = useContext(StyleController);
   var km = moment().locale("km", localization);
   var en = moment().locale("en", localization);
-  let eventDate = moment(props?.eventDate).format("YYYY-MM-DD");
-  let endEventDate = moment(props?.endEventDate).format("YYYY-MM-DD");
+  let eventDate = moment(props?.from).format("YYYY-MM-DD");
+  let endEventDate = moment(props?.to).format("YYYY-MM-DD");
 
   const SingleDate = () => {
     if (getLanguage() === "kh") {
@@ -25,13 +25,11 @@ export default function EventCards(props) {
             color: props?.color,
           }}
         >
-          {moment(props?.eventDate).locale("km", localization).format("DD") +
+          {moment(props?.from).locale("km", localization).format("DD") +
             ", " +
-            km.localeData().months(moment(props?.endEventDate)) +
+            km.localeData().months(moment(props?.to)) +
             " " +
-            moment(props?.endEventDate)
-              .locale("km", localization)
-              .format("YYYY")}
+            moment(props?.to).locale("km", localization).format("YYYY")}
         </Text>
       );
     } else {
@@ -43,13 +41,11 @@ export default function EventCards(props) {
             color: props?.color,
           }}
         >
-          {moment(props?.eventDate).locale("en", localization).format("DD") +
+          {moment(props?.from).locale("en", localization).format("DD") +
             ", " +
-            en.localeData().months(moment(props?.endEventDate)) +
+            en.localeData().months(moment(props?.to)) +
             " " +
-            moment(props?.endEventDate)
-              .locale("en", localization)
-              .format("YYYY")}
+            moment(props?.to).locale("en", localization).format("YYYY")}
         </Text>
       );
     }
@@ -65,17 +61,13 @@ export default function EventCards(props) {
             color: props?.color,
           }}
         >
-          {moment(props?.eventDate).locale("km", localization).format("DD") +
+          {moment(props?.from).locale("km", localization).format("DD") +
             " ~ " +
-            moment(props?.endEventDate)
-              .locale("km", localization)
-              .format("DD") +
+            moment(props?.to).locale("km", localization).format("DD") +
             ", " +
-            km.localeData().months(moment(props?.endEventDate)) +
+            km.localeData().months(moment(props?.to)) +
             " " +
-            moment(props?.endEventDate)
-              .locale("km", localization)
-              .format("YYYY")}
+            moment(props?.to).locale("km", localization).format("YYYY")}
         </Text>
       );
     } else {
@@ -87,17 +79,13 @@ export default function EventCards(props) {
             color: props?.color,
           }}
         >
-          {moment(props?.eventDate).locale("en", localization).format("DD") +
+          {moment(props?.from).locale("en", localization).format("DD") +
             " ~ " +
-            moment(props?.endEventDate)
-              .locale("en", localization)
-              .format("DD") +
+            moment(props?.to).locale("en", localization).format("DD") +
             ", " +
-            en.localeData().months(moment(props?.endEventDate)) +
+            en.localeData().months(moment(props?.to)) +
             " " +
-            moment(props?.endEventDate)
-              .locale("en", localization)
-              .format("YYYY")}
+            moment(props?.to).locale("en", localization).format("YYYY")}
         </Text>
       );
     }
@@ -113,7 +101,7 @@ export default function EventCards(props) {
             color: props?.color,
           }}
         >
-          {props?.eventNameKhmer}
+          {props?.title}
         </Text>
       );
     } else {
@@ -125,7 +113,7 @@ export default function EventCards(props) {
             color: props?.color,
           }}
         >
-          {props?.eventName}
+          {props?.title}
         </Text>
       );
     }

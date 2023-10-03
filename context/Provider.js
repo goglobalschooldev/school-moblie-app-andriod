@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useReducer, useState } from "react";
 import { ACTION, reducer } from "./Reducer";
 export const DataController = createContext();
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Provider({ children }) {
   const [logined, loginedDispatch] = useReducer(reducer, false);
@@ -19,22 +18,6 @@ export default function Provider({ children }) {
   const [studentDBCtx, studentDBCtxDispatch] = useReducer(reducer, []);
   const [enrollmentDBCtx, enrollmentDBCtxDispatch] = useReducer(reducer, []);
   const [listLeaveDBCtx, listLeaveDBCtxDispatch] = useReducer(reducer, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      let data = await AsyncStorage.getItem("@user");
-      // console.log(data, "data");
-      // loginedDispatch({
-      //   type: ACTION.LOGIN_USER,
-      //   payload: data !== null ? true : false,
-      // });
-      userDispatch({
-        type: ACTION.LOGIN_USER,
-        payload: data !== null ? JSON.parse(data) : {},
-      });
-    };
-    fetchData();
-  }, []);
 
   return (
     <DataController.Provider

@@ -39,42 +39,14 @@ const wait = (timeout) => {
 
 export default function Dashboard({ navigation }) {
   const { height, width } = useContext(StyleController);
-  const [dataArray, setDateArray] = useState();
-  const [refreshing, setRefreshing] = useState(false);
   const { accountDBCtx, accountDBCtxDispatch, logined } =
     useContext(DataController);
   const t = useTranslation();
   const [notiTest, setNotiTest] = useState("");
   var num = 1;
-  let currentDate = moment().locale("en").format("YYYY-MM-DD");
   const notificationListener = useRef();
   const responseListener = useRef();
-
-  const {
-    data: Announcement,
-    loading: announcementLoading,
-    refetch: refetchAnnoucement,
-  } = useQuery(QUERY_ANNOUNCEMENT, {
-    notifyOnNetworkStatusChange: true,
-  });
-  let AnnouncementData = useMemo(() => {
-    if (!Announcement?.getAnnouncement) {
-      return [];
-    }
-    return Announcement?.getAnnouncement;
-  }, [Announcement?.getAnnouncement]);
-  // console.log(AnnouncementData, "AnnouncementData");
-
-  useEffect(() => {
-    const announcementInterval = setInterval(() => {
-      refetchAnnoucement();
-    }, 10000);
-
-    return () => {
-      clearInterval(announcementInterval);
-    };
-    // refetchAnnoucement();
-  }, [Announcement?.getAnnouncement]);
+  let ParentId = accountDBCtx?.uid;
 
   //noti
   useEffect(() => {
@@ -120,101 +92,8 @@ export default function Dashboard({ navigation }) {
     fetchData();
   }, []);
 
-  //useInfo
-  const [useinfo, setUserinfo] = useState(null);
-  let token = accountDBCtx?.token;
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const getUser = await graphQLClient.request(GER_USERINFO, {
-          headers: {
-            authorization: token,
-          },
-        });
-        if (getUser) {
-          console.log(getUser, "getUser");
-        }
-      } catch (error) {
-        // console.log(error?.message, "error getUser");
-      }
-    }
-    fetchData();
-  }, []);
-
   //Query Events
-  const [academicCalendar, setAcademicCalendar] = useState([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const GetAcademicCalendarPagination = await graphQLClient.request(
-          GER_ACADEMICCALENDAR,
-          {
-            limit: 100,
-            lg: "KH",
-            page: 1,
-            keyword: "",
-          }
-        );
-        if (GetAcademicCalendarPagination) {
-          // console.log(
-          //   GetAcademicCalendarPagination?.getAcademicCalendarPagination?.data,
-          //   "GetAcademicCalendarPagination"
-          // );
-          setAcademicCalendar(
-            GetAcademicCalendarPagination?.getAcademicCalendarPagination
-          );
-        }
-      } catch (error) {
-        // console.log(error?.message, "error getActiveAcademicYear");
-      }
-    }
-    fetchData();
-  }, []);
-  // Academic Calendar
-
-  const {
-    data: Data,
-    loading: eventLoading,
-    errors,
-    refetch: eventRefetch,
-  } = useQuery(QUERY_EVENTS, {
-    variables: {
-      academicYearId:
-        // activeAcademic?._id
-        "62f079626cf8a36847d31d2d",
-    },
-    pollInterval: 2000,
-    onCompleted: ({ getEvents }) => {},
-    onError: async (error) => {
-      // console.log(error.message, "Error event");
-    },
-  });
-
-  useEffect(() => {
-    if (Data?.getEvents) {
-      let eventsData = Data?.getEvents;
-      let filterData = eventsData?.filter(
-        (e) =>
-          moment(e?.eventDate).locale("en").format("YYYY-MM-DD") >= currentDate
-      );
-
-      let sortedArray = [...filterData]?.sort(
-        (a, b) =>
-          moment(a.eventDate).locale("en").format("YYYYMMDD") -
-          moment(b.eventDate).locale("en").format("YYYYMMDD")
-      );
-      // console.log(sortedArray?.map(e => moment(e?.eventDate).locale('en')?.format('YYYY-MM-DD') +" - "+moment(e?.endEventDate).locale('en')?.format('YYYY-MM-DD')),"sortedArray")
-      setDateArray(sortedArray);
-    }
-    eventRefetch();
-  }, [Data?.getEvents]);
-  // console.log(dataArray,"dataArray")
-
-  let sliceEvent = dataArray?.slice(0, 3);
-  // console.log(sliceEvent, "sliceEvent");
-  //LocalStorage
   const setLocalStorage = async () => {
     let loginUser = await AsyncStorage.getItem("@login");
     let newLogin = loginUser === null ? {} : JSON.parse(loginUser);
@@ -229,10 +108,6 @@ export default function Dashboard({ navigation }) {
     setLocalStorage();
   }, [navigation]);
 
-  //Query Student
-  let ParentId = accountDBCtx?.uid;
-  // console.log(accountDBCtx, "login");
-
   const [Students, setStudents] = useState([]);
 
   useEffect(() => {
@@ -242,27 +117,13 @@ export default function Dashboard({ navigation }) {
           parentsId: ParentId,
         });
         setStudents(GetStudentsForMobile?.getStudentByParentsMobile);
-        // console.log(GetStudentsForMobile);
       } catch (error) {
-        // console.log(error.message, "Error GetStudentsForMobile");
+        console.log(error.message, "Error GetStudentsForMobile");
       }
     }
     fetchData();
   }, [ParentId]);
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
-  }, []);
-
-  //
-  if (refreshing) {
-    return (
-      <View style={styles.loadingStyle}>
-        <ActivityIndicator size="large" color="#EFB419" />
-      </View>
-    );
-  }
   return (
     <>
       <StatusBar
@@ -352,59 +213,37 @@ export default function Dashboard({ navigation }) {
         </View>
         <ScrollView
           contentContainerStyle={styles.scrollView}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={refreshing}
-          //     onRefresh={onRefresh}
-          //     progressBackgroundColor="white"
-          //   />
-          // }
           showsVerticalScrollIndicator={false}
         >
-          {sliceEvent !== null ? (
-            <View
+          {/* <View
+            style={{
+              flexDirection: "row",
+              width: width * 0.95,
+              alignSelf: "center",
+              paddingTop: 8,
+            }}
+          >
+            <Image
+              source={require("../assets/Images/bell.png")}
               style={{
-                flexDirection: "row",
-                width: width * 0.95,
-                alignSelf: "center",
-                paddingTop: 8,
+                width: 18,
+                height: 18,
+                marginTop: 4,
+              }}
+            />
+
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 16,
+                color: COLORS.MAIN,
+                left: 3,
               }}
             >
-              <Image
-                source={require("../assets/Images/bell.png")}
-                style={{
-                  width: 18,
-                  height: 18,
-                  marginTop: 4,
-                }}
-              />
+              {t("ព្រឹត្តិការណ៍នាពេលខាងមុខ")}
+            </Text>
+          </View> */}
 
-              <Text
-                style={{
-                  fontFamily: "Bayon-Regular",
-                  fontSize: 16,
-                  color: COLORS.MAIN,
-                  left: 3,
-                }}
-              >
-                {t("ព្រឹត្តិការណ៍នាពេលខាងមុខ")}
-              </Text>
-            </View>
-          ) : null}
-          {sliceEvent?.map((item) => {
-            num++;
-            return (
-              <View key={item?._id}>
-                <EventCards
-                  {...item}
-                  bgColor={
-                    num % 2 == 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
-                  }
-                  color={num % 2 == 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK}
-                />
-              </View>
-            );
-          })}
           {/* <View
             style={{
               flexDirection: "row",
@@ -443,41 +282,6 @@ export default function Dashboard({ navigation }) {
           >
             <ViewLeaveCard />
           </TouchableOpacity> */}
-
-          <View
-            style={{
-              flexDirection: "row",
-              width: width * 0.95,
-              alignSelf: "center",
-              paddingTop: 2,
-              paddingBottom: 2,
-            }}
-          >
-            <Image
-              source={require("../assets/Images/announcement.png")}
-              style={{ width: 20, height: 20, alignSelf: "center" }}
-            />
-            <Text
-              style={{
-                fontFamily: "Bayon-Regular",
-                fontSize: 14,
-                color: "#EA2877",
-                left: 3,
-              }}
-            >
-              {t("ដំណឹងថ្មីៗ")}
-            </Text>
-          </View>
-          {AnnouncementData?.map((items) => (
-            <TouchableOpacity
-              key={items?._id}
-              onPress={() =>
-                navigation.navigate("AnnouncementDetail", { data: items })
-              }
-            >
-              <AnnouncementCard {...items} loading={announcementLoading} />
-            </TouchableOpacity>
-          ))}
         </ScrollView>
       </View>
     </>

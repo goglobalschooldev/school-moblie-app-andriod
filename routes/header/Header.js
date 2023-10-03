@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -20,14 +20,38 @@ import LanguageModal from "../../components/modal/languageModal";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTranslation } from "react-multi-lang";
 import { Popover, Box, Button } from "native-base";
+import { GER_USERINFO } from "../../graphql/Get_MobileUserLogin";
 
 export default function Header({ title, navigation }) {
   const { styleState, height, width } = useContext(StyleController);
   const { accountDBCtx, mobileDBCtx } = useContext(DataController);
-  // console.log(mobileDBCtx,"Header")
-  //
-  let ProfileImage = accountDBCtx?.user?.profileImage;
-  // console.log(ProfileImage,"ProfileImage")
+  // console.log(accountDBCtx, "Header");
+
+  const {
+    data: UserData,
+    loading: UserLoading,
+    error: UserError,
+    refetch: UserRefetch,
+  } = useQuery(GER_USERINFO, {
+    pollInterval: 2000,
+    onCompleted: ({ getMobileUserLogin }) => {},
+    onError: async (error) => {
+      console.log(error.message, "Error getUser");
+      if (error.message === "Not Authorized") {
+        await AsyncStorage.removeItem("@userData");
+        loginedDispatch({
+          type: ACTION.LOGIN_USER,
+          payload: false,
+        });
+      }
+    },
+  });
+
+  useEffect(() => {
+    UserRefetch();
+  }, [UserData?.getMobileUserLogin]);
+  let ProfileImage = UserData?.getMobileUserLogin?.profileImg;
+  // console.log(ProfileImage, "ProfileImage");
   const t = useTranslation();
 
   const UserImage = useMemo(() => {
@@ -70,42 +94,23 @@ export default function Header({ title, navigation }) {
     <View style={{ width: width, backgroundColor: COLORS.WHITE }}>
       <View style={styles.header}>
         <View style={styles.insideBar}>
-          <Popover
-            trigger={(triggerProps) => {
-              return (
-                <TouchableOpacity
-                  {...triggerProps}
-                  style={{
-                    width: width * 0.65,
-                    height: 50,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <View
-                    style={{
-                      alignSelf: "center",
-                    }}
-                  >
-                    {/* <Image
-                      source={require("../../assets/Images/left-align.png")}
-                      style={{ alignSelf: "center", width: 18, height: 18 }}
-                    /> */}
-                    <MaterialIcons name="sort" size={26} color="#476CF1" />
-                  </View>
-                  <Text style={styles.textBar}>{title}</Text>
-                </TouchableOpacity>
-              );
+          <TouchableOpacity
+            style={{
+              width: width * 0.65,
+              height: 50,
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            <Popover.Content accessibilityLabel="Delete Customerd" w="56">
-              <Popover.Arrow />
-              <Popover.CloseButton />
-              <Popover.Header>
-                <Text style={styles.textBar}>Hello, This is Header</Text>
-              </Popover.Header>
-            </Popover.Content>
-          </Popover>
+            <View
+              style={{
+                alignSelf: "center",
+              }}
+            >
+              <MaterialIcons name="sort" size={26} color="#476CF1" />
+            </View>
+            <Text style={styles.textBar}>{title}</Text>
+          </TouchableOpacity>
           <View
             style={{
               width: width * 0.35,
@@ -116,7 +121,7 @@ export default function Header({ title, navigation }) {
               paddingRight: 20,
             }}
           >
-            {title === t("ទំព័រដើម") ? (
+            {/* {title === t("ទំព័រដើម") ? (
               <TouchableOpacity
                 style={{ paddingHorizontal: 20 }}
                 onPress={() => navigation.navigate("NotificationScreen")}
@@ -126,7 +131,7 @@ export default function Header({ title, navigation }) {
                   style={{ width: width * 0.055, height: height * 0.027 }}
                 />
               </TouchableOpacity>
-            ) : null}
+            ) : null} */}
 
             <View
               style={{

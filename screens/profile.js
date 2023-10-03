@@ -7,8 +7,12 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import React, { useContext, useState } from "react";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  MaterialCommunityIcons,
+  MaterialIcons,
+  Ionicons,
+} from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import Root from "../root";
 import Header from "../routes/header/Header";
@@ -16,7 +20,6 @@ import { COLORS } from "../color";
 import { StyleController } from "../static/styleProvider";
 import ModalSignOut from "../components/modal/modalSignOut";
 import { DataController } from "../context/Provider";
-import { Ionicons } from "@expo/vector-icons";
 import { MOBILE_USER } from "../graphql/gql_MobileUser";
 import { useMutation, useQuery } from "@apollo/client";
 import { UPDATE_IMAGE } from "../graphql/gql_updateImage";
@@ -29,14 +32,16 @@ import LanguageModal from "../components/modal/languageModal";
 import { getLanguage, useTranslation } from "react-multi-lang";
 import { ScrollView } from "react-native";
 import HeaderSetting from "../routes/header/HeaderSetting";
-
+import { GER_USERINFO, Get_USERINFO } from "../graphql/Get_MobileUserLogin";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GER_PARENTSBYID } from "../graphql/Get_ParentsById";
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
 export default function Profile({ navigation }) {
   const { styleState, height, width } = useContext(StyleController);
-  const { accountDBCtx, accountDBCtxDispatch, mobileDBCtxDispatch } =
+  const { accountDBCtx, mobileDBCtxDispatch, loginedDispatch } =
     useContext(DataController);
   const [image, setImage] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -47,53 +52,87 @@ export default function Profile({ navigation }) {
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  //user from mutaion login
-  let Account = accountDBCtx;
-  console.log(accountDBCtx, "Account");
-
   const ParentName = () => {
     if (getLanguage() === "kh") {
       return (
         <Text style={{ fontSize: 20 }}>
-          {Account?.lastName + " " + Account?.firstName}
+          {useinfo?.lastName + " " + useinfo?.firstName}
         </Text>
       );
     } else {
       return (
         <Text style={{ fontSize: 18 }}>
-          {Account?.englishName !== null
-            ? Account?.englishName
-            : Account?.lastName + " " + Account?.firstName}
+          {useinfo?.englishName !== null
+            ? useinfo?.englishName
+            : useinfo?.lastName + " " + useinfo?.firstName}
         </Text>
       );
     }
   };
 
-  //
-
-  //get Image from guery by mutation login Id
   let ProfileImage = accountDBCtx;
 
+  //useInfo
+  const [useinfo, setUserinfo] = useState(null);
   const {
-    data: imageUser,
-    loading: isLoading,
-    refetch: mobileRefetch,
-  } = useQuery(MOBILE_USER, {
-    variables: {
-      mobileUserId: ProfileImage?.uid,
+    data: UserData,
+    loading: UserLoading,
+    error: UserError,
+    refetch: UserRefetch,
+  } = useQuery(GER_USERINFO, {
+    pollInterval: 2000,
+    onCompleted: ({ getMobileUserLogin }) => {
+      setUserinfo(getMobileUserLogin);
+      console.log(useinfo, "useinfo");
     },
-    onCompleted: ({ getMobileUserById }) => {
-      // console.log(getMobileUserById, "test");
+    onError: async (error) => {
+      console.log(error.message, "Error getUser");
+      if (error.message === "Not Authorized") {
+        await AsyncStorage.removeItem("@userData");
+        loginedDispatch({
+          type: ACTION.LOGIN_USER,
+          payload: false,
+        });
+      }
     },
-    onError: (error) => {
-      console.log(error.message, "Error");
-    },
-    fetchPolicy: "network-only",
   });
 
-  // console.log(imageUser?.getMobileUserById?.profileImage, "profile")
+  // GETPATENT
+  const [parentinfo, setParentinfo] = useState(null);
+  const {
+    data: ParentData,
+    loading: ParentLoading,
+    error: ParentError,
+    refetch: ParentRefetch,
+  } = useQuery(GER_PARENTSBYID, {
+    variables: {
+      id: ProfileImage?.uid,
+    },
+    pollInterval: 2000,
+    onCompleted: ({ getParentsById }) => {
+      setParentinfo(getParentsById);
+      console.log(parentinfo, "parentinfo");
+    },
+    onError: async (error) => {
+      console.log(error.message, "Error parentinfo");
+      if (error.message === "Not Authorized") {
+        await AsyncStorage.removeItem("@userData");
+        loginedDispatch({
+          type: ACTION.LOGIN_USER,
+          payload: false,
+        });
+      }
+    },
+  });
 
-  //
+  useEffect(() => {
+    UserRefetch();
+  }, [useinfo]);
+
+  useEffect(() => {
+    ParentRefetch();
+  }, [parentinfo]);
+
   const [UpdateMobileUserProfileImg, { loading }] = useMutation(UPDATE_IMAGE, {
     onError: (e) => {
       console.log(e.message);
@@ -101,12 +140,7 @@ export default function Profile({ navigation }) {
   });
 
   const userImage =
-    "https://storage.go-globalschool.com/api" +
-    imageUser?.getMobileUserById?.profileImage;
-
-  const userImgNull = imageUser?.getMobileUserById?.profileImage;
-
-  // console.log(userImage)
+    "https://storage.go-globalschool.com/api" + useinfo?.profileImg;
 
   //handle update image
   const pickImage = async () => {
@@ -130,7 +164,7 @@ export default function Profile({ navigation }) {
         let formData = new FormData();
         formData.append("image", {
           uri: imgUser.uri,
-          name: imageUser?.getMobileUserById?._id + ".png",
+          name: useinfo?._id + ".png",
           type: "image/png", // if you can get image type from cropping replace here
         });
 
@@ -147,7 +181,7 @@ export default function Profile({ navigation }) {
         if (uploadImg) {
           await UpdateMobileUserProfileImg({
             variables: {
-              mobileUserId: ProfileImage?._id,
+              mobileUserId: ProfileImage?.uid,
               profileImage: uploadImg?.data,
             },
             update(_, result) {
@@ -167,7 +201,7 @@ export default function Profile({ navigation }) {
     }
   };
 
-  if (loading || isLoading || refreshing) {
+  if (loading || refreshing) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />
@@ -176,16 +210,7 @@ export default function Profile({ navigation }) {
   }
   return (
     <Root Header={<Header title={t("គណនី")} navigation={navigation} />}>
-      <ScrollView
-        contentContainerStyle={styles.scrollView}
-        // refreshControl={
-        //   <RefreshControl
-        //     refreshing={refreshing}
-        //     onRefresh={onRefresh}
-        //     progressBackgroundColor="white"
-        //   />
-        // }
-      >
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.container}>
           <View style={styles.header}>
             {/* cover */}
@@ -202,10 +227,15 @@ export default function Profile({ navigation }) {
                   navigation={navigation}
                   images={image}
                   userImages={userImage}
-                  loadingImage={isLoading}
-                  userImgNull={userImgNull}
+                  loadingImage={UserLoading}
+                  userImgNull={useinfo?.profileImg}
                 />
-                <TouchableOpacity style={styles.camera} onPress={pickImage}>
+                <TouchableOpacity
+                  style={styles.camera}
+                  onPress={() => {
+                    // pickImage;
+                  }}
+                >
                   <FontAwesome name="camera" size={16} color="black" />
                 </TouchableOpacity>
               </View>
@@ -249,14 +279,14 @@ export default function Profile({ navigation }) {
                     fontFamily: "Kantumruy-Regular",
                   }}
                 >
-                  {Account?.tel}
+                  {parentinfo?.tel}
                 </Text>
               </View>
 
               <View style={styles.List}>
-                <MaterialIcons
+                <Ionicons
                   style={{ width: 22 }}
-                  name="email"
+                  name="person"
                   size={20}
                   color="#A0A0A0"
                 />
@@ -267,7 +297,7 @@ export default function Profile({ navigation }) {
                     fontFamily: "Kantumruy-Regular",
                   }}
                 >
-                  {accountDBCtx?.user?.email}
+                  {parentinfo?.nationality}
                 </Text>
               </View>
               <View style={styles.List}>
@@ -284,14 +314,14 @@ export default function Profile({ navigation }) {
                     fontFamily: "Kantumruy-Regular",
                   }}
                 >
-                  {/* {"ភូមិ" +
-                    Account?.village +
+                  {"ភូមិ" +
+                    parentinfo?.village +
                     " សង្កាត់" +
-                    Account?.commune +
+                    parentinfo?.commune +
                     " ស្រុក" +
-                    Account?.district +
+                    parentinfo?.district +
                     " ខេត្ត" +
-                    Account?.province} */}
+                    parentinfo?.province}
                 </Text>
               </View>
             </View>

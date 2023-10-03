@@ -8,4 +8,5 @@ export const COLORS = {
   ORANGE_DARK: "#D17821",
   ORANGE_LIGHT: "#FFEEDB",
   ORANGE: "#FCA845",
+  GREY: "#f8f8f8",
 };

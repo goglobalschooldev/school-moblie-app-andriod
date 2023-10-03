@@ -25,6 +25,7 @@ import { useTranslation } from "react-multi-lang";
 import { PartComponent } from "../static/part-component";
 import graphQLClient from "../config/endpoint_2";
 import { getLanguage } from "react-multi-lang";
+import { GER_ACADEMICCALENDAR } from "../graphql/Get_AcademicCalendarPagination";
 
 //
 const wait = (timeout) => {
@@ -38,13 +39,11 @@ const Events = ({ navigation }) => {
   const [academicName, setAcademicName] = useState();
   const [refreshing, setRefreshing] = useState(false);
   const [academicYear, setAcademicYear] = useState();
+  const [limit, setLimit] = useState(100);
   const t = useTranslation();
 
   var num = 1;
-  //Active Academic
-  const { data: academic } = useQuery(ACADEMIC_YEAR);
-  // let activeAcademic = academic?.getActiveAcademicYear[0];
-  // console.log(activeAcademic, "activeAcademic");
+
   const [activeAcademic, setActiveAcademic] = useState(null);
   useEffect(() => {
     async function fetchData() {
@@ -60,22 +59,35 @@ const Events = ({ navigation }) => {
     }
     fetchData();
   }, []);
-  //
-  const { data, loading, refetch } = useQuery(QUERY_EVENTS, {
-    variables: {
-      academicYearId:
-        // activeAcademic?._id
-        "62f079626cf8a36847d31d2d",
-    },
-    onCompleted: ({ getEvents }) => {},
-    onError: (error) => {
-      console.log(error.message, "error");
-    },
-  });
+  const [academicCalendar, setAcademicCalendar] = useState([]);
 
   useEffect(() => {
-    let eventsData = data?.getEvents;
-    if (data?.getEvents) {
+    async function fetchData() {
+      try {
+        const GetAcademicCalendarPagination = await graphQLClient.request(
+          GER_ACADEMICCALENDAR,
+          {
+            limit: limit,
+            lg: "KH",
+            page: 1,
+            keyword: "",
+          }
+        );
+        if (GetAcademicCalendarPagination) {
+          setAcademicCalendar(
+            GetAcademicCalendarPagination?.getAcademicCalendarPagination?.data
+          );
+        }
+      } catch (error) {
+        // console.log(error?.message, "error getActiveAcademicYear");
+      }
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    let eventsData = academicCalendar;
+    if (academicCalendar) {
       let sortedArray = [...eventsData]?.sort(
         (a, b) =>
           moment(a.eventDate).locale("en").format("YYYYMMDD") -
@@ -83,8 +95,7 @@ const Events = ({ navigation }) => {
       );
       setDateArray(sortedArray);
     }
-    refetch();
-  }, [data?.getEvents]);
+  }, [academicCalendar]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -92,7 +103,7 @@ const Events = ({ navigation }) => {
   }, []);
 
   // console.log(dataArray, "dataArray");
-  if (loading || refreshing) {
+  if (refreshing) {
     return (
       <View style={styles.loadingStyle}>
         <ActivityIndicator size="large" color="#EFB419" />

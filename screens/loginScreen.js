@@ -38,10 +38,11 @@ export default function LoginScreen({ navigation }, props) {
   const [notiToken, setNotiToken] = useState("");
   const [isChecked, setChecked] = useState(false);
   const t = useTranslation();
+
   //getItem
   const getLocalStorage = async () => {
     let tokenNoti = await AsyncStorage.getItem("@tokenNoti");
-    setNotiToken(tokenNoti);
+    setNotiToken(tokenNoti, "tokenNoti");
     return tokenNoti;
   };
 
@@ -112,8 +113,18 @@ export default function LoginScreen({ navigation }, props) {
         setChecked(getUser?.isChecked);
         setEmail(getUser?.email);
         setPassword(getUser?.password);
+        if (
+          getUser?.isChecked === true &&
+          getUser?.password &&
+          getUser?.isChecked
+        ) {
+          loginedDispatch({
+            type: ACTION.LOGIN_USER,
+            payload: true,
+          });
+        }
       }
-      // console.log(getUser, "getUser");
+      // console.log(getData2, "getUser");
     }
     fetchData();
   }, [navigation]);
@@ -156,8 +167,6 @@ export default function LoginScreen({ navigation }, props) {
             payload: result,
           });
           setLocalStorage(result);
-          AsyncStorage.setItem("@user", JSON.stringify(user));
-          AsyncStorage.setItem("@appState", JSON.stringify(true));
           setLocalDataUser({ email, password, isChecked });
           loginedDispatch({
             type: ACTION.LOGIN_USER,

@@ -208,7 +208,7 @@ export default function ClassModal({ navigation, data, stuId, academicId }) {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 setModalVisible(false);
                 setEYScheck(false);
@@ -239,7 +239,7 @@ export default function ClassModal({ navigation, data, stuId, academicId }) {
                   </Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {EYScheck === true ? ChildhoodReport() : null}
           </View>
         </View>

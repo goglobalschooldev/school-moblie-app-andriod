@@ -56,6 +56,7 @@ export default function ModalSignOut() {
   });
   async function clearUserData() {
     await AsyncStorage.removeItem("@login");
+    await AsyncStorage.removeItem("@userData");
     try {
       loginedDispatch({
         type: ACTION.LOGIN_USER,
@@ -85,6 +86,7 @@ export default function ModalSignOut() {
 
     //copy from above
     clearUserData();
+
     async function fetchData() {
       try {
         const removeUsertoken = await graphQLClient.request(
