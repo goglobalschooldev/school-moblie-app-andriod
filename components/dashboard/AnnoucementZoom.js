@@ -15,27 +15,31 @@ import { Animated } from "react-native";
 import {
   PanGestureHandler,
   PinchGestureHandler,
+  ScrollView,
   State,
 } from "react-native-gesture-handler";
 
 export default function AnnoucementZoom({
   load,
   loading,
-  dataNoti,
   announcementtLoading,
 }) {
   const { styleState, height, width } = useContext(StyleController);
   const [modalVisible, setModalVisible] = useState(false);
   const [panEnabled, setPanEnabled] = useState(false);
+  const [Image, setImage] = useState("");
+
+  //declare some useful variables
+  const scale = useRef(new Animated.Value(1)).current;
+  const translateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
 
   //
-  const ImageData = useMemo(() => {
+  function ImageData({ item }) {
     return (
       <AutoHeightImage
         source={{
-          uri:
-            load?.data?.picture ||
-            dataNoti?.getAnnouncementById?.picture + "?time=" + new Date(),
+          uri: item + "?time=" + new Date(),
           cache: "reload",
         }}
         resizeMode="contain"
@@ -43,12 +47,7 @@ export default function AnnoucementZoom({
         style={{ alignSelf: "center", margin: 5 }}
       />
     );
-  }, [load?.data?.picture, dataNoti?.getAnnouncementById?.picture]);
-
-  //declare some useful variables
-  const scale = useRef(new Animated.Value(1)).current;
-  const translateX = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(0)).current;
+  }
 
   //
   const pinchRef = createRef();
@@ -144,11 +143,7 @@ export default function AnnoucementZoom({
                   >
                     <Animated.Image
                       source={{
-                        uri:
-                          load?.data?.picture ||
-                          dataNoti?.getAnnouncementById?.picture +
-                            "?time=" +
-                            new Date(),
+                        uri: Image + "?time=" + new Date(),
                         cache: "reload",
                       }}
                       style={{
@@ -165,9 +160,19 @@ export default function AnnoucementZoom({
             </PanGestureHandler>
           </View>
         </Modal>
-        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-          {ImageData}
-        </TouchableOpacity>
+        <ScrollView horizontal showsVerticalScrollIndicator={false}>
+          {load?.data?.referenceFiles?.map((item) => (
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(!modalVisible), setImage(item);
+              }}
+              style={{ flexDirection: "row" }}
+              key={item}
+            >
+              <ImageData item={item} />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
     );
   }

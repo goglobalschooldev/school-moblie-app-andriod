@@ -2,7 +2,7 @@
   "expo": {
     "name": "Go Global School",
     "slug": "school-mobile",
-    "version": "1.0.28",
+    "version": "1.0.29",
     "orientation": "portrait",
     "icon": "./assets/Images/playstore.png",
     "userInterfaceStyle": "light",
@@ -40,7 +40,7 @@
         "android.permission.ACCESS_BACKGROUND_LOCATION"
       ],
       "package": "com.goglobalschool.schoolmobile",
-      "versionCode": 29,
+      "versionCode": 30,
       "googleServicesFile": "./google-services.json"
     },
     "web": {

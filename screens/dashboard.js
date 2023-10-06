@@ -32,6 +32,7 @@ import graphQLClient from "../config/endpoint_2";
 import AnnouncementCard from "../components/Announcement";
 import { GER_ACADEMICCALENDAR } from "../graphql/Get_AcademicCalendarPagination";
 import { GER_USERINFO } from "../graphql/Get_MobileUserLogin";
+
 //
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -47,6 +48,34 @@ export default function Dashboard({ navigation }) {
   const notificationListener = useRef();
   const responseListener = useRef();
   let ParentId = accountDBCtx?.uid;
+
+  const {
+    data: Announcement,
+    loading: announcementLoading,
+    refetch: refetchAnnoucement,
+  } = useQuery(QUERY_ANNOUNCEMENT, {
+    variables: {
+      page: 1,
+      limit: 1000,
+      from: "",
+      to: "",
+      keyword: "",
+      publish: true,
+    },
+    notifyOnNetworkStatusChange: true,
+    pollInterval: 2000,
+    onCompleted: ({ getAnnouncementsPagination }) => {},
+    onError: async (error) => {
+      console.log(error.message, "Error Announcement");
+    },
+  });
+  let AnnouncementData = useMemo(() => {
+    if (!Announcement?.getAnnouncementsPagination?.data) {
+      return [];
+    }
+    return Announcement?.getAnnouncementsPagination?.data;
+  }, [Announcement?.getAnnouncementsPagination?.data]);
+  // console.log(AnnouncementData, "AnnouncementData");
 
   //noti
   useEffect(() => {
@@ -122,6 +151,7 @@ export default function Dashboard({ navigation }) {
       }
     }
     fetchData();
+    refetchAnnoucement();
   }, [ParentId]);
 
   return (
@@ -282,6 +312,44 @@ export default function Dashboard({ navigation }) {
           >
             <ViewLeaveCard />
           </TouchableOpacity> */}
+          <View
+            style={{
+              flexDirection: "row",
+              width: width * 0.95,
+              height: height * 0.08,
+              alignSelf: "center",
+              alignItems: "center",
+              paddingTop: 2,
+              paddingBottom: 2,
+            }}
+          >
+            <Image
+              source={require("../assets/Images/announcement.png")}
+              style={{ width: 20, height: 20, alignSelf: "center" }}
+            />
+            <Text
+              style={{
+                fontFamily: "Bayon-Regular",
+                fontSize: 14,
+                color: "#EA2877",
+                left: 3,
+              }}
+            >
+              {t("ដំណឹងថ្មីៗ")}
+            </Text>
+          </View>
+          <View style={{ marginBottom: height / 4 }}>
+            {AnnouncementData?.map((items) => (
+              <TouchableOpacity
+                key={items?._id}
+                onPress={() =>
+                  navigation.navigate("AnnouncementDetail", { data: items })
+                }
+              >
+                <AnnouncementCard {...items} loading={announcementLoading} />
+              </TouchableOpacity>
+            ))}
+          </View>
         </ScrollView>
       </View>
     </>

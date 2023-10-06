@@ -181,8 +181,8 @@ export default function Profile({ navigation }) {
         if (uploadImg) {
           await UpdateMobileUserProfileImg({
             variables: {
-              mobileUserId: ProfileImage?.uid,
-              profileImage: uploadImg?.data,
+              id: ProfileImage?.uid,
+              profileImg: uploadImg?.data,
             },
             update(_, result) {
               mobileRefetch();
@@ -233,7 +233,7 @@ export default function Profile({ navigation }) {
                 <TouchableOpacity
                   style={styles.camera}
                   onPress={() => {
-                    // pickImage;
+                    pickImage();
                   }}
                 >
                   <FontAwesome name="camera" size={16} color="black" />

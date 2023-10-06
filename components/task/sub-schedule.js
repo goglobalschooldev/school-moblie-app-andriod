@@ -8,22 +8,22 @@ import { getEngNumber } from "../../static/engNumber";
 import { getLanguage } from "react-multi-lang";
 import PreviewTeacherImg from "./preiewTeacherImg";
 import moment from "moment";
+import localization from "moment/locale/km";
+
 export const SubjectSchedule = (props) => {
   const { styleState, height, width } = useContext(StyleController);
-  const [teacherName, setTeacherName] = useState();
 
-  console.log(props, "props");
+  // console.log(props, "props");
   const teacherImage = props?.day?.teacherProfileImg;
 
   const teacherLeader = props?.day;
 
   const timeSchedule = `${moment(props?.startTime)
-    .locale("en-gb")
+    .locale("en", localization)
     .format("hh:mm")} - ${moment(props?.endTime)
-    .locale("en-gb")
+    .locale("en", localization)
     .format("hh:mm")}`;
 
-  console.log(timeSchedule, "timeSchedule");
   let startTime = timeSchedule.split(" - ");
 
   let startTimeFirst = getKhmerNum(startTime[0].split(":")[0]);

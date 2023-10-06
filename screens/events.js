@@ -39,7 +39,7 @@ const Events = ({ navigation }) => {
   const [academicName, setAcademicName] = useState();
   const [refreshing, setRefreshing] = useState(false);
   const [academicYear, setAcademicYear] = useState();
-  const [limit, setLimit] = useState(100);
+  const [limit, setLimit] = useState(1000);
   const t = useTranslation();
 
   var num = 1;
@@ -61,29 +61,27 @@ const Events = ({ navigation }) => {
   }, []);
   const [academicCalendar, setAcademicCalendar] = useState([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const GetAcademicCalendarPagination = await graphQLClient.request(
-          GER_ACADEMICCALENDAR,
-          {
-            limit: limit,
-            lg: "KH",
-            page: 1,
-            keyword: "",
-          }
-        );
-        if (GetAcademicCalendarPagination) {
-          setAcademicCalendar(
-            GetAcademicCalendarPagination?.getAcademicCalendarPagination?.data
-          );
-        }
-      } catch (error) {
-        // console.log(error?.message, "error getActiveAcademicYear");
-      }
-    }
-    fetchData();
-  }, []);
+  const {
+    data: AnnouncementData,
+    loading: AnnouncementLoading,
+    refetch: refetchAnnouncement,
+  } = useQuery(GER_ACADEMICCALENDAR, {
+    variables: {
+      limit: limit,
+      lg: "KH",
+      page: 1,
+      keyword: "",
+    },
+    pollInterval: 2000,
+    onCompleted: ({}) => {
+      setAcademicCalendar(
+        AnnouncementData?.getAcademicCalendarPagination?.data
+      );
+    },
+    onError: async (error) => {
+      console.log(error.message, "Error Announcement");
+    },
+  });
 
   useEffect(() => {
     let eventsData = academicCalendar;

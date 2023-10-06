@@ -225,7 +225,7 @@ export default function Schedule({ navigation, route }) {
             sectionData?.map((item, index) => {
               return (
                 <View key={item?._id}>
-                  {/* <SubjectSchedule
+                  <SubjectSchedule
                     {...item}
                     bgColor={
                       index % 4 === 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
@@ -233,7 +233,7 @@ export default function Schedule({ navigation, route }) {
                     color={
                       index % 4 === 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK
                     }
-                  /> */}
+                  />
                 </View>
               );
             })
