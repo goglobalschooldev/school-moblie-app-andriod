@@ -4,9 +4,12 @@ import { Image } from "react-native";
 import {
   View,
   Text,
+  Modal,
   StyleSheet,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from "react-native";
 import { COLORS } from "../../color";
 import { StyleController } from "../../static/styleProvider";
@@ -20,17 +23,17 @@ import {
 } from "react-multi-lang";
 import en from "../../translations/en.json";
 import kh from "../../translations/kh.json";
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DataController } from "../../context/Provider";
 import { ACTION } from "../../context/Reducer";
-import { Popover, Button, Box } from "native-base";
 
 setTranslations({ en, kh });
 setDefaultLanguage("kh");
 setDefaultTranslations({ kh });
 
 export default function LanguageModal() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [openSelectLng, setOpenSelectLng] = useState(false);
   const t = useTranslation();
 
   const ImageFlag = () => {
@@ -61,11 +64,13 @@ export default function LanguageModal() {
   const ChangeEng = () => {
     setLanguage("en");
     setLocalLang("en");
+    setOpenSelectLng(!openSelectLng);
   };
 
   const ChangeKh = () => {
     setLanguage("kh");
     setLocalLang("kh");
+    setOpenSelectLng(!openSelectLng);
   };
 
   //step3
@@ -80,73 +85,66 @@ export default function LanguageModal() {
 
   return (
     <View style={{ width: "100%" }}>
-      <Popover
-        trigger={(triggerProps) => {
-          return (
-            <TouchableOpacity {...triggerProps} onPress={() => setIsOpen(true)}>
-              {ImageFlag()}
-            </TouchableOpacity>
-          );
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={openSelectLng}
+        onRequestClose={() => {
+          setOpenSelectLng(!openSelectLng);
         }}
-        isOpen={isOpen}
-        onClose={() => setIsOpen(!isOpen)}
       >
-        <Popover.Content accessibilityLabel="Delete Customerd" w="56">
-          <Popover.Arrow />
-          <Popover.CloseButton onPress={() => setIsOpen(false)} />
-          <Popover.Header>
-            <Text
-              style={{
-                fontFamily: "Kantumruy-Regular",
-                fontSize: 14,
-                color: COLORS.MAIN,
-              }}
-            >
-              {t("ជ្រើសរើសភាសា")}
-            </Text>
-          </Popover.Header>
-          <Popover.Body>
+        <TouchableWithoutFeedback
+          onPress={() => setOpenSelectLng(!openSelectLng)}
+        >
+          <View style={styles.bgModal} />
+        </TouchableWithoutFeedback>
+        <View style={styles.centerModal}>
+          <View style={styles.modalBox}>
+            <View style={{ padding: 5 }}>
+              <Text
+                style={{
+                  fontFamily: "Kantumruy-Regular",
+                  fontSize: 14,
+                  color: COLORS.MAIN,
+                }}
+              >
+                {t("ជ្រើសរើសភាសា")}
+              </Text>
+            </View>
             <View
               style={{
                 flexDirection: "column",
-                padding: 2,
+                padding: 10,
                 // backgroundColor: "pink",
                 width: "100%",
               }}
             >
-              <TouchableOpacity
-                onPress={() => {
-                  ChangeKh(), setIsOpen(false);
-                }}
-              >
+              <TouchableOpacity onPress={() => ChangeKh()}>
                 <View style={styles.lngChoice}>
-                  <Text style={styles.titleLng}>ភាសាខ្មែរ</Text>
                   <Image
                     source={require("../../assets/Images/Cambodia-Flag.png")}
                     style={styles.imageChoose}
                   />
+                  <Text style={styles.titleLng}>ភាសាខ្មែរ</Text>
                 </View>
               </TouchableOpacity>
-              <View
-                style={{ width: "100%", height: 1, backgroundColor: "#dcdcdc" }}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  ChangeEng(), setIsOpen(false);
-                }}
-              >
+              <TouchableOpacity onPress={() => ChangeEng()}>
                 <View style={styles.lngChoice}>
-                  <Text style={styles.titleLng}>English</Text>
                   <Image
                     source={require("../../assets/Images/English-Flag.png")}
                     style={styles.imageChoose}
                   />
+                  <Text style={styles.titleLng}>English</Text>
                 </View>
               </TouchableOpacity>
             </View>
-          </Popover.Body>
-        </Popover.Content>
-      </Popover>
+          </View>
+        </View>
+      </Modal>
+
+      <TouchableOpacity onPress={() => setOpenSelectLng(!openSelectLng)}>
+        {ImageFlag()}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -181,23 +179,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   imageChoose: {
-    width: 25,
-    height: 25,
+    width: 38,
+    height: 38,
     borderRadius: 70,
     alignSelf: "center",
     borderColor: COLORS.ORANGE,
     borderWidth: 1,
   },
   titleLng: {
-    flex: 1,
     alignSelf: "center",
-    // left: 10,
+    left: 10,
     fontFamily: "Kantumruy-Regular",
     fontSize: 14,
   },
   lngChoice: {
     flexDirection: "row",
     marginVertical: 5,
+    borderBottomWidth: 1,
+    borderColor: "#E4E4E4",
     padding: 2,
   },
 });

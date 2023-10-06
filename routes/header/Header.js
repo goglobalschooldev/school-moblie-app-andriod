@@ -19,7 +19,6 @@ import { useQuery } from "@apollo/client";
 import LanguageModal from "../../components/modal/languageModal";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTranslation } from "react-multi-lang";
-import { Popover, Box, Button } from "native-base";
 import { GER_USERINFO } from "../../graphql/Get_MobileUserLogin";
 
 export default function Header({ title, navigation }) {

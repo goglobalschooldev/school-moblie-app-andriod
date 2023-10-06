@@ -115,13 +115,13 @@ export default function Profile({ navigation }) {
     },
     onError: async (error) => {
       console.log(error.message, "Error parentinfo");
-      if (error.message === "Not Authorized") {
-        await AsyncStorage.removeItem("@userData");
-        loginedDispatch({
-          type: ACTION.LOGIN_USER,
-          payload: false,
-        });
-      }
+      // if (error.message === "Not Authorized") {
+      //   await AsyncStorage.removeItem("@userData");
+      //   loginedDispatch({
+      //     type: ACTION.LOGIN_USER,
+      //     payload: false,
+      //   });
+      // }
     },
   });
 

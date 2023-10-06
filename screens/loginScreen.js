@@ -118,10 +118,10 @@ export default function LoginScreen({ navigation }, props) {
           getUser?.password &&
           getUser?.isChecked
         ) {
-          loginedDispatch({
-            type: ACTION.LOGIN_USER,
-            payload: true,
-          });
+          // loginedDispatch({
+          //   type: ACTION.LOGIN_USER,
+          //   payload: true,
+          // });
         }
       }
       // console.log(getData2, "getUser");

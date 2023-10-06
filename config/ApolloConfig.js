@@ -96,13 +96,13 @@ const ApolloConfig = ({ children }) => {
         networkError?.graphQLErrors[0]?.message === "Not Authorized"
       ) {
         console.log(networkError?.response?.errors[0]?.message);
-        loginedDispatch({
-          type: ACTION.LOGIN_USER,
-          payload: false,
-        });
-        AsyncStorage.removeItem("@userData");
-        AsyncStorage.removeItem("@login");
-        setToken("");
+        // loginedDispatch({
+        //   type: ACTION.LOGIN_USER,
+        //   payload: false,
+        // });
+        // AsyncStorage.removeItem("@userData");
+        // AsyncStorage.removeItem("@login");
+        // setToken("");
       } else console.log(networkError?.graphQLErrors[0]?.message);
     } catch (e) {}
   });

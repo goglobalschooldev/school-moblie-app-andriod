@@ -1,21 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Text, View } from "react-native";
 import { StyleController } from "../../static/styleProvider";
-import { Entypo } from "@expo/vector-icons";
 import { COLORS } from "../../color";
 import { getKhmerNum } from "../../static/khmerNumber";
-import { padLeadingZeros } from "../../static/padLeadingZeros";
 import { Divider } from "react-native-paper";
 import { getEngNumber } from "../../static/engNumber";
 import { getLanguage } from "react-multi-lang";
-import { Image } from "react-native";
 import PreviewTeacherImg from "./preiewTeacherImg";
 import moment from "moment";
 export const SubjectSchedule = (props) => {
   const { styleState, height, width } = useContext(StyleController);
   const [teacherName, setTeacherName] = useState();
 
-  // console.log(props, "props");
+  console.log(props, "props");
   const teacherImage = props?.day?.teacherProfileImg;
 
   const teacherLeader = props?.day;
@@ -24,8 +21,9 @@ export const SubjectSchedule = (props) => {
     .locale("en-gb")
     .format("hh:mm")} - ${moment(props?.endTime)
     .locale("en-gb")
-    .format("hh:mm")}}`;
+    .format("hh:mm")}`;
 
+  console.log(timeSchedule, "timeSchedule");
   let startTime = timeSchedule.split(" - ");
 
   let startTimeFirst = getKhmerNum(startTime[0].split(":")[0]);
@@ -34,6 +32,7 @@ export const SubjectSchedule = (props) => {
   let endTimelast = getKhmerNum(startTime[1].split(":")[1]);
 
   let startTimeEng = timeSchedule.split(" - ");
+
   let startTimeFirstEng = getEngNumber(startTimeEng[0].split(":")[0]);
   let startTimelastEng = getEngNumber(startTimeEng[0].split(":")[1]);
   let endTimeFirstEng = getEngNumber(startTimeEng[1].split(":")[0]);

@@ -25,7 +25,7 @@ import { Get_Schedule_For_Mobile } from "../../graphql/Get_ScheduleForMobile";
 export default function Schedule({ navigation, route }) {
   const { styleState, height, width } = useContext(StyleController);
   const [selectDay, setSelectDay] = useState("Monday");
-  const [sectionData, setSectionData] = useState([]);
+  const [sectionData, setSectionData] = useState(null);
   const t = useTranslation();
 
   const { schedule } = route?.params;
@@ -219,23 +219,21 @@ export default function Schedule({ navigation, route }) {
         </View>
 
         <ScrollView>
-          {sectionData?.length > 0 ? (
+          {sectionData?.length > 0 &&
+          sectionData[0]?.day?.subjectId !== null &&
+          sectionData[0]?.breakTime === false ? (
             sectionData?.map((item, index) => {
               return (
                 <View key={item?._id}>
-                  {item?.day?.subjectId !== null ? (
-                    <SubjectSchedule
-                      {...item}
-                      bgColor={
-                        index % 4 === 0
-                          ? COLORS.BLUE_LIGHT
-                          : COLORS.ORANGE_LIGHT
-                      }
-                      color={
-                        index % 4 === 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK
-                      }
-                    />
-                  ) : null}
+                  {/* <SubjectSchedule
+                    {...item}
+                    bgColor={
+                      index % 4 === 0 ? COLORS.BLUE_LIGHT : COLORS.ORANGE_LIGHT
+                    }
+                    color={
+                      index % 4 === 0 ? COLORS.BLUE_DARK : COLORS.ORANGE_DARK
+                    }
+                  /> */}
                 </View>
               );
             })
