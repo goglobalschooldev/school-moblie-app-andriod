@@ -12,12 +12,15 @@ import ImageZoom from "react-native-image-pan-zoom";
 import AutoHeightImage from "react-native-auto-height-image";
 import { StyleController } from "../../static/styleProvider";
 import { Animated } from "react-native";
+import { ExpandingDot } from "react-native-animated-pagination-dots";
+
 import {
   PanGestureHandler,
   PinchGestureHandler,
   ScrollView,
   State,
 } from "react-native-gesture-handler";
+import { FlatList } from "react-native";
 
 export default function AnnoucementZoom({
   load,
@@ -33,6 +36,7 @@ export default function AnnoucementZoom({
   const scale = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
+  const scrollX = React.useRef(new Animated.Value(0)).current;
 
   //
   function ImageData({ item }) {
@@ -160,7 +164,7 @@ export default function AnnoucementZoom({
             </PanGestureHandler>
           </View>
         </Modal>
-        <ScrollView horizontal showsVerticalScrollIndicator={false}>
+        {/* <ScrollView horizontal showsVerticalScrollIndicator={false}>
           {load?.data?.referenceFiles?.map((item) => (
             <TouchableOpacity
               onPress={() => {
@@ -172,7 +176,52 @@ export default function AnnoucementZoom({
               <ImageData item={item} />
             </TouchableOpacity>
           ))}
-        </ScrollView>
+        </ScrollView> */}
+        <FlatList
+          data={load?.data?.referenceFiles}
+          keyExtractor={(item) => item}
+          showsHorizontalScrollIndicator={false}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            {
+              useNativeDriver: false,
+            }
+          )}
+          pagingEnabled
+          horizontal
+          decelerationRate={"normal"}
+          scrollEventThrottle={16}
+          renderItem={({ item }) => (
+            // Render each item here
+            <TouchableOpacity
+              onPress={() => {
+                setModalVisible(!modalVisible), setImage(item);
+              }}
+              style={{ flexDirection: "row" }}
+              key={item}
+            >
+              <ImageData item={item} />
+            </TouchableOpacity>
+          )}
+        />
+        <ExpandingDot
+          data={load?.data?.referenceFiles}
+          expandingDotWidth={30}
+          scrollX={scrollX}
+          inActiveDotOpacity={0.6}
+          dotStyle={{
+            width: 10,
+            height: 10,
+            backgroundColor: "#347af0",
+            borderRadius: 5,
+            marginHorizontal: 5,
+          }}
+          containerStyle={
+            {
+              // top: 30,
+            }
+          }
+        />
       </View>
     );
   }

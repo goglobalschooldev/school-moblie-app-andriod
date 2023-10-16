@@ -1,16 +1,21 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Image, View } from "react-native";
 import DashboardStack from "../routes/stack/dashboardStack";
+import AcademicStack from "../routes/stack/academicStack";
 import EventsStack from "../routes/stack/eventStack";
 import ProfileStack from "../routes/stack/profileStack";
-import TransportationStack from "./stack/transportationStack";
 import Constants from "expo-constants";
-import { Badge } from "react-native-elements";
+import { Avatar, Badge } from "react-native-elements";
 import VersionCheck from "react-native-version-check";
 import { useState } from "react";
 import Aboutschool from "../screens/aboutschool";
-import Curriculum from "../screens/curriculum";
+import { DataController } from "../context/Provider";
+import { useQuery } from "@apollo/client";
+import { GER_PARENTSBYID } from "../graphql/Get_ParentsById";
+import { useMemo } from "react";
+import { COLORS } from "../color";
+import AnnounmentStack from "./stack/announcementStack";
 import Schoolfee from "../screens/schoolfee";
 
 const Tab = createBottomTabNavigator();
@@ -37,6 +42,72 @@ const TabNavigation = ({ navigation }) => {
   useEffect(() => {
     checkLatestVersion();
   }, []);
+  useEffect(() => {
+    ParentRefetch();
+  }, [accountDBCtx]);
+
+  const { accountDBCtx } = useContext(DataController);
+
+  const {
+    data: ParentData,
+    loading: ParentLoading,
+    error: ParentError,
+    refetch: ParentRefetch,
+  } = useQuery(GER_PARENTSBYID, {
+    variables: {
+      id: accountDBCtx?.uid,
+    },
+    pollInterval: 2000,
+    onCompleted: ({ getParentsById }) => {
+      console.log(getParentsById, "parentinfo");
+    },
+    onError: async (error) => {
+      console.log(error.message, "Error parentinfo");
+      // if (error.message === "Not Authorized") {
+      //   await AsyncStorage.removeItem("@userData");
+      //   loginedDispatch({
+      //     type: ACTION.LOGIN_USER,
+      //     payload: false,
+      //   });
+      // }
+    },
+  });
+  let ProfileImage = ParentData?.getParentsById?.profileImg;
+
+  const UserImage = useMemo(() => {
+    const userImage = "https://storage.go-globalschool.com/api" + ProfileImage;
+    if (
+      userImage === "https://storage.go-globalschool.com/api" ||
+      null ||
+      ProfileImage === null
+    ) {
+      return (
+        <Image
+          resizeMode="cover"
+          style={{
+            height: 28,
+            width: 28,
+            borderRadius: 50,
+            position: "absolute",
+          }}
+          source={require("../assets/Images/user.png")}
+        />
+      );
+    } else {
+      return (
+        <Image
+          resizeMode="contain"
+          style={{
+            height: 30,
+            width: 30,
+            borderRadius: 50,
+            position: "absolute",
+          }}
+          source={{ uri: userImage + "?time=" + new Date() }}
+        />
+      );
+    }
+  }, [accountDBCtx, ProfileImage]);
   return (
     <Tab.Navigator
       initialRouteName="DashboardStack"
@@ -80,6 +151,33 @@ const TabNavigation = ({ navigation }) => {
           ),
         }}
       />
+      <Tab.Screen
+        name="AcademicStack"
+        component={AcademicStack}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/graduation-cap.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/graduation-cap_silver.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
       {/* <Tab.Screen
         name="TaskStack"
         component={TaskStack}
@@ -107,6 +205,7 @@ const TabNavigation = ({ navigation }) => {
           ),
         }}
       /> */}
+
       {/* <Tab.Screen
         name="TransportationStack"
         component={TransportationStack}
@@ -134,9 +233,9 @@ const TabNavigation = ({ navigation }) => {
           ),
         }}
       /> */}
-      {/* <Tab.Screen
-        name="Aboutschool"
-        component={Aboutschool}
+      <Tab.Screen
+        name="AnnounmentStack"
+        component={AnnounmentStack}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
@@ -148,73 +247,19 @@ const TabNavigation = ({ navigation }) => {
             >
               {focused ? (
                 <Image
-                  source={require("../assets/Images/about2.png")}
+                  source={require("../assets/Images/loudspeaker2.png")}
                   style={{ width: 24, height: 24 }}
                 />
               ) : (
                 <Image
-                  source={require("../assets/Images/about1.png")}
+                  source={require("../assets/Images/loudspeaker1.png")}
                   style={{ width: 23, height: 23 }}
                 />
               )}
             </View>
           ),
         }}
-      /> */}
-      {/* <Tab.Screen
-        name="Curriculum"
-        component={Curriculum}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {focused ? (
-                <Image
-                  source={require("../assets/Images/book-of-black-cover-closed1.png")}
-                  style={{ width: 24, height: 24 }}
-                />
-              ) : (
-                <Image
-                  source={require("../assets/Images/book-of-black-cover-closed2.png")}
-                  style={{ width: 23, height: 23 }}
-                />
-              )}
-            </View>
-          ),
-        }}
-      /> */}
-      {/* <Tab.Screen
-        name="Schoolfee"
-        component={Schoolfee}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {focused ? (
-                <Image
-                  source={require("../assets/Images/coin1.png")}
-                  style={{ width: 24, height: 24 }}
-                />
-              ) : (
-                <Image
-                  source={require("../assets/Images/coin2.png")}
-                  style={{ width: 23, height: 23 }}
-                />
-              )}
-            </View>
-          ),
-        }}
-      /> */}
+      />
       <Tab.Screen
         name="EventsStack"
         component={EventsStack}
@@ -243,6 +288,62 @@ const TabNavigation = ({ navigation }) => {
         }}
       />
       <Tab.Screen
+        name="Schoolfee"
+        component={Schoolfee}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/coin1.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/coin2.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Aboutschool"
+        component={Aboutschool}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {focused ? (
+                <Image
+                  source={require("../assets/Images/home2.png")}
+                  style={{ width: 24, height: 24 }}
+                />
+              ) : (
+                <Image
+                  source={require("../assets/Images/home1.png")}
+                  style={{ width: 23, height: 23 }}
+                />
+              )}
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
         name="ProfileStack"
         component={ProfileStack}
         options={{
@@ -256,9 +357,17 @@ const TabNavigation = ({ navigation }) => {
             >
               {focused ? (
                 <>
-                  <Image
-                    source={require("../assets/Images/portrait.png")}
-                    style={{ width: 24, height: 24 }}
+                  <Avatar
+                    size={24}
+                    rounded
+                    ImageComponent={() => UserImage}
+                    overlayContainerStyle={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderColor: COLORS.ORANGE,
+                      borderWidth: 1,
+                      resizeMode: "cover",
+                    }}
                   />
                   <View
                     style={{
@@ -277,9 +386,17 @@ const TabNavigation = ({ navigation }) => {
                 </>
               ) : (
                 <>
-                  <Image
-                    source={require("../assets/Images/portrait-silver.png")}
-                    style={{ width: 23, height: 23 }}
+                  <Avatar
+                    size={23}
+                    rounded
+                    ImageComponent={() => UserImage}
+                    overlayContainerStyle={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderColor: COLORS.ORANGE,
+                      borderWidth: 1,
+                      resizeMode: "cover",
+                    }}
                   />
                   <View
                     style={{

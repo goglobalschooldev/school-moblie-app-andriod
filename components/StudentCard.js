@@ -15,10 +15,10 @@ const StudentCard = (props) => {
       return (
         <Text
           style={{
-            fontFamily: "Kantumruy-Regular",
+            fontFamily: "Kantumruy-Bold",
             alignSelf: "center",
-            color: COLORS.WHITE,
-            fontSize: 14,
+            color: COLORS.gray,
+            fontSize: 16,
             alignItems: "center",
           }}
           numberOfLines={1}
@@ -30,10 +30,10 @@ const StudentCard = (props) => {
       return (
         <Text
           style={{
-            fontFamily: "Kantumruy-Regular",
+            fontFamily: "Kantumruy-Bold",
             alignSelf: "center",
-            color: COLORS.WHITE,
-            fontSize: 14,
+            color: COLORS.gray,
+            fontSize: 16,
             alignItems: "center",
           }}
           numberOfLines={1}
@@ -48,9 +48,8 @@ const StudentCard = (props) => {
     <View
       style={{
         flex: 1,
-        width: width * 0.44,
+        width: width * 0.33,
         flexDirection: "row",
-        marginTop: 5,
         alignItems: "center",
         justifyContent: "space-around",
       }}
@@ -58,11 +57,7 @@ const StudentCard = (props) => {
       <View
         style={{
           height: height * 0.21,
-          width: width * 0.38,
           justifyContent: "space-evenly",
-          borderWidth: 1,
-          borderColor: COLORS.ORANGE,
-          borderRadius: 14,
           flexDirection: "column",
         }}
       >
@@ -84,11 +79,8 @@ const StudentCard = (props) => {
         )}
         <View
           style={{
-            height: height * 0.036,
             width: width * 0.3,
-            backgroundColor: COLORS.MAIN,
             alignSelf: "center",
-            borderRadius: 5,
             justifyContent: "center",
           }}
         >
@@ -106,11 +98,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   stuImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 100,
     alignSelf: "center",
-    marginVertical: 4,
     borderWidth: 1,
     borderColor: "#dcdcdc",
   },

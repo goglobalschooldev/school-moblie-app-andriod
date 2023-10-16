@@ -9,4 +9,6 @@ export const COLORS = {
   ORANGE_LIGHT: "#FFEEDB",
   ORANGE: "#FCA845",
   GREY: "#f8f8f8",
+  PURPLE: "#6862C2",
+  PINK: "#EC2777",
 };

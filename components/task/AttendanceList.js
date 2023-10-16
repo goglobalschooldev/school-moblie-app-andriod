@@ -17,7 +17,7 @@ export default function AttendanceList(props) {
       <View className="flex flex-row h-fit w-[97%] bg-white items-center border-b border-background self-center">
         <View className="py-3 justify-center w-[31%] items-center">
           <Text className="text-black font-kantunruy-regular text-xs leading-6">
-            {moment(props?.data)
+            {moment(props?.date)
               .locale("en", localization)
               .format("DD MMM YYYY")}
           </Text>

@@ -136,7 +136,7 @@ export default function LoginScreen({ navigation }, props) {
         token: notiToken,
         osType: "android",
       });
-      // console.log(addUsertoken, "addUsertoken");
+      console.log(addUsertoken, "addUsertoken");
     } catch (error) {
       console.log(error.message, "erroraddUsertoken");
     }

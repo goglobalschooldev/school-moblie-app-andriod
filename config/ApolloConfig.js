@@ -108,7 +108,7 @@ const ApolloConfig = ({ children }) => {
   });
 
   const uploadLink = createHttpLink({
-    uri: `https://${URI}`,
+    uri: `http://${URI}`,
   });
 
   const wsLink = new WebSocketLink({

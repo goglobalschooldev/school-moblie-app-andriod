@@ -11,6 +11,8 @@ import React from "react";
 import Header from "../routes/header/Header";
 import { useTranslation } from "react-multi-lang";
 import { COLORS } from "../color";
+import { FontAwesome, AntDesign, Entypo } from "@expo/vector-icons";
+// import MapView from "react-native-maps";
 
 const Aboutschool = ({ navigation }) => {
   const t = useTranslation();
@@ -56,6 +58,7 @@ const Aboutschool = ({ navigation }) => {
       </Text>
     );
   };
+
   return (
     <>
       <StatusBar
@@ -81,10 +84,10 @@ const Aboutschool = ({ navigation }) => {
           }}
         >
           <Image
-            source={require("../assets/Images/new_event.jpg")}
+            source={require("../assets/Images/Programme-Image.jpg")}
             resizeMode="cover"
             style={{
-              height: 200,
+              height: 300,
               width: "90%",
               marginTop: "5%",
               borderRadius: 10,
@@ -104,8 +107,8 @@ const Aboutschool = ({ navigation }) => {
             }}
           >
             <Image
-              source={require("../assets/Images/new_event.jpg")}
-              resizeMode="contain"
+              source={require("../assets/Images/Version-Image.jpg")}
+              resizeMode="cover"
               style={{
                 height: "100%",
                 width: "30%",
@@ -138,8 +141,8 @@ const Aboutschool = ({ navigation }) => {
             }}
           >
             <Image
-              source={require("../assets/Images/new_event.jpg")}
-              resizeMode="contain"
+              source={require("../assets/Images/Mission-Image.jpg")}
+              resizeMode="cover"
               style={{
                 height: "100%",
                 width: "30%",
@@ -183,9 +186,18 @@ const Aboutschool = ({ navigation }) => {
               justifyContent: "space-between",
             }}
           >
-            <View style={{ height: "100%", width: "49%" }}>
+            <View
+              style={{
+                height: "100%",
+                width: "49%",
+                // alignItems: "center",
+                // justifyContent: "flex-start",
+              }}
+            >
               <Image
-                source={require("../assets/Images/user_phoem.jpg")}
+                source={{
+                  uri: "https://storage.go-globalschool.com/api/uploads/employee-Image/cfb7cbbe-b0be-4d38-ba9d-1ce6ff1db0941012022jpeg.png",
+                }}
                 resizeMode="cover"
                 style={{
                   height: "80%",
@@ -199,7 +211,9 @@ const Aboutschool = ({ navigation }) => {
 
             <View style={{ height: "100%", width: "49%" }}>
               <Image
-                source={require("../assets/Images/user_phoem.jpg")}
+                source={{
+                  uri: "https://storage.go-globalschool.com/api/uploads/employee-Image/76cc3634-390a-42db-a4cd-7482d267c95c1012022jpeg.png",
+                }}
                 resizeMode="cover"
                 style={{
                   height: "80%",
@@ -218,12 +232,119 @@ const Aboutschool = ({ navigation }) => {
             style={{
               flexDirection: "row",
               width: "90%",
-              height: 50,
-              alignItems: "flex-end",
+              alignItems: "center",
             }}
           >
-            <Title1 title={"Contact us :"} />
+            <FontAwesome
+              name="phone"
+              size={20}
+              color={COLORS.MAIN}
+              style={{ marginRight: 10 }}
+            />
             <Body1 text={"076 777 2168"} />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              width: "90%",
+              alignItems: "center",
+            }}
+          >
+            <Entypo
+              name="mail"
+              size={20}
+              color={COLORS.MAIN}
+              style={{ marginRight: 10 }}
+            />
+
+            <Body1 text={"info@go-globalschool.com"} />
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              width: "90%",
+              alignItems: "center",
+            }}
+          >
+            <Entypo
+              name="location-pin"
+              size={20}
+              color={COLORS.MAIN}
+              style={{ marginRight: 10 }}
+            />
+
+            <Body1 text={"info@go-globalschool.com"} />
+          </View>
+          <View
+            style={{
+              width: "90%",
+              height: 300,
+              marginTop: 14,
+              backgroundColor: COLORS.GREY,
+              borderRadius: 5,
+            }}
+          >
+            <Title1 title={"Find us on google map"} />
+            {/* <MapView
+              style={{ width: "100%", height: "100%" }}
+              initialRegion={{
+                latitude: 13.347917462736245,
+                longitude: 103.84412492640914,
+                latitudeDelta: 0.0922 / 30,
+                longitudeDelta: 0.0421 / 30,
+              }}
+            /> */}
+          </View>
+          <Image
+            source={require("../assets/Images/square-terminal.png")}
+            resizeMode="contain"
+            style={{
+              height: 20,
+              width: "90%",
+              marginTop: 50,
+            }}
+          />
+          <Text
+            style={{
+              fontFamily: "Kantumruy-Regular",
+              fontSize: 12,
+              width: "90%",
+              color: COLORS.PURPLE,
+              textAlign: "center",
+              marginTop: 4,
+            }}
+          >
+            រៀបចំអភិវឌ្ឍដោយ៖
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              width: "90%",
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Kantumruy-Bold",
+                fontSize: 12,
+                color: COLORS.PURPLE,
+                textAlign: "center",
+                marginTop: 4,
+              }}
+            >
+              ក្រុមហ៊ុនហ្គោគ្លប៊ល
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Kantumruy-Bold",
+                fontSize: 12,
+                color: COLORS.PINK,
+                textAlign: "center",
+                marginTop: 4,
+              }}
+            >
+              អាយធី
+            </Text>
           </View>
         </ScrollView>
       </ImageBackground>

@@ -56,7 +56,7 @@ export default function Dashboard({ navigation }) {
   } = useQuery(QUERY_ANNOUNCEMENT, {
     variables: {
       page: 1,
-      limit: 1000,
+      limit: 3,
       from: "",
       to: "",
       keyword: "",
@@ -177,7 +177,7 @@ export default function Dashboard({ navigation }) {
           style={{
             width: width,
             alignSelf: "center",
-            height: height * 0.29,
+            height: height * 0.23,
             backgroundColor: COLORS.WHITE,
             flexDirection: "column",
             justifyContent: "center",
@@ -185,59 +185,33 @@ export default function Dashboard({ navigation }) {
         >
           <View
             style={{
-              width: width * 0.95,
-              alignSelf: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "Bayon-Regular",
-                fontSize: 20,
-                color: COLORS.MAIN,
-              }}
-            >
-              {t("បុត្រធីតា")}
-            </Text>
-          </View>
-          <View
-            style={{
               flex: 1,
               width: width,
               alignSelf: "center",
-              borderBottomWidth: 1,
-              borderBottomColor: "#E4E4E4",
             }}
           >
             <View
               style={{
                 flex: 1,
+                justifyContent: "center",
               }}
             >
-              <ImageBackground
-                source={require("../assets/Images/Dashboard.png")}
-                resizeMode="cover"
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                }}
+              <ScrollView
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                stickyHeaderIndices={[1]}
               >
-                <ScrollView
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  stickyHeaderIndices={[1]}
-                >
-                  {Students?.map((load) => (
-                    <TouchableOpacity
-                      key={load?._id}
-                      onPress={() =>
-                        navigation.navigate("StuClass", { data: load })
-                      }
-                    >
-                      <StudentCard {...load} />
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </ImageBackground>
+                {Students?.map((load) => (
+                  <TouchableOpacity
+                    key={load?._id}
+                    onPress={() =>
+                      navigation.navigate("StuClass", { data: load })
+                    }
+                  >
+                    <StudentCard {...load} />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
           </View>
         </View>

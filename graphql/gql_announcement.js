@@ -30,6 +30,18 @@ export const QUERY_ANNOUNCEMENT = gql`
         }
         referenceFiles
       }
+      paginator {
+        slNo
+        prev
+        next
+        perPage
+        totalPosts
+        totalPages
+        currentPage
+        hasPrevPage
+        hasNextPage
+        totalDocs
+      }
     }
   }
 `;
